@@ -6,7 +6,7 @@ Users can be **organizers** (event admins), **hosts** (provide locations and acc
 What sets evie apart is **accommodations**: hosts offer places to sleep, and attendees book into them.
 A later feature adds **pick-up and drop-off** rides.
 
-This document is the living index of the gameplan. Each stage has a spec in [`gameplan/`](gameplan/) with its
+This document is the living index of the gameplan. Each stage has a spec in this folder with its
 requirements, desired outcome, scope and milestones. Update the status table whenever a stage starts or finishes.
 
 ## Tech stack
@@ -70,19 +70,19 @@ Dashed boxes are horizontal (technical) stages; all others are vertical (domain)
 
 Legend: ⏳ pending · 🚧 in progress · ✅ done
 
-| ID  | Stage                                                                       | Kind       | Depends on     | Release goals | Status |
-| --- | --------------------------------------------------------------------------- | ---------- | -------------- | ------------- | ------ |
-| 00  | [Development setup](gameplan/00-development-setup.md)                       | horizontal | —              | v0.1, v0.2    | ⏳     |
-| 01  | [Platform scaffolding](gameplan/01-platform-scaffolding.md)                 | horizontal | 00             | v0.2, v0.3    | ⏳     |
-| 02  | [Identity & profiles](gameplan/02-identity-profiles.md)                     | vertical   | 01             | v0.3          | ⏳     |
-| 03  | [Households & managed profiles](gameplan/03-households-managed-profiles.md) | vertical   | 02             | v0.5          | ⏳     |
-| 04  | [Contacts](gameplan/04-contacts.md)                                         | vertical   | 02             | v0.5          | ⏳     |
-| 05  | [Events & activities](gameplan/05-events-activities.md)                     | vertical   | 02             | v0.6          | ⏳     |
-| 06  | [Notifications foundation](gameplan/06-notifications-foundation.md)         | horizontal | 02             | v0.6          | ⏳     |
-| 07  | [Invitations & attendance](gameplan/07-invitations-attendance.md)           | vertical   | 03, 04, 05, 06 | v0.7          | ⏳     |
-| 08  | [Accommodations](gameplan/08-accommodations.md)                             | vertical   | 07             | v1            | ⏳     |
-| 09  | [Pick-up & drop-off](gameplan/09-pickup-dropoff.md)                         | vertical   | 07             | v2            | ⏳     |
-| 10  | [Deployment & operations](gameplan/10-deployment-operations.md)             | horizontal | 00, 01         | v0.4, v0.8    | ⏳     |
+| ID  | Stage                                                                | Kind       | Depends on     | Release goals | Status |
+| --- | -------------------------------------------------------------------- | ---------- | -------------- | ------------- | ------ |
+| 00  | [Development setup](./00-development-setup.md)                       | horizontal | —              | v0.1, v0.2    | ⏳     |
+| 01  | [Platform scaffolding](./01-platform-scaffolding.md)                 | horizontal | 00             | v0.2, v0.3    | ⏳     |
+| 02  | [Identity & profiles](./02-identity-profiles.md)                     | vertical   | 01             | v0.3          | ⏳     |
+| 03  | [Households & managed profiles](./03-households-managed-profiles.md) | vertical   | 02             | v0.5          | ⏳     |
+| 04  | [Contacts](./04-contacts.md)                                         | vertical   | 02             | v0.5          | ⏳     |
+| 05  | [Events & activities](./05-events-activities.md)                     | vertical   | 02             | v0.6          | ⏳     |
+| 06  | [Notifications foundation](./06-notifications-foundation.md)         | horizontal | 02             | v0.6          | ⏳     |
+| 07  | [Invitations & attendance](./07-invitations-attendance.md)           | vertical   | 03, 04, 05, 06 | v0.7          | ⏳     |
+| 08  | [Accommodations](./08-accommodations.md)                             | vertical   | 07             | v1            | ⏳     |
+| 09  | [Pick-up & drop-off](./09-pickup-dropoff.md)                         | vertical   | 07             | v2            | ⏳     |
+| 10  | [Deployment & operations](./10-deployment-operations.md)             | horizontal | 00, 01         | v0.4, v0.8    | ⏳     |
 
 A stage can start once the milestones listed in its **Requirements** are done; the stages it depends on don't have to be ✅ yet. Stages without dependencies on each other (e.g. 03–06) can run in parallel.
 
@@ -90,8 +90,8 @@ A stage can start once the milestones listed in its **Requirements** are done; t
 
 Development is organized into release goals. Each goal is a version, delivers one or more stage milestones and is tracked as a GitHub milestone. Goal numbers don't match stage numbers: a goal can span several stages, and a stage can be split across several goals. Like the stages, the goals change as the project evolves: they can be added, deferred, merged or re-cut.
 
-- **GitHub milestone:** one per goal, titled `vX.Y - <goal name>` (e.g. `v0.2 - Monorepo setup`, `v2 - Pick-up and drop-off`). Its description holds the goal's description and the stage milestones it targets, grouped by stage ([template](templates/github-milestone.md)).
-- **Issues:** each stage milestone becomes one or more issues in the goal's GitHub milestone ([template](templates/github-issue.md)). Issues start as rough outlines and are refined before implementation.
+- **GitHub milestone:** one per goal, titled `vX.Y - <goal name>` (e.g. `v0.2 - Monorepo setup`, `v2 - Pick-up and drop-off`). Its description holds the goal's description and the stage milestones it targets, grouped by stage ([template](../templates/github-milestone.md)).
+- **Issues:** each stage milestone becomes one or more issues in the goal's GitHub milestone ([template](../templates/github-issue.md)). Issues start as rough outlines and are refined before implementation.
 - **Sub-issues** are only created while planning the implementation of a single issue, to split its work into items that PRs close.
 - **Versioning before v1:** every PR is a `fix` (patch). Only the PR that closes the last issue of a goal is a `feat`, which bumps the minor version (e.g. `0.2.x` → `0.3.0`). Breaking changes (`!`) are not used before v1. This deliberately bends SemVer and ends with v1.
 - **Major goals:** release-please never reaches `1.0.0` or `2.0.0` from `feat` commits, so the PR that completes v1 or v2 sets the version with a `Release-As: X.0.0` footer. v2 is a deliberate "big feature" major, not a breaking change. From v1 on, normal SemVer applies.
