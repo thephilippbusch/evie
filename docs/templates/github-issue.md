@@ -1,6 +1,6 @@
 # GitHub issue template
 
-Used to turn a stage milestone into one or more issues in its release goal's GitHub milestone. Issues start as rough outlines and are refined before implementation. Sub-issues are only created while planning the implementation of a single issue.
+Used to turn a GitHub milestone's targets into one or more issues in that milestone. Issues start as rough outlines and are refined before implementation. Sub-issues are only created while planning the implementation of a single issue.
 
 **Title:** states the intent clearly, e.g. `Setup agent skills directory` or `Add password reset workflow`.
 
