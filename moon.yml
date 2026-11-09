@@ -1,8 +1,9 @@
 $schema: 'https://moonrepo.dev/schemas/v2/project.json'
 
 # The repository root as a project: hosts repo-wide tasks. Its tasks run from
-# the repository root, declare no inputs (so they never hash the whole repo)
-# and are `run` tasks, so `moon check` and `moon ci` skip them.
+# the repository root and never hash the whole repo. The hook and formatting
+# tasks declare no inputs and are `run` tasks, so `moon check` and `moon ci`
+# skip them; `validate-agent-files` is a `test` task that always runs in CI.
 layer: 'tool'
 project:
   title: 'root'
@@ -42,3 +43,20 @@ tasks:
       cache: false
       runInCI: false
       outputStyle: 'stream'
+
+  validate-agent-files:
+    description: 'Validate skills, subagents and AGENTS.md files against the authoring-skills budgets.'
+    command: 'sh scripts/validate-agent-files.sh'
+    type: 'test'
+    inputs:
+      - '.agents/**/*'
+      - '.claude/agents/**/*'
+      - '**/AGENTS.md'
+      - '**/CLAUDE.md'
+      - 'scripts/validate-agent-files.sh'
+    options:
+      # Links may point to any file in the repo, which the inputs can't list
+      # without hashing the whole repo. So the task never reuses a cached
+      # result, and `moon ci` runs it even when no input changed.
+      cache: false
+      runInCI: 'always'
