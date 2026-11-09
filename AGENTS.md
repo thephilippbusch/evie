@@ -13,7 +13,7 @@ Work is tracked in [GitHub milestones](https://github.com/thephilippbusch/evie/m
 | `libs/`           | Libraries used by apps, never deployed: protobuf definitions, shared crates and packages (_planned_)         |
 | `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                |
 | `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates |
-| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it (_planned_)                          |
+| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                      |
 | `.claude/agents/` | Claude Code subagents (_planned_)                                                                            |
 | `.moon/`          | moon workspace and toolchain config (_planned_)                                                              |
 
@@ -79,7 +79,8 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 
 ## Skills
 
-In `.agents/skills/`. _Building blocks_ do one task and are reused by other skills; _workflows_ chain them. All _planned_; link each one here when it lands.
+In `.agents/skills/`, following the [Agent Skills spec](https://agentskills.io/specification). Claude Code reads them through the `.claude/skills` symlink; OpenCode and Codex read `.agents/skills/` directly. Add skills only in `.agents/skills/`, never in `.claude/skills/` or `.opencode/skills/`.
+_Building blocks_ do one task and are reused by other skills; _workflows_ chain them. All _planned_; link each one here when it lands.
 
 - **Git & delivery:** `conventional-commits`, `branch`, `commit`, `pull-request` · workflow `ship`
 - **Issues & milestones:** `issue`, `check-milestone`
