@@ -1,5 +1,5 @@
 <!--
-Title: a Conventional Commit, e.g. "chore: add the issue skill". Before v1, no PR is a feat, except the one that closes the last issue of a milestone.
+Title: a Conventional Commit, e.g. "chore: add the issue skill". Before v1, use a type that doesn't release (chore, ci, docs, ai, ...); only the PR that closes the last issue of a milestone is a feat.
 This body becomes the squash commit's body, so keep it plain Markdown and delete these comments.
 To set the release version, end the body with a blank line and a "Release-As: X.Y.Z" footer as the very last line.
 -->
