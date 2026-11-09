@@ -23,6 +23,16 @@ tasks:
       cache: false
       runInCI: false
 
+  format-staged:
+    description: 'Format the staged files and stage the result. Run by the pre-commit hook.'
+    command: 'sh scripts/format-staged.sh'
+    type: 'run'
+    inputs: []
+    options:
+      cache: false
+      runInCI: false
+      outputStyle: 'stream'
+
   lint-commit-msg:
     description: 'Check that a commit message is a Conventional Commit. Run by the commit-msg hook.'
     command: 'sh scripts/lint-commit-msg.sh'
