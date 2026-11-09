@@ -14,7 +14,7 @@ Work is tracked in [GitHub milestones](https://github.com/thephilippbusch/evie/m
 | `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                |
 | `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates |
 | `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                      |
-| `.claude/agents/` | Claude Code subagents (_planned_)                                                                            |
+| `.claude/agents/` | Claude Code subagents                                                                                        |
 | `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks            |
 | `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                        |
 
@@ -98,17 +98,17 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 - **Quality:** [`verify`](.agents/skills/verify/SKILL.md), [`writing-style`](.agents/skills/writing-style/SKILL.md), [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
 - **Planning:** `plan`
 - **Investigation:** [`debug`](.agents/skills/debug/SKILL.md), [`benchmark`](.agents/skills/benchmark/SKILL.md)
-- **Review:** `review-security`, `review-architecture`, `review-code-quality`, `review-tests`, `review-project-rules` · workflow `review`
+- **Review:** [`review-security`](.agents/skills/review-security/SKILL.md), [`review-architecture`](.agents/skills/review-architecture/SKILL.md), [`review-code-quality`](.agents/skills/review-code-quality/SKILL.md), [`review-tests`](.agents/skills/review-tests/SKILL.md), [`review-project-rules`](.agents/skills/review-project-rules/SKILL.md) · workflow [`review`](.agents/skills/review/SKILL.md)
 - **Meta:** [`authoring-skills`](.agents/skills/authoring-skills/SKILL.md)
 
 ## Subagents
 
-In `.claude/agents/`. Thin wrappers that preload skills and restrict tools; they run non-interactively with structured output. All _planned_.
+In `.claude/agents/`. Thin wrappers that preload skills and restrict tools; they run non-interactively with structured output.
 
-- **Reviewers:** one read-only reviewer per review focus, run in parallel by `review`
-- **Verifier:** runs the affected checks in the background and reports only failures
-- **Milestone auditor:** runs `check-milestone` against a GitHub milestone and lists the gaps
-- **Implementer:** works in its own git worktree with `commit` and `verify`, for parallel independent tasks
+- **Reviewers:** one read-only reviewer per review focus, run in parallel by `review`: [`reviewer-security`](.claude/agents/reviewer-security.md), [`reviewer-architecture`](.claude/agents/reviewer-architecture.md), [`reviewer-code-quality`](.claude/agents/reviewer-code-quality.md), [`reviewer-tests`](.claude/agents/reviewer-tests.md), [`reviewer-project-rules`](.claude/agents/reviewer-project-rules.md)
+- **Verifier** (_planned_): runs the affected checks in the background and reports only failures
+- **Milestone auditor** (_planned_): runs `check-milestone` against a GitHub milestone and lists the gaps
+- **Implementer** (_planned_): works in its own git worktree with `commit` and `verify`, for parallel independent tasks
 
 ## Editing this file
 
