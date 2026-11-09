@@ -1,0 +1,37 @@
+name: PR title
+
+# PRs are squash-merged and the squash commit takes the PR title, so the title
+# is what release-please reads on main. `edited` re-runs the check when the
+# title changes; the others keep the check on the PR's latest commit.
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+# A newer run for the same PR replaces an older one, so a slow run for an old
+# title can't report after the run for the current title.
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-title:
+    # The ruleset in .github/rulesets/main.json requires this check by name.
+    name: PR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: scripts
+          persist-credentials: false
+      # The title is untrusted input: pass it through the environment, never
+      # interpolate it into the script, so it can't inject shell commands.
+      # The same script runs in the commit-msg hook, so PR titles and local
+      # commits follow the same rules.
+      - name: Check that the PR title is a Conventional Commit
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | sh scripts/lint-commit-msg.sh --pr-title

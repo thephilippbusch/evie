@@ -1,18 +1,30 @@
 #!/bin/sh
 # Checks that a commit message is a Conventional Commit.
 #
-# Usage: lint-commit-msg.sh [FILE]
-#   FILE  the commit message file (as passed to the commit-msg hook).
-#         Without FILE, or with "-", the message is read from stdin.
+# Usage: lint-commit-msg.sh [--pr-title] [FILE]
+#   --pr-title  check a PR title instead (used by CI). The title becomes the
+#               squash commit on main, so the git-written headers below are
+#               rejected too.
+#   FILE        the commit message file (as passed to the commit-msg hook).
+#               Without FILE, or with "-", the message is read from stdin.
 #
 # Allowed types are the standard Conventional Commit types plus `ai` for
 # agent configuration. Messages that git or GitHub write themselves (merges,
-# reverts, fixup!/squash!/amend!) are accepted as they are.
+# reverts, fixup!/squash!/amend!) are accepted as they are, except with
+# --pr-title.
 
 set -eu
 
 types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|ai'
 max_header_length=100
+subject='commit message'
+pr_title=false
+
+if [ "${1:-}" = '--pr-title' ]; then
+  subject='PR title'
+  pr_title=true
+  shift
+fi
 
 if [ "${1:--}" = "-" ]; then
   raw=$(cat)
@@ -29,7 +41,7 @@ header=$(printf '%s\n' "$message" | sed -n '/[^[:space:]]/{p;q;}')
 after_header=$(printf '%s\n' "$message" | sed -n '/[^[:space:]]/{n;p;q;}')
 
 fail() {
-  printf 'Invalid commit message: %s\n\n' "$1" >&2
+  printf 'Invalid %s: %s\n\n' "$subject" "$1" >&2
   printf '  %s\n\n' "$header" >&2
   printf 'Expected a Conventional Commit: <type>[(scope)][!]: <description>\n' >&2
   printf 'Allowed types: %s\n' "$(printf '%s' "$types" | sed 's/|/, /g')" >&2
@@ -42,9 +54,11 @@ if [ -z "$header" ]; then
   fail 'the message is empty'
 fi
 
-case "$header" in
-  'Merge '* | 'Revert "'* | 'fixup! '* | 'squash! '* | 'amend! '*) exit 0 ;;
-esac
+if [ "$pr_title" = false ]; then
+  case "$header" in
+    'Merge '* | 'Revert "'* | 'fixup! '* | 'squash! '* | 'amend! '*) exit 0 ;;
+  esac
+fi
 
 if ! printf '%s\n' "$header" | grep -Eq "^($types)(\([^()[:space:]]+\))?!?: [^[:space:]]"; then
   fail 'the header does not match the format'
