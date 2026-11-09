@@ -15,7 +15,8 @@ Work is tracked in [GitHub milestones](https://github.com/thephilippbusch/evie/m
 | `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates |
 | `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                      |
 | `.claude/agents/` | Claude Code subagents (_planned_)                                                                            |
-| `.moon/`          | moon workspace and toolchain config (_planned_)                                                              |
+| `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks            |
+| `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                        |
 
 Every moon project has its own `AGENTS.md` (with a `CLAUDE.md` symlink) covering its purpose, structure, commands and local rules (_planned_).
 Read it before you change that project. Where it differs from this file, the project file wins.
@@ -32,7 +33,7 @@ Read it before you change that project. Where it differs from this file, the pro
 proto pins the tool versions; moon is the entry point for every task. Prefer `moon run` over calling bun or cargo directly, so caching and task dependencies apply.
 
 ```sh
-proto install                     # install the pinned toolchain (moon, bun, rust, …)
+proto trust && proto install      # install the pinned toolchain (moon, dprint, bun, rust, …)
 moon query projects               # list projects
 moon query projects --affected    # projects touched by your changes
 moon run <project>:<task>         # one task in one project, e.g. moon run backend:test
@@ -42,6 +43,7 @@ docker compose up                 # local stack: PostgreSQL, Mailpit, backend, f
 ```
 
 Standard tasks: `build`, `lint`, `format`, `test`, `codegen`, `migrate`.
+Git hooks install themselves on the first `moon run` in a checkout, or with `moon sync hooks`. `pre-commit` formats the staged Markdown, JSON and YAML files with dprint and stages the result; `commit-msg` rejects messages that aren't Conventional Commits.
 Add dependencies with the native tool inside the project: `bun add <pkg>` or `cargo add <crate>`.
 moon is also available to agents over MCP (`moon mcp`, _planned_).
 
