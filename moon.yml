@@ -22,3 +22,13 @@ tasks:
     options:
       cache: false
       runInCI: false
+
+  lint-commit-msg:
+    description: 'Check that a commit message is a Conventional Commit. Run by the commit-msg hook.'
+    command: 'sh scripts/lint-commit-msg.sh'
+    type: 'run'
+    inputs: []
+    options:
+      cache: false
+      runInCI: false
+      outputStyle: 'stream'
