@@ -24,12 +24,12 @@ There is no `bench` moon task yet, so run the commands in the project directory.
 ## Steps
 
 1. **Define the claim.** Name the operation, the metric (time per operation, throughput, allocations) and realistic inputs, including sizes.
-2. **Write the benchmark** in the project that owns the code, or reuse an existing one. Measure the smallest unit that contains the change. Commit it on its own with the `commit` skill (once it exists), before the change, so both sides run the same benchmark.
+2. **Write the benchmark** in the project that owns the code, or reuse an existing one. Measure the smallest unit that contains the change. Commit it on its own with the `commit` skill, before the change, so both sides run the same benchmark.
 3. **Measure the baseline** on the code without the change. If the change is already written, check out the baseline in a separate worktree; the references show how.
 4. **Measure the change** on the same machine, with the same build profile, toolchain version and inputs. Keep the machine quiet: no builds, tests or other benchmarks running alongside.
 5. **Repeat.** Run each side at least three times, alternating baseline and change, so drift (heat, background load) shows up as variance instead of as a difference.
 6. **Judge.** The difference is real only if it is larger than the variance between runs of the same code. Otherwise the result is "no measurable change". Report slowdowns too.
-7. **Report** the result in the PR description with the `pull-request` skill (once it exists).
+7. **Report** the result in the PR description with the `pull-request` skill.
 
 ## Output
 

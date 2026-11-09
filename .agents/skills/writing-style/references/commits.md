@@ -1,6 +1,6 @@
 # Commit bodies
 
-The title is a Conventional Commit; its format belongs to the `conventional-commits` skill (once it exists). The body says what changed and why, in one to three sentences. Leave it out when the title says everything.
+The title is a Conventional Commit; its format belongs to the `conventional-commits` skill. The body says what changed and why, in one to three sentences. Leave it out when the title says everything.
 
 ## What and why, not how
 

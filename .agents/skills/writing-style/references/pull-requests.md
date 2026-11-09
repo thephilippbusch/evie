@@ -1,6 +1,6 @@
 # PR descriptions
 
-Follow `.github/pull_request_template.md`. PRs are squash-merged and the body becomes the commit body on `main`, so it follows the commit rules too. The title format belongs to the `conventional-commits` skill (once it exists).
+Follow `.github/pull_request_template.md`. PRs are squash-merged and the body becomes the commit body on `main`, so it follows the commit rules too. The title format belongs to the `conventional-commits` skill.
 
 ## Description: one short paragraph
 

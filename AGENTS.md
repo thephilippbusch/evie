@@ -67,7 +67,7 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 - Never push to `main` or force-push. Work on a branch and open a PR.
 - Never read `.env` files or other secrets.
 - Claude Code enforces the rules above with permissions in `.claude/settings.json` and a hook in `.claude/hooks/` (needs `jq`); list new generated or release-owned paths in [`protected-paths.txt`](.claude/hooks/protected-paths.txt).
-- PR titles are Conventional Commits, checked in CI. PRs are squash-merged, and the commit takes the PR title and description. Before v1, no PR is a `feat`, except the one that closes the last issue of a milestone.
+- PR titles are Conventional Commits, checked in CI. PRs are squash-merged, and the commit takes the PR title and description. Before v1, PR titles use a type that doesn't release (`chore`, `ci`, `docs`, `ai`, …); only the PR that closes the last issue of a milestone is a `feat`.
 - From v0.5 on, participation features support acting for household members and managed profiles, and record who acted.
 - New apps are added with the `moon-new-app` skill, which registers them for releases and image builds.
 - A change that adds or changes a workflow updates the matching `AGENTS.md` and skills.
@@ -92,7 +92,7 @@ In `.agents/skills/`, following the [Agent Skills spec](https://agentskills.io/s
 Check skills, subagents and every `AGENTS.md` with `moon run root:validate-agent-files`; CI runs it on every PR.
 _Building blocks_ do one task and are reused by other skills; _workflows_ chain them. Unlinked names are _planned_; link each one here when it lands.
 
-- **Git & delivery:** `conventional-commits`, `branch`, `commit`, `pull-request` · workflow `ship`
+- **Git & delivery:** [`conventional-commits`](.agents/skills/conventional-commits/SKILL.md), [`branch`](.agents/skills/branch/SKILL.md), [`commit`](.agents/skills/commit/SKILL.md), [`pull-request`](.agents/skills/pull-request/SKILL.md) · workflow [`ship`](.agents/skills/ship/SKILL.md)
 - **Issues & milestones:** [`issue`](.agents/skills/issue/SKILL.md), `check-milestone`
 - **moon:** [`moon-query`](.agents/skills/moon-query/SKILL.md), [`moon-run`](.agents/skills/moon-run/SKILL.md), [`moon-new-library`](.agents/skills/moon-new-library/SKILL.md), [`moon-new-app`](.agents/skills/moon-new-app/SKILL.md), [`moon-add-task`](.agents/skills/moon-add-task/SKILL.md)
 - **Quality:** [`verify`](.agents/skills/verify/SKILL.md), [`writing-style`](.agents/skills/writing-style/SKILL.md), [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
