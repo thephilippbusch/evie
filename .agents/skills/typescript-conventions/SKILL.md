@@ -50,4 +50,4 @@ Stack-specific patterns belong to their own skills (once they exist): Effect ser
 - `describe` names the unit; `test` states the behaviour as a sentence. Use `test`, not `it`.
 - Test through a module's exports; don't export internals for a test.
 - Don't `mock.module` your own code; pass the dependency in instead.
-- Run tests with `moon run <project>:test`; add `-- -t "<name>"` for one test. Use the `moon-run` skill (once it exists).
+- Run tests with `moon run <project>:test`; add `-- -t "<name>"` for one test. Use the `moon-run` skill.

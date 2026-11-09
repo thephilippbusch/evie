@@ -83,4 +83,4 @@ moon run :test                                       # every project with a test
 moon run backend:test -- book_rejects_a_full_place   # one test, by name filter
 ```
 
-Use the `moon-run` skill (once it exists) for the details.
+Use the `moon-run` skill for the details.

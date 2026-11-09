@@ -94,7 +94,7 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 - **Git & delivery:** `conventional-commits`, `branch`, `commit`, `pull-request` · workflow `ship`
 - **Issues & milestones:** [`issue`](.agents/skills/issue/SKILL.md), `check-milestone`
 - **moon:** [`moon-query`](.agents/skills/moon-query/SKILL.md), [`moon-run`](.agents/skills/moon-run/SKILL.md), [`moon-new-library`](.agents/skills/moon-new-library/SKILL.md), [`moon-new-app`](.agents/skills/moon-new-app/SKILL.md), [`moon-add-task`](.agents/skills/moon-add-task/SKILL.md)
-- **Quality:** `verify`, `writing-style`, [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
+- **Quality:** [`verify`](.agents/skills/verify/SKILL.md), [`writing-style`](.agents/skills/writing-style/SKILL.md), [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
 - **Planning:** `plan`
 - **Investigation:** [`debug`](.agents/skills/debug/SKILL.md), [`benchmark`](.agents/skills/benchmark/SKILL.md)
 - **Review:** `review-security`, `review-architecture`, `review-code-quality`, `review-tests`, `review-project-rules` · workflow `review`

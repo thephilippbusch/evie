@@ -34,7 +34,7 @@ The description is all an agent sees before it picks a skill. Write it for that 
 2. One sentence starting with "Use when", listing the situations and the words a user would say.
 
 ```yaml
-description: Formats, lints and tests the moon projects a change affects and reports only failures. Use when checking work before a commit or PR, or when asked to verify, check or test changes.
+description: Checks the formatting, lint, build and tests of what a change affects, through moon and dprint, and reports only the failures. Use when checking work before a commit or PR, or when asked to verify, check or test changes.
 ```
 
 Avoid vague verbs ("helps with"), repo history, and step details. Aim for under 300 characters.
@@ -48,7 +48,7 @@ The body loads in full when the skill is used, so keep it short and imperative:
 - **Output**: what the agent returns or leaves behind. If a subagent or workflow consumes it, give a fixed format (see [subagents.md](subagents.md#structured-output)).
 - **Rules**: the few things that must never happen, if any.
 
-Write like the root `AGENTS.md`: short sentences, tables and bullets, no filler. Follow the `writing-style` skill once it exists.
+Write like the root `AGENTS.md`: short sentences, tables and bullets, no filler. Follow the `writing-style` skill.
 
 ## Progressive disclosure
 

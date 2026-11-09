@@ -32,7 +32,7 @@ Run tasks through moon, not by calling `bun`, `cargo` or a script directly. moon
 3. Before a PR, run `moon ci`. It compares the branch with `main` and runs exactly the tasks CI runs.
 4. On a failure, rerun the failing target alone: `moon run <project>:<task> --output-style stream`.
 
-The `verify` skill (once it exists) wraps these steps.
+The `verify` skill wraps these steps.
 
 ## How moon decides what runs
 
