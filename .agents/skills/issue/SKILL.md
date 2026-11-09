@@ -44,7 +44,7 @@ Create sub-issues only while planning the implementation of a single issue, neve
 - Refer to other work by issue number (`#15`) or milestone title only, never by names from notes outside GitHub.
 - Only direct blocked-by links; GitHub shows the chain.
 - When `docs/templates/github-issue.md` or a kind's hints in [references/kinds.md](references/kinds.md) change, update `.github/ISSUE_TEMPLATE/` in the same change.
-- Follow the `writing-style` skill (once it exists).
+- Follow the `writing-style` skill.
 
 ## Output
 

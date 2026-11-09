@@ -50,4 +50,4 @@ Stack-specific patterns (gRPC services, SeaORM entities and migrations) belong t
 - Async tests use `#[tokio::test]`; time-dependent ones use `start_paused = true` instead of real sleeps.
 - Name a test for the behaviour it checks, without a `test_` prefix: `book_rejects_a_full_place`.
 - Assert on error variants with `matches!`, not on message strings.
-- Run tests with `moon run <project>:test`; add `-- <filter>` for one test. Use the `moon-run` skill (once it exists).
+- Run tests with `moon run <project>:test`; add `-- <filter>` for one test. Use the `moon-run` skill.

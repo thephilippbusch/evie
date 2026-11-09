@@ -75,4 +75,4 @@ moon run frontend:test -- -t "never returns"        # tests whose name matches
 moon run frontend:test -- src/bookings              # tests under a path
 ```
 
-Use the `moon-run` skill (once it exists) for the details.
+Use the `moon-run` skill for the details.

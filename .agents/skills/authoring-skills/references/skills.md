@@ -48,7 +48,7 @@ The body loads in full when the skill is used, so keep it short and imperative:
 - **Output**: what the agent returns or leaves behind. If a subagent or workflow consumes it, give a fixed format (see [subagents.md](subagents.md#structured-output)).
 - **Rules**: the few things that must never happen, if any.
 
-Write like the root `AGENTS.md`: short sentences, tables and bullets, no filler. Follow the `writing-style` skill once it exists.
+Write like the root `AGENTS.md`: short sentences, tables and bullets, no filler. Follow the `writing-style` skill.
 
 ## Progressive disclosure
 
