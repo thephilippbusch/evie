@@ -1,0 +1,20 @@
+# Paths agents must not edit by hand. Enforced by pre-tool-use.sh for the
+# Edit, Write, MultiEdit and NotebookEdit tools, and for Bash commands that
+# write to them (redirects, tee, sed -i, cp, mv, rm, ...).
+#
+# One rule per line: <glob> <reason shown to the agent>
+# - A glob without "/" matches the file name at any depth.
+# - A glob with "/" matches the path from the repository root; "*" also matches "/"
+#   and "**/" also matches no directory.
+# - A trailing "/" protects everything below that directory.
+# - Matching ignores case. Lines starting with "#" are comments.
+
+# Release files. release-please writes them when it opens the release PR.
+CHANGELOG.md                    Owned by release-please, which writes it from the squash-merged Conventional Commit PR titles. Change the PR title instead.
+.release-please-manifest.json   The release manifest is owned by release-please, which bumps the versions on release. Register new apps in release-please-config.json instead.
+
+# Generated code. Change the source and run `moon run :codegen`.
+# Fill in the real output paths once codegen exists (#22), for example:
+# libs/proto/gen/                     Generated from the protobuf definitions. Change the .proto source and run `moon run :codegen`.
+# apps/backend/src/proto/             Generated from the protobuf definitions. Change the .proto source and run `moon run :codegen`.
+# apps/frontend/src/**/auth-schema.ts Generated BetterAuth Drizzle schema. Change the BetterAuth config and run `moon run :codegen`.
