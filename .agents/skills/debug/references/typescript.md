@@ -26,9 +26,11 @@ Run it in the project directory. bun prints a `debug.bun.sh` URL; open it, set b
 
 ## Effect
 
+The names below are Effect 3 APIs, matching the `Context.Tag` rule in the root `AGENTS.md`.
+
 - A failed Effect carries a `Cause`. Print all of it, not just the message: `Effect.tapErrorCause((cause) => Effect.logError(Cause.pretty(cause)))`.
 - In a test, run with `Effect.runPromiseExit(program)` and assert on the `Exit`, so a failure shows its tagged error instead of a rejected promise.
-- Raise the log level for one program: `program.pipe(Logger.withMinimumLogLevel(LogLevel.Debug))`. Add `Effect.log` or `Effect.tap` at the step you suspect.
+- Show debug logs for one program: `program.pipe(Logger.withMinimumLogLevel(LogLevel.Debug))`. Add `Effect.logDebug` or `Effect.tap` at the step you suspect.
 - Name steps with `Effect.withSpan("name")` or `Effect.fn("name")`, so logs and errors show where they came from.
 - Isolate a dependency by providing a test `Layer` for its `Context.Tag`, e.g. `Layer.succeed(BackendClient, fake)`. If the bug disappears, it is in the real service or in what it returns.
 - A missing `Config` value fails with a `ConfigError` that names the key; check the variable is set, but never read `.env` files.
