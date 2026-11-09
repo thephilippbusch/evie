@@ -1,0 +1,60 @@
+name: Release
+
+# release-please reads the squash commits on main. A feat, fix, perf or revert
+# commit opens or updates the release PR; merging the release PR tags vX.Y.Z,
+# writes CHANGELOG.md and creates the GitHub release. The packages, the first
+# version and the changelog sections are in release-please-config.json.
+on:
+  push:
+    branches: [main]
+
+# The GITHUB_TOKEN only needs to read; the GitHub App token below does the
+# writes.
+permissions:
+  contents: read
+
+# One run at a time, so two runs can't open or tag the same release. A newer
+# push waits instead of cancelling a run that is halfway through a release.
+concurrency:
+  group: release-please
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Only set for the root package, and only when the run created a release.
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      # PRs opened with the GITHUB_TOKEN don't trigger workflows, so the
+      # release PR would get no `PR title` or `moon ci` checks. A GitHub App
+      # token avoids that. The token gets only what release-please needs:
+      # contents for the branch, tags and releases, pull requests and issues
+      # for the release PR and its labels.
+      - name: Create a GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
+      - name: Open the release PR or create the release
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  # Jobs that run on a release need this job and check its output, e.g.:
+  #
+  # publish-images:
+  #   needs: release-please
+  #   if: needs.release-please.outputs.release_created == 'true'
+  #   steps:
+  #     - run: echo "Publishing ${{ needs.release-please.outputs.tag_name }}"

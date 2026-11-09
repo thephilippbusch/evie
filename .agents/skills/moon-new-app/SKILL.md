@@ -45,7 +45,7 @@ Every app is released with the repository version and published as an image. Iss
 
 - [ ] **Docker image:** one `Dockerfile` that builds the app's image, in `apps/<name>/`.
 - [ ] **Local stack:** add the app as a service to the Docker Compose file (once it exists).
-- [ ] **Release version:** register the app's manifest with release-please so every release writes the version to it: a `package.json` goes into `extra-files`, a Rust crate takes `version.workspace = true` from the root `Cargo.toml` (once release-please is set up, issue #18).
+- [ ] **Release version:** add the app's manifest to `extra-files` in `release-please-config.json`, so every release writes the version to it: a `package.json` directly; a Rust crate takes `version.workspace = true` from the root `Cargo.toml`, and its `Cargo.lock` entry is a toml extra-file too, so the lockfile changes in the same release commit. Entries in [references/release-version.md](references/release-version.md).
 - [ ] **Image publishing:** add the app to the list of images built and published on every release (once it exists, issues #19 and #42).
 - [ ] **Repo map:** name the app in the `apps/` row of the root `AGENTS.md`.
 
