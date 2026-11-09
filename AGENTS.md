@@ -45,6 +45,7 @@ docker compose up                 # local stack: PostgreSQL, Mailpit, backend, f
 Standard tasks: `build`, `lint`, `format`, `test`, `codegen`, `migrate`.
 Git hooks install themselves on the first `moon run` in a checkout, or with `moon sync hooks`. `pre-commit` formats the staged Markdown, JSON and YAML files with dprint and stages the result; `commit-msg` rejects messages that aren't Conventional Commits.
 Add dependencies with the native tool inside the project: `bun add <pkg>` or `cargo add <crate>`.
+Releases: a `feat`, `fix`, `perf` or `revert` squash commit on `main` makes release-please open or update the release PR; merging it tags `vX.Y.Z`, writes `CHANGELOG.md` and creates the GitHub release.
 Agents can also query moon over MCP: [`.mcp.json`](.mcp.json) registers `moon mcp` for Claude Code, and `.claude/settings.json` allows its read-only tools.
 
 - `get_projects`, `get_project`, `get_tasks`, `get_task`: the project and task graph.
