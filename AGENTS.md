@@ -88,6 +88,7 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 ## Skills
 
 In `.agents/skills/`, following the [Agent Skills spec](https://agentskills.io/specification). Claude Code reads them through the `.claude/skills` symlink; OpenCode and Codex read `.agents/skills/` directly. Add skills only in `.agents/skills/`, never in `.claude/skills/` or `.opencode/skills/`.
+Check skills, subagents and every `AGENTS.md` with `moon run root:validate-agent-files`; CI runs it on every PR.
 _Building blocks_ do one task and are reused by other skills; _workflows_ chain them. Unlinked names are _planned_; link each one here when it lands.
 
 - **Git & delivery:** `conventional-commits`, `branch`, `commit`, `pull-request` · workflow `ship`
