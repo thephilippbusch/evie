@@ -26,7 +26,7 @@ There is one skills directory, at the repo root. No per-project skill directorie
 
 ## Budgets
 
-The source of truth for the CI validator. Lines are counted with `wc -l` over the whole file, frontmatter included. "Guide" rows are advice; CI doesn't check them.
+The source of truth for the CI validator, `scripts/validate-agent-files.sh`. Lines are counted with `wc -l` over the whole file, frontmatter included. "Guide" rows are advice; CI doesn't check them.
 
 | What                                                | Limit                                                                                             | CI    |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----- |
@@ -40,7 +40,7 @@ The source of truth for the CI validator. Lines are counted with `wc -l` over th
 | Subagent `name`                                     | same rules as a skill `name`, equals the file name without `.md`                                  | yes   |
 | Subagent `description`                              | non-empty                                                                                         | yes   |
 | Relative links in skills, subagents and `AGENTS.md` | resolve to an existing file                                                                       | yes   |
-| Symlinks (`CLAUDE.md`, `.claude/skills`)            | resolve; `CLAUDE.md` points to `AGENTS.md` in the same directory                                  | yes   |
+| Symlinks (`CLAUDE.md`, `.claude/skills`)            | resolve; every `AGENTS.md` has a `CLAUDE.md` beside it that points to it                          | yes   |
 | Skill `description`                                 | aim for under 300 chars                                                                           | guide |
 | `SKILL.md`                                          | aim for under 150 lines; move detail to `references/`                                             | guide |
 | Reference file                                      | under 300 lines, one topic each                                                                   | guide |
@@ -65,13 +65,6 @@ Skills can't call each other. A skill names another one in backticks and tells t
 5. If a subagent wraps the skill, add it to `.claude/agents/` (see [references/subagents.md](references/subagents.md)).
 6. In the root `AGENTS.md`, link the skill in the Skills list, drop its _planned_ marker, and update the Workflow table if a step changes.
 7. Update any project `AGENTS.md` whose workflow the skill changes.
-8. Validate:
-
-   ```sh
-   uvx --from "git+https://github.com/agentskills/agentskills#subdirectory=skills-ref" skills-ref validate .agents/skills/<name>
-   wc -l .agents/skills/<name>/SKILL.md AGENTS.md
-   ```
-
-   Once CI validation exists, run its moon task instead.
+8. Validate with `moon run root:validate-agent-files`. It runs the spec validator and checks every "CI: yes" budget; CI runs it on every PR.
 
 9. Try it: start a fresh agent session, ask with one of the trigger phrases, and check the skill loads.
