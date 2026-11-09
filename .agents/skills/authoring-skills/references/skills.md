@@ -34,7 +34,7 @@ The description is all an agent sees before it picks a skill. Write it for that 
 2. One sentence starting with "Use when", listing the situations and the words a user would say.
 
 ```yaml
-description: Formats, lints and tests the moon projects a change affects and reports only failures. Use when checking work before a commit or PR, or when asked to verify, check or test changes.
+description: Checks the formatting, lint, build and tests of what a change affects, through moon and dprint, and reports only the failures. Use when checking work before a commit or PR, or when asked to verify, check or test changes.
 ```
 
 Avoid vague verbs ("helps with"), repo history, and step details. Aim for under 300 characters.
