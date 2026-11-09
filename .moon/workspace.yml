@@ -13,3 +13,9 @@ vcs:
   client: 'git'
   provider: 'github'
   defaultBranch: 'main'
+  # Hooks are generated into .moon/hooks and activated (core.hooksPath) on the
+  # first moon run in a checkout, or with `moon sync hooks`.
+  sync: true
+  hooks:
+    commit-msg:
+      - 'moon run root:lint-commit-msg -- "$ARG1"'
