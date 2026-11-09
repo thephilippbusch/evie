@@ -94,7 +94,7 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 - **Git & delivery:** `conventional-commits`, `branch`, `commit`, `pull-request` · workflow `ship`
 - **Issues & milestones:** `issue`, `check-milestone`
 - **moon:** `moon-query`, `moon-run`, `moon-new-library`, `moon-new-app`, `moon-add-task`
-- **Quality:** `verify`, `writing-style`, `rust-conventions`, `typescript-conventions`
+- **Quality:** `verify`, `writing-style`, [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), `typescript-conventions`
 - **Planning:** `plan`
 - **Investigation:** `debug`, `benchmark`
 - **Review:** `review-security`, `review-architecture`, `review-code-quality`, `review-tests`, `review-project-rules` · workflow `review`
