@@ -45,7 +45,12 @@ docker compose up                 # local stack: PostgreSQL, Mailpit, backend, f
 Standard tasks: `build`, `lint`, `format`, `test`, `codegen`, `migrate`.
 Git hooks install themselves on the first `moon run` in a checkout, or with `moon sync hooks`. `pre-commit` formats the staged Markdown, JSON and YAML files with dprint and stages the result; `commit-msg` rejects messages that aren't Conventional Commits.
 Add dependencies with the native tool inside the project: `bun add <pkg>` or `cargo add <crate>`.
-moon is also available to agents over MCP (`moon mcp`, _planned_).
+Agents can also query moon over MCP: [`.mcp.json`](.mcp.json) registers `moon mcp` for Claude Code, and `.claude/settings.json` allows its read-only tools.
+
+- `get_projects`, `get_project`, `get_tasks`, `get_task`: the project and task graph.
+- `get_changed_files`: changed files; pass `remote: false` for uncommitted changes. A file belongs to the project with the deepest `source` that contains it; those projects are the affected ones.
+- `get_templates`, `get_template`: code generator templates. `generate`, `sync_projects` and `sync_workspace` write files, so they ask first.
+- Not registered for OpenCode and Codex yet: moon 2.6 speaks only the stateless MCP `2026-07-28` protocol. OpenCode 2.2 can't connect to it; Codex is untested.
 
 ## Rules
 
