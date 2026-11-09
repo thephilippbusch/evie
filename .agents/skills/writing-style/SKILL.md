@@ -34,8 +34,8 @@ Write for a reader who is busy and new to the change. The root `AGENTS.md` and t
 
 - **Docs:** imperative for instructions, present tense for facts. Mark what doesn't exist yet as _planned_.
 - **Code comments:** say why, not what. The code shows what it does; a comment explains a choice, a constraint or a trap.
-- **Commit bodies:** what changed and why, in one to three sentences. The title format belongs to the `conventional-commits` skill (once it exists).
-- **PR descriptions:** follow `.github/pull_request_template.md`. The body becomes the squash commit body, so it follows the commit rules. The title format belongs to the `conventional-commits` skill (once it exists).
+- **Commit bodies:** what changed and why, in one to three sentences. The title format belongs to the `conventional-commits` skill.
+- **PR descriptions:** follow `.github/pull_request_template.md`. The body becomes the squash commit body, so it follows the commit rules. The title format belongs to the `conventional-commits` skill.
 - **Issues:** follow the `issue` skill for structure; this skill covers the sentences.
 
 ## Scope

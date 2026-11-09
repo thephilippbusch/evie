@@ -20,7 +20,7 @@ Fix the cause, not the symptom. No fix without a reproduction, and no fix withou
 3. **Write the regression test.** If step 1 produced a test, it is the regression test; otherwise write one now, at the lowest level that shows the cause. Name it after the behaviour, not the issue number. Run it: it must fail, and fail for the bug's reason (a wrong value or error, not a compile error or broken setup).
 4. **Fix.** Make the smallest change that removes the cause. Remove temporary logs, `dbg!`, `console.log` and `.only`.
 5. **Confirm.** The regression test passes, the project's whole `test` task passes, and the original reproduction no longer fails. Check the affected projects with the `verify` skill.
-6. **Commit.** Commit the test and the fix together with the `commit` skill (once it exists), so no commit has a failing test. Put the output below in the PR description with the `pull-request` skill (once it exists).
+6. **Commit.** Commit the test and the fix together with the `commit` skill, so no commit has a failing test. Put the output below in the PR description with the `pull-request` skill.
 
 ## Output
 

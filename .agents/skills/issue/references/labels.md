@@ -28,7 +28,7 @@ Zero or more, next to the kind label.
 
 ## Labels and commit types
 
-A label describes the issue, not the release. The PR title's Conventional Commit type decides the release; see the `conventional-commits` skill (once it exists).
+A label describes the issue, not the release. The PR title's Conventional Commit type decides the release; see the `conventional-commits` skill.
 
 ## Add a label
 
