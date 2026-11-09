@@ -66,7 +66,7 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 - Never push to `main` or force-push. Work on a branch and open a PR.
 - Never read `.env` files or other secrets.
 - Claude Code enforces the rules above with permissions in `.claude/settings.json` and a hook in `.claude/hooks/` (needs `jq`); list new generated or release-owned paths in [`protected-paths.txt`](.claude/hooks/protected-paths.txt).
-- PR titles are Conventional Commits and PRs are squash-merged. Before v1, every PR is a `fix`; only the PR that closes the last issue of a milestone is a `feat`.
+- PR titles are Conventional Commits, checked in CI. PRs are squash-merged, and the commit takes the PR title and description ([ruleset](.github/rulesets/main.json)). Before v1, no PR is a `feat`, except the one that closes the last issue of a milestone.
 - From v0.5 on, participation features support acting for household members and managed profiles, and record who acted.
 - New apps are added with the `moon-new-app` skill, which registers them for releases and image builds.
 - A change that adds or changes a workflow updates the matching `AGENTS.md` and skills.
