@@ -92,7 +92,7 @@ Check skills, subagents and every `AGENTS.md` with `moon run root:validate-agent
 _Building blocks_ do one task and are reused by other skills; _workflows_ chain them. Unlinked names are _planned_; link each one here when it lands.
 
 - **Git & delivery:** `conventional-commits`, `branch`, `commit`, `pull-request` · workflow `ship`
-- **Issues & milestones:** `issue`, `check-milestone`
+- **Issues & milestones:** [`issue`](.agents/skills/issue/SKILL.md), `check-milestone`
 - **moon:** `moon-query`, `moon-run`, `moon-new-library`, `moon-new-app`, `moon-add-task`
 - **Quality:** `verify`, `writing-style`, [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
 - **Planning:** `plan`
