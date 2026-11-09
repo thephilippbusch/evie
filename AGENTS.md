@@ -83,7 +83,7 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 ## Skills
 
 In `.agents/skills/`, following the [Agent Skills spec](https://agentskills.io/specification). Claude Code reads them through the `.claude/skills` symlink; OpenCode and Codex read `.agents/skills/` directly. Add skills only in `.agents/skills/`, never in `.claude/skills/` or `.opencode/skills/`.
-_Building blocks_ do one task and are reused by other skills; _workflows_ chain them. All _planned_; link each one here when it lands.
+_Building blocks_ do one task and are reused by other skills; _workflows_ chain them. Unlinked names are _planned_; link each one here when it lands.
 
 - **Git & delivery:** `conventional-commits`, `branch`, `commit`, `pull-request` · workflow `ship`
 - **Issues & milestones:** `issue`, `check-milestone`
@@ -92,7 +92,7 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 - **Planning:** `plan`
 - **Investigation:** `debug`, `benchmark`
 - **Review:** `review-security`, `review-architecture`, `review-code-quality`, `review-tests`, `review-project-rules` · workflow `review`
-- **Meta:** `authoring-skills`
+- **Meta:** [`authoring-skills`](.agents/skills/authoring-skills/SKILL.md)
 
 ## Subagents
 
@@ -105,4 +105,4 @@ In `.claude/agents/`. Thin wrappers that preload skills and restrict tools; they
 
 ## Editing this file
 
-Keep it under 200 lines and link to details instead of repeating them. Project-specific notes go in that project's `AGENTS.md`. Conventions for skills, subagents and `AGENTS.md` files live in `authoring-skills` (_planned_).
+Keep it under 200 lines and link to details instead of repeating them. Project-specific notes go in that project's `AGENTS.md`. Conventions for skills, subagents and `AGENTS.md` files live in [`authoring-skills`](.agents/skills/authoring-skills/SKILL.md).
