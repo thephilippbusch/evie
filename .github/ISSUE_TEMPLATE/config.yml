@@ -1,0 +1,5 @@
+# Blank issues are off, so every issue opened in the GitHub UI starts from one
+# of the templates in this folder: the headings of
+# docs/templates/github-issue.md plus a kind label. Agents create issues with
+# the issue skill in .agents/skills/issue/, which uses the same structure.
+blank_issues_enabled: false
