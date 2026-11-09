@@ -1,0 +1,24 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+# The repository root as a project: hosts repo-wide tasks. Its tasks run from
+# the repository root, declare no inputs (so they never hash the whole repo)
+# and are `run` tasks, so `moon check` and `moon ci` skip them.
+layer: 'tool'
+project:
+  title: 'root'
+  description: 'Repo-wide tasks, such as the commit hooks and formatting.'
+
+# Don't inherit the tasks meant for apps and libs.
+workspace:
+  inheritedTasks:
+    include: []
+
+tasks:
+  format:
+    description: 'Format Markdown, JSON and YAML files with dprint.'
+    command: 'dprint fmt'
+    type: 'run'
+    inputs: []
+    options:
+      cache: false
+      runInCI: false
