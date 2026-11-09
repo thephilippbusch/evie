@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "moon": {
+      "type": "stdio",
+      "command": "moon",
+      "args": ["mcp"]
+    }
+  }
+}
