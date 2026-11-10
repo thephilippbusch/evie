@@ -4,11 +4,10 @@ $schema: 'https://moonrepo.dev/schemas/v2/toolchains.json'
 # moon uses each tool.
 
 rust:
-  # Installed with rustup next to the pinned Rust version, for the `lint` and
-  # `format` tasks.
-  components:
-    - 'clippy'
-    - 'rustfmt'
+  # Write the pinned version to the channel in rust-toolchain.toml, so rustup
+  # picks it for every cargo call, inside and outside moon. That file also lists
+  # the components the lint and format tasks need.
+  syncToolchainConfig: true
 
 javascript:
   packageManager: 'bun'

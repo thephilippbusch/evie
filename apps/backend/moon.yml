@@ -1,0 +1,13 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'application'
+language: 'rust'
+project:
+  title: 'backend'
+  description: 'The gRPC backend that owns the domain data; the frontend server calls it.'
+
+# Libraries this app uses, so changes to them affect it.
+dependsOn: []
+
+# build, lint, test and format come from .moon/tasks/rust.yml.
+tasks: {}
