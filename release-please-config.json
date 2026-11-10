@@ -27,7 +27,8 @@
       ],
       "extra-files": [
         { "type": "toml", "path": "Cargo.toml", "jsonpath": "$.workspace.package.version" },
-        { "type": "toml", "path": "Cargo.lock", "jsonpath": "$.package[?(@.name.value=='backend')].version" }
+        { "type": "toml", "path": "Cargo.lock", "jsonpath": "$.package[?(@.name.value=='backend')].version" },
+        { "type": "json", "path": "apps/frontend/package.json", "jsonpath": "$.version" }
       ]
     }
   }

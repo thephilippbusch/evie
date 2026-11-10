@@ -9,6 +9,3 @@ target/
 # bun and SolidStart
 node_modules/
 .output/
-.vinxi/
-.solid/
-dist/
