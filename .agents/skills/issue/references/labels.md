@@ -17,10 +17,12 @@ Every open issue has exactly one. The kinds are explained in [kinds.md](kinds.md
 
 Zero or more, next to the kind label.
 
-| Label    | Description on GitHub                              |
-| -------- | -------------------------------------------------- |
-| `agents` | Agent skills, subagents and AGENTS.md files        |
-| `ci`     | GitHub workflows, repository settings and releases |
+| Label      | Description on GitHub                              |
+| ---------- | -------------------------------------------------- |
+| `agents`   | Agent skills, subagents and AGENTS.md files        |
+| `backend`  | Rust gRPC backend and database                     |
+| `ci`       | GitHub workflows, repository settings and releases |
+| `frontend` | SolidStart frontend and BFF                        |
 
 ## Triage labels
 
