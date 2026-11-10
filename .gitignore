@@ -2,3 +2,10 @@
 .moon/cache
 .moon/docker
 .moon/hooks
+
+# Rust
+target/
+
+# bun and SolidStart
+node_modules/
+.output/

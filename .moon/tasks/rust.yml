@@ -1,0 +1,54 @@
+$schema: 'https://moonrepo.dev/schemas/v2/tasks.json'
+
+# Tasks for every Rust crate. Each runs cargo in the crate's folder, so it acts
+# on that crate only, while the root Cargo.toml and Cargo.lock hold the shared
+# workspace settings and versions.
+inheritedBy:
+  language: 'rust'
+
+fileGroups:
+  sources:
+    - 'src/**/*'
+    - 'tests/**/*'
+    - 'benches/**/*'
+    - 'build.rs'
+  manifests:
+    - 'Cargo.toml'
+    - '/Cargo.toml'
+    - '/Cargo.lock'
+
+tasks:
+  build:
+    description: 'Compile the crate.'
+    command: 'cargo build --locked'
+    type: 'build'
+    inputs:
+      - '@group(sources)'
+      - '@group(manifests)'
+    # No `outputs`: cargo writes to the shared /target folder of the workspace,
+    # which moon can't cache per crate.
+
+  lint:
+    description: 'Check the formatting with rustfmt and lint with clippy, denying warnings.'
+    script: 'cargo fmt --check && cargo clippy --all-targets --locked -- -D warnings'
+    type: 'test'
+    inputs:
+      - '@group(sources)'
+      - '@group(manifests)'
+
+  test:
+    description: 'Run the unit and integration tests.'
+    command: 'cargo test --locked'
+    type: 'test'
+    inputs:
+      - '@group(sources)'
+      - '@group(manifests)'
+
+  format:
+    description: 'Format the crate with rustfmt.'
+    command: 'cargo fmt'
+    type: 'run'
+    inputs: []
+    options:
+      cache: false
+      runInCI: false

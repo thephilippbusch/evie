@@ -1,0 +1,23 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'application'
+language: 'typescript'
+project:
+  title: 'frontend'
+  description: 'The SolidStart web app that people use in the browser; its server is the BFF that calls the backend.'
+
+# Libraries this app uses, so changes to them affect it.
+dependsOn: []
+
+# lint, typecheck, test and format come from .moon/tasks/typescript.yml.
+tasks:
+  build:
+    description: 'Build the app for production with Vite.'
+    command: 'vite build'
+    type: 'build'
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+      - 'public/**/*'
+    outputs:
+      - '.output'

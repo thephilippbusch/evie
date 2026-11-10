@@ -1,0 +1,15 @@
+$schema: 'https://moonrepo.dev/schemas/v2/toolchains.json'
+
+# Tool versions are pinned in .prototools; these settings only configure how
+# moon uses each tool.
+
+rust:
+  # Write the pinned version to the channel in rust-toolchain.toml, so rustup
+  # picks it for every cargo call, inside and outside moon. That file also lists
+  # the components the lint and format tasks need.
+  syncToolchainConfig: true
+
+javascript:
+  packageManager: 'bun'
+
+bun: {}

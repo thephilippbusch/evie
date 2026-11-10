@@ -7,18 +7,18 @@ Work is tracked in [GitHub milestones](https://github.com/thephilippbusch/evie/m
 
 ## Repo map
 
-| Path              | Contents                                                                                                     |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| `apps/`           | Deployable apps, one Docker image each: SolidStart frontend + BFF, Rust gRPC backend (_planned_)             |
-| `libs/`           | Libraries used by apps, never deployed: protobuf definitions, shared crates and packages (_planned_)         |
-| `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                |
-| `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates |
-| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                      |
-| `.claude/agents/` | Claude Code subagents                                                                                        |
-| `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks            |
-| `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                        |
+| Path              | Contents                                                                                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/`           | Deployable apps, one Docker image each: [`frontend`](apps/frontend/AGENTS.md) (SolidStart + BFF), [`backend`](apps/backend/AGENTS.md) (Rust gRPC) |
+| `libs/`           | Libraries used by apps, never deployed: protobuf definitions, shared crates and packages (_planned_)                                              |
+| `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                                                     |
+| `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates                                      |
+| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                                                           |
+| `.claude/agents/` | Claude Code subagents                                                                                                                             |
+| `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks                                                 |
+| `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                                                             |
 
-Every moon project has its own `AGENTS.md` (with a `CLAUDE.md` symlink) covering its purpose, structure, commands and local rules (_planned_).
+Every moon project has its own `AGENTS.md` (with a `CLAUDE.md` symlink) covering its purpose, structure, commands and local rules.
 Read it before you change that project. Where it differs from this file, the project file wins.
 
 ## Stack
@@ -38,11 +38,12 @@ moon query projects               # list projects
 moon query projects --affected    # projects touched by your changes
 moon run <project>:<task>         # one task in one project, e.g. moon run backend:test
 moon run :<task>                  # a task in every project that has it, e.g. moon run :lint
+moon check --all                  # build, lint, type-check and test every project
 moon ci                           # the affected tasks, as CI runs them
 docker compose up                 # local stack: PostgreSQL, Mailpit, backend, frontend
 ```
 
-Standard tasks: `build`, `lint`, `format`, `test`, `codegen`, `migrate`.
+Standard tasks: `build`, `lint`, `typecheck`, `format`, `test`, `codegen`, `migrate`. Rust and TypeScript projects inherit theirs from `.moon/tasks/rust.yml` and `.moon/tasks/typescript.yml`. `lint` also checks the formatting: rustfmt for Rust, Biome for TypeScript.
 Git hooks install themselves on the first `moon run` in a checkout, or with `moon sync hooks`. `pre-commit` formats the staged Markdown, JSON and YAML files with dprint and stages the result; `commit-msg` rejects messages that aren't Conventional Commits.
 Add dependencies with the native tool inside the project: `bun add <pkg>` or `cargo add <crate>`.
 Releases: a `feat`, `fix`, `perf` or `revert` squash commit on `main` makes release-please open or update the release PR; merging it tags `vX.Y.Z`, writes `CHANGELOG.md` and creates the GitHub release.

@@ -1,0 +1,53 @@
+$schema: 'https://moonrepo.dev/schemas/v2/tasks.json'
+
+# Tasks for every TypeScript project. Biome and TypeScript are dev dependencies
+# of the root package.json; biome.json at the root configures Biome for all
+# projects.
+inheritedBy:
+  language: 'typescript'
+
+fileGroups:
+  sources:
+    - 'src/**/*'
+    - '*.ts'
+    - 'tsconfig.json'
+  configs:
+    - 'package.json'
+    - '/package.json'
+    - '/bun.lock'
+    - '/biome.json'
+
+tasks:
+  lint:
+    description: 'Lint, check the formatting and the import order with Biome, without writing.'
+    command: 'biome check .'
+    type: 'test'
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+
+  typecheck:
+    description: 'Check the types with the TypeScript compiler.'
+    command: 'tsc --noEmit'
+    type: 'test'
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+
+  test:
+    description: 'Run the tests with bun.'
+    # Passes while a project has no tests yet.
+    command: 'bun test --pass-with-no-tests'
+    type: 'test'
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+
+  format:
+    description: 'Format the project and organize its imports with Biome.'
+    command: 'biome check --write .'
+    type: 'run'
+    inputs: []
+    options:
+      cache: false
+      runInCI: false

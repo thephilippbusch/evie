@@ -17,6 +17,12 @@ jobs:
         with:
           # moon ci compares against the base branch to find affected tasks.
           fetch-depth: 0
+      # proto's Rust plugin only locates toolchains that rustup installed under
+      # their exact version, and the runner's preinstalled Rust is named
+      # `stable`. With no arguments, rustup installs the toolchain and
+      # components from rust-toolchain.toml, whose channel moon syncs from
+      # .prototools. See https://github.com/moonrepo/setup-toolchain/issues/14.
+      - run: rustup toolchain install
       # Installs proto and the tools pinned in .prototools. proto trusts the
       # repository's config in CI, so no `proto trust` is needed.
       - uses: moonrepo/setup-toolchain@261c62cb5b0f580c7be7c8cd0f023a2e96756095 # v0.6.4
