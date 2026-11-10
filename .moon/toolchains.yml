@@ -1,0 +1,16 @@
+$schema: 'https://moonrepo.dev/schemas/v2/toolchains.json'
+
+# Tool versions are pinned in .prototools; these settings only configure how
+# moon uses each tool.
+
+rust:
+  # Installed with rustup next to the pinned Rust version, for the `lint` and
+  # `format` tasks.
+  components:
+    - 'clippy'
+    - 'rustfmt'
+
+javascript:
+  packageManager: 'bun'
+
+bun: {}

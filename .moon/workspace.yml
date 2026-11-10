@@ -9,6 +9,12 @@ projects:
   sources:
     root: '.'
 
+# Apps (`layer: 'application'`) may depend on libraries, but a library may never
+# depend on an app. moon enforces this by default; it's set here so the rule is
+# visible.
+constraints:
+  enforceLayerRelationships: true
+
 vcs:
   client: 'git'
   provider: 'github'
