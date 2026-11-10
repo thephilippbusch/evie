@@ -106,9 +106,9 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 In `.claude/agents/`. Thin wrappers that preload skills and restrict tools; they run non-interactively with structured output.
 
 - **Reviewers:** one read-only reviewer per review focus, run in parallel by `review`: [`reviewer-security`](.claude/agents/reviewer-security.md), [`reviewer-architecture`](.claude/agents/reviewer-architecture.md), [`reviewer-code-quality`](.claude/agents/reviewer-code-quality.md), [`reviewer-tests`](.claude/agents/reviewer-tests.md), [`reviewer-project-rules`](.claude/agents/reviewer-project-rules.md)
-- **Verifier** (_planned_): runs the affected checks in the background and reports only failures
-- **Milestone auditor** (_planned_): runs `check-milestone` against a GitHub milestone and lists the gaps
-- **Implementer** (_planned_): works in its own git worktree with `commit` and `verify`, for parallel independent tasks
+- **Verifier:** [`verifier`](.claude/agents/verifier.md) runs the affected checks in the background and reports only failures
+- **Milestone auditor:** [`milestone-auditor`](.claude/agents/milestone-auditor.md) runs `check-milestone` against a GitHub milestone and lists the gaps
+- **Implementer:** [`implementer`](.claude/agents/implementer.md) works in its own git worktree with `commit` and `verify`, for parallel independent tasks
 
 ## Editing this file
 
