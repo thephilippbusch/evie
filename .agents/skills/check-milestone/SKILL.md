@@ -27,14 +27,16 @@ Use only commands that match the `Bash(...)` allow list in `.claude/settings.jso
    | a person | anything no allowed command can show, such as rulesets, secrets, or "an agent loads the skills"                                                                                               |
 
    A check is `pass` with evidence, `fail` with the gap, or `unknown` with what to check by hand.
-4. **Rate each target** from its checks:
+4. **Rate each target** from its checks. Take the first row that matches:
 
-   | Status    | When                                         |
-   | --------- | -------------------------------------------- |
-   | `done`    | every check passes                           |
-   | `partly`  | some checks pass and at least one fails      |
-   | `missing` | no check passes and at least one fails       |
-   | `unknown` | no check fails and at least one is `unknown` |
+   | Status    | When                                                       |
+   | --------- | ---------------------------------------------------------- |
+   | `missing` | at least one check fails and none passes                   |
+   | `partly`  | at least one check fails                                   |
+   | `unknown` | at least one check is `unknown`, even when the others pass |
+   | `done`    | every check passes                                         |
+
+   A target whose only open check is one for a person is `unknown`, not `partly`.
 
 5. **Map open issues** to the targets they would finish, from their titles; read the body with `gh issue view <n> --json title,body` when the title isn't enough. Closed issues aren't evidence: a target is done only when the checks pass.
 
@@ -42,7 +44,7 @@ Use only commands that match the `Bash(...)` allow list in `.claude/settings.jso
 
 A fixed Markdown list, with no text before or after it:
 
-1. The status line: `**check-milestone:** <m>: N of M targets done, N partly, N missing, N unknown`.
+1. The status line: `**check-milestone:** <m>: N of M targets done, N partly, N missing, N unknown`. Write the target lines first and count the status line from them; the four counts add up to M.
 2. One line per target, in the order of the description: `- **done|partly|missing|unknown** · <target>: <evidence or gap> (<open issues>)`. Leave out the brackets when no open issue maps to the target.
 3. If you made assumptions, such as which milestone you picked: `**Assumptions:** <list>`.
 
