@@ -84,19 +84,19 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 | 6. PR        | Conventional Commit title, link the issue                   | `pull-request`                               |
 | 7. Review    | Run the focus reviewers and address the findings            | `review`                                     |
 
-`ship` chains steps 4–6. `check-milestone` shows what is still missing in a milestone. Until a skill exists, do the step by hand.
+`ship` chains steps 4–6. `check-milestone` shows what is still missing in a milestone.
 
 ## Skills
 
 In `.agents/skills/`, following the [Agent Skills spec](https://agentskills.io/specification). Claude Code reads them through the `.claude/skills` symlink; OpenCode and Codex read `.agents/skills/` directly. Add skills only in `.agents/skills/`, never in `.claude/skills/` or `.opencode/skills/`.
 Check skills, subagents and every `AGENTS.md` with `moon run root:validate-agent-files`; CI runs it on every PR.
-_Building blocks_ do one task and are reused by other skills; _workflows_ chain them. Unlinked names are _planned_; link each one here when it lands.
+_Building blocks_ do one task and are reused by other skills; _workflows_ chain them.
 
 - **Git & delivery:** [`conventional-commits`](.agents/skills/conventional-commits/SKILL.md), [`branch`](.agents/skills/branch/SKILL.md), [`commit`](.agents/skills/commit/SKILL.md), [`pull-request`](.agents/skills/pull-request/SKILL.md) · workflow [`ship`](.agents/skills/ship/SKILL.md)
-- **Issues & milestones:** [`issue`](.agents/skills/issue/SKILL.md), `check-milestone`
+- **Issues & milestones:** [`issue`](.agents/skills/issue/SKILL.md), [`check-milestone`](.agents/skills/check-milestone/SKILL.md)
 - **moon:** [`moon-query`](.agents/skills/moon-query/SKILL.md), [`moon-run`](.agents/skills/moon-run/SKILL.md), [`moon-new-library`](.agents/skills/moon-new-library/SKILL.md), [`moon-new-app`](.agents/skills/moon-new-app/SKILL.md), [`moon-add-task`](.agents/skills/moon-add-task/SKILL.md)
 - **Quality:** [`verify`](.agents/skills/verify/SKILL.md), [`writing-style`](.agents/skills/writing-style/SKILL.md), [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
-- **Planning:** `plan`
+- **Planning:** [`plan`](.agents/skills/plan/SKILL.md)
 - **Investigation:** [`debug`](.agents/skills/debug/SKILL.md), [`benchmark`](.agents/skills/benchmark/SKILL.md)
 - **Review:** [`review-security`](.agents/skills/review-security/SKILL.md), [`review-architecture`](.agents/skills/review-architecture/SKILL.md), [`review-code-quality`](.agents/skills/review-code-quality/SKILL.md), [`review-tests`](.agents/skills/review-tests/SKILL.md), [`review-project-rules`](.agents/skills/review-project-rules/SKILL.md) · workflow [`review`](.agents/skills/review/SKILL.md)
 - **Meta:** [`authoring-skills`](.agents/skills/authoring-skills/SKILL.md)
@@ -107,7 +107,7 @@ In `.claude/agents/`. Thin wrappers that preload skills and restrict tools; they
 
 - **Reviewers:** one read-only reviewer per review focus, run in parallel by `review`: [`reviewer-security`](.claude/agents/reviewer-security.md), [`reviewer-architecture`](.claude/agents/reviewer-architecture.md), [`reviewer-code-quality`](.claude/agents/reviewer-code-quality.md), [`reviewer-tests`](.claude/agents/reviewer-tests.md), [`reviewer-project-rules`](.claude/agents/reviewer-project-rules.md)
 - **Verifier:** [`verifier`](.claude/agents/verifier.md) runs the affected checks in the background and reports only failures
-- **Milestone auditor:** [`milestone-auditor`](.claude/agents/milestone-auditor.md) runs `check-milestone` against a GitHub milestone and lists the gaps
+- **Milestone auditor:** [`milestone-auditor`](.claude/agents/milestone-auditor.md) runs [`check-milestone`](.agents/skills/check-milestone/SKILL.md) against a GitHub milestone and lists the gaps
 - **Implementer:** [`implementer`](.claude/agents/implementer.md) works in its own git worktree with `commit` and `verify`, for parallel independent tasks
 
 ## Editing this file
