@@ -99,6 +99,8 @@
       "Bash(docker compose up *)",
       "Bash(docker compose ps *)",
       "Bash(docker compose logs *)",
+      "Bash(dprint check *)",
+      "Bash(jq *)",
       "mcp__moon__get_projects",
       "mcp__moon__get_project",
       "mcp__moon__get_tasks",
