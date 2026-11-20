@@ -9,6 +9,8 @@
     "./*": "./src/*.tsx"
   },
   "dependencies": {
+    "@kobalte/core": "^0.13.14",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.7.1",
     "tailwindcss": "^4.3.5",
