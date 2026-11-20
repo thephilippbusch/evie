@@ -22,13 +22,14 @@ Biome and TypeScript are dev dependencies of the root `package.json`, and `biome
 
 `build` is defined in [`moon.yml`](moon.yml); the other tasks come from [`.moon/tasks/typescript.yml`](../../.moon/tasks/typescript.yml), shared by every TypeScript project.
 
-| Command                       | What it does                                     |
-| ----------------------------- | ------------------------------------------------ |
-| `moon run frontend:build`     | Build the app for production with Vite           |
-| `moon run frontend:lint`      | Lint and check formatting and imports with Biome |
-| `moon run frontend:typecheck` | Check the types with `tsc`                       |
-| `moon run frontend:test`      | Run the tests with `bun test`                    |
-| `moon run frontend:format`    | Format the code and organize imports with Biome  |
+| Command                       | What it does                                             |
+| ----------------------------- | -------------------------------------------------------- |
+| `moon run frontend:build`     | Build the app for production with Vite                   |
+| `moon run frontend:lint`      | Lint with Biome                                          |
+| `moon run frontend:check`     | Run `lint`, then check formatting and imports with Biome |
+| `moon run frontend:typecheck` | Check the types with `tsc`                               |
+| `moon run frontend:test`      | Run the tests with `bun test`                            |
+| `moon run frontend:format`    | Format the code and organize imports with Biome          |
 
 For a dev server, run `bun run dev` in `apps/frontend/`.
 

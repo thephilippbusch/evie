@@ -19,9 +19,19 @@ fileGroups:
 
 tasks:
   lint:
-    description: 'Lint, check the formatting and the import order with Biome, without writing.'
-    command: 'biome check .'
+    description: 'Lint with Biome, failing on warnings like clippy does.'
+    command: 'biome lint --error-on-warnings .'
     type: 'test'
+    inputs:
+      - '@group(sources)'
+      - '@group(configs)'
+
+  check:
+    description: 'Run lint, then check the formatting and the import order with Biome, without writing.'
+    command: 'biome check --linter-enabled=false .'
+    type: 'test'
+    deps:
+      - '~:lint'
     inputs:
       - '@group(sources)'
       - '@group(configs)'

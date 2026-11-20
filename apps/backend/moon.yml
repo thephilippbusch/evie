@@ -9,5 +9,5 @@ project:
 # Libraries this app uses, so changes to them affect it.
 dependsOn: []
 
-# build, lint, test and format come from .moon/tasks/rust.yml.
+# build, lint, check, test and format come from .moon/tasks/rust.yml.
 tasks: {}

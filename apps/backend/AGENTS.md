@@ -19,12 +19,13 @@ The workspace files live at the repository root: `Cargo.toml`, `Cargo.lock` and 
 
 The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), shared by every Rust crate.
 
-| Command                   | What it does                                    |
-| ------------------------- | ----------------------------------------------- |
-| `moon run backend:build`  | Compile the crate                               |
-| `moon run backend:lint`   | Check formatting with rustfmt, lint with clippy |
-| `moon run backend:test`   | Run the unit and integration tests              |
-| `moon run backend:format` | Format the crate with rustfmt                   |
+| Command                   | What it does                                       |
+| ------------------------- | -------------------------------------------------- |
+| `moon run backend:build`  | Compile the crate                                  |
+| `moon run backend:lint`   | Lint with clippy                                   |
+| `moon run backend:check`  | Run `lint`, then check the formatting with rustfmt |
+| `moon run backend:test`   | Run the unit and integration tests                 |
+| `moon run backend:format` | Format the crate with rustfmt                      |
 
 ## Local rules
 

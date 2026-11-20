@@ -9,7 +9,7 @@ project:
 # Libraries this app uses, so changes to them affect it.
 dependsOn: []
 
-# lint, typecheck, test and format come from .moon/tasks/typescript.yml.
+# lint, check, typecheck, test and format come from .moon/tasks/typescript.yml.
 tasks:
   build:
     description: 'Build the app for production with Vite.'

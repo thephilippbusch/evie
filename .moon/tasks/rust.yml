@@ -29,9 +29,19 @@ tasks:
     # which moon can't cache per crate.
 
   lint:
-    description: 'Check the formatting with rustfmt and lint with clippy, denying warnings.'
-    script: 'cargo fmt --check && cargo clippy --all-targets --locked -- -D warnings'
+    description: 'Lint with clippy, denying warnings.'
+    command: 'cargo clippy --all-targets --locked -- -D warnings'
     type: 'test'
+    inputs:
+      - '@group(sources)'
+      - '@group(manifests)'
+
+  check:
+    description: 'Run lint, then check the formatting with rustfmt, without writing.'
+    command: 'cargo fmt --check'
+    type: 'test'
+    deps:
+      - '~:lint'
     inputs:
       - '@group(sources)'
       - '@group(manifests)'
