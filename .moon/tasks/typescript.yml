@@ -26,12 +26,15 @@ tasks:
       - '@group(sources)'
       - '@group(configs)'
 
+  # Every static check: lint and typecheck as deps, then the formatting and the
+  # import order.
   check:
-    description: 'Run lint, then check the formatting and the import order with Biome, without writing.'
+    description: 'Run lint and typecheck, then check the formatting and the import order with Biome, without writing.'
     command: 'biome check --linter-enabled=false .'
     type: 'test'
     deps:
       - '~:lint'
+      - '~:typecheck'
     inputs:
       - '@group(sources)'
       - '@group(configs)'

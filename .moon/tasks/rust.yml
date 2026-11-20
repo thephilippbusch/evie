@@ -36,8 +36,10 @@ tasks:
       - '@group(sources)'
       - '@group(manifests)'
 
+  # Every static check: lint as a dep, which also type-checks every target
+  # since clippy compiles them, then the formatting.
   check:
-    description: 'Run lint, then check the formatting with rustfmt, without writing.'
+    description: 'Run lint, which also checks the types, then check the formatting with rustfmt, without writing.'
     command: 'cargo fmt --check'
     type: 'test'
     deps:
