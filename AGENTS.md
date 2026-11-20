@@ -43,7 +43,7 @@ moon ci                           # the affected tasks, as CI runs them
 docker compose up                 # local stack: PostgreSQL, Mailpit, backend, frontend
 ```
 
-Standard tasks: `build`, `lint`, `typecheck`, `format`, `test`, `codegen`, `migrate`. Rust and TypeScript projects inherit theirs from `.moon/tasks/rust.yml` and `.moon/tasks/typescript.yml`. `lint` also checks the formatting: rustfmt for Rust, Biome for TypeScript.
+Standard tasks: `build`, `lint`, `check`, `typecheck`, `format`, `test`, `codegen`, `migrate`. Rust and TypeScript projects inherit theirs from `.moon/tasks/rust.yml` and `.moon/tasks/typescript.yml`. `lint` only lints; `check` runs `lint` and checks the formatting without writing: rustfmt for Rust, Biome for TypeScript. The `check` task is not the `moon check` command, which runs every build and test task, `check` included.
 Git hooks install themselves on the first `moon run` in a checkout, or with `moon sync hooks`. `pre-commit` formats the staged Markdown, JSON and YAML files with dprint and stages the result; `commit-msg` rejects messages that aren't Conventional Commits.
 Add dependencies with the native tool inside the project: `bun add <pkg>` or `cargo add <crate>`.
 Releases: a `feat`, `fix`, `perf` or `revert` squash commit on `main` makes release-please open or update the release PR; merging it tags `vX.Y.Z`, writes `CHANGELOG.md` and creates the GitHub release.

@@ -13,7 +13,7 @@ The root `moon.yml` is the style reference: read it before you add a task.
    - `<project>/moon.yml` for a task of one app or library.
    - The root `moon.yml` for a repo-wide task. It runs from the repository root, as `root:<task>`, and its script goes in `scripts/`.
    - A file in `.moon/tasks/` for a task that every project of a kind needs. See [Inherited tasks](#inherited-tasks).
-2. Name the task. Use a standard name where it fits, so `moon run :<task>` reaches every project: `build`, `lint`, `typecheck`, `format`, `test`, `codegen`, `migrate`. Otherwise use a kebab-case name that starts with a verb, like `validate-agent-files`.
+2. Name the task. Use a standard name where it fits, so `moon run :<task>` reaches every project: `build`, `lint`, `check`, `typecheck`, `format`, `test`, `codegen`, `migrate`. `lint` only lints; `check` depends on `lint` and checks the formatting. Otherwise use a kebab-case name that starts with a verb, like `validate-agent-files`.
 3. Write the task with the keys below, in this order. Add a YAML comment for every choice that isn't obvious, such as why a task isn't cached.
 4. Check the resolved task: `moon task <project>:<task>`.
 5. Run it with the `moon-run` skill: `moon run <project>:<task>`.
@@ -54,8 +54,8 @@ tasks:
 ## Inherited tasks
 
 - A file in `.moon/tasks/` defines tasks that every project matching its `inheritedBy` gets, by `layer`, `language`, `stack` or `tags`. A language match needs `language` set in the project's `moon.yml`.
-  - `rust.yml`: `build`, `lint` (rustfmt and clippy), `test` and `format` for every Rust crate.
-  - `typescript.yml`: `lint` (Biome), `typecheck`, `test` and `format` for every TypeScript project. Each project adds its own `build`, since apps and libraries build differently.
+  - `rust.yml`: `build`, `lint` (clippy), `check` (`lint` and rustfmt), `test` and `format` for every Rust crate.
+  - `typescript.yml`: `lint` (Biome), `check` (`lint`, then Biome's formatting and import order), `typecheck`, `test` and `format` for every TypeScript project. Each project adds its own `build`, since apps and libraries build differently.
 
   ```yaml
   # .moon/tasks/library.yml

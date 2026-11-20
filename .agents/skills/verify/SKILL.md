@@ -35,11 +35,11 @@ CI: the whole-branch dprint command, then:
 moon ci --output-style buffer-only-failure
 ```
 
-- `moon check` runs the affected `build` and `test` tasks. `lint` tasks are `test` tasks, so it runs them too.
+- `moon check` runs the affected `build` and `test` tasks. `lint` and `check` tasks are `test` tasks, so it runs them too.
 - `moon ci` also runs the tasks CI runs on every PR, such as `root:validate-agent-files`.
 - `--output-style buffer-only-failure` prints the output of failing tasks only.
 - dprint checks Markdown, JSON and YAML. It lists the files that aren't formatted and skips deleted ones.
-- `format` tasks, such as `root:format`, are `run` tasks that rewrite files, so verify never runs them. A project checks the formatting of its code in its `lint` task, e.g. with `cargo fmt --check`.
+- `format` tasks, such as `root:format`, are `run` tasks that rewrite files, so verify never runs them. A project checks the formatting of its code in its `check` task, e.g. with `cargo fmt --check`.
 
 ## Steps
 
