@@ -1,13 +1,17 @@
-# Registering an app's version with release-please
+# Registering a project's version with release-please
 
 Every release writes the repository version into the files listed in `extra-files` of the `"."` package in `release-please-config.json`. Each file needs the version field already: set it to the current version from `.release-please-manifest.json`. An entry whose path or field doesn't exist is skipped with only a warning.
 
-## TypeScript app
+## TypeScript app or library
 
-Add one entry per app:
+Add one entry per package, apps and libraries alike:
 
 ```json
-{ "type": "json", "path": "apps/<name>/package.json", "jsonpath": "$.version" }
+{
+  "type": "json",
+  "path": "<apps|libs>/<name>/package.json",
+  "jsonpath": "$.version"
+}
 ```
 
 ## Rust app
