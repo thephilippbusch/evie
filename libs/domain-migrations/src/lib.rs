@@ -1,5 +1,5 @@
 //! SeaORM migrations for evie's domain schema. The backend never migrates on
-//! its own; `moon run migration:migrate` applies the pending migrations.
+//! its own; `moon run domain-migrations:migrate` applies the pending migrations.
 use sea_orm_migration::{MigrationTrait, async_trait};
 
 pub use sea_orm_migration::MigratorTrait;

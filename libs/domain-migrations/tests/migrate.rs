@@ -1,4 +1,4 @@
-use migration::{Migrator, MigratorTrait};
+use domain_migrations::{Migrator, MigratorTrait};
 use sea_orm_migration::sea_orm::Database;
 use testcontainers_modules::{
     postgres::Postgres, testcontainers::ImageExt, testcontainers::runners::AsyncRunner,

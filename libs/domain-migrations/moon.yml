@@ -3,7 +3,7 @@ $schema: 'https://moonrepo.dev/schemas/v2/project.json'
 layer: 'library'
 language: 'rust'
 project:
-  title: 'migration'
+  title: 'domain-migrations'
   description: 'SeaORM migrations for the domain schema, applied with the migrate task.'
 
 # Projects this one uses, so affected checks reach their dependents.

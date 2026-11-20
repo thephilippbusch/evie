@@ -1,4 +1,4 @@
-# migration
+# domain-migrations
 
 ## Purpose
 
@@ -18,16 +18,16 @@ The backend never migrates on start: it must run and report its health while Pos
 
 The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), except `migrate`.
 
-| Command                      | What it does                                                                        |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
-| `moon run migration:migrate` | Apply the pending migrations to the database in `DATABASE_URL`                      |
-| `moon run migration:build`   | Compile the crate                                                                   |
-| `moon run migration:lint`    | Lint with clippy                                                                    |
-| `moon run migration:check`   | Run `lint` (clippy also checks the types), then check the formatting with rustfmt   |
-| `moon run migration:test`    | Run the tests; they start PostgreSQL with testcontainers, so Docker must be running |
-| `moon run migration:format`  | Format the crate with rustfmt                                                       |
+| Command                              | What it does                                                                        |
+| ------------------------------------ | ----------------------------------------------------------------------------------- |
+| `moon run domain-migrations:migrate` | Apply the pending migrations to the database in `DATABASE_URL`                      |
+| `moon run domain-migrations:build`   | Compile the crate                                                                   |
+| `moon run domain-migrations:lint`    | Lint with clippy                                                                    |
+| `moon run domain-migrations:check`   | Run `lint` (clippy also checks the types), then check the formatting with rustfmt   |
+| `moon run domain-migrations:test`    | Run the tests; they start PostgreSQL with testcontainers, so Docker must be running |
+| `moon run domain-migrations:format`  | Format the crate with rustfmt                                                       |
 
-For other CLI commands, run it from `libs/migration/`, e.g. `cargo run -- status` or `cargo run -- down`.
+For other CLI commands, run it from `libs/domain-migrations/`, e.g. `cargo run -- status` or `cargo run -- down`.
 
 ## Local rules
 

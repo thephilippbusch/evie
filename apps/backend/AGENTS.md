@@ -4,7 +4,7 @@
 
 evie's Rust gRPC backend. It owns the domain data; the frontend server calls it, and the browser never does.
 For now it serves only the standard gRPC health service (`grpc.health.v1`). The server-wide status (service `""`) is `SERVING` while PostgreSQL answers a ping and `NOT_SERVING` otherwise; it starts as `NOT_SERVING` and is checked every 5 seconds.
-The backend starts without a database and never migrates. The [`migration`](../../libs/migration/AGENTS.md) crate owns the domain schema.
+The backend starts without a database and never migrates. The [`domain-migrations`](../../libs/domain-migrations/AGENTS.md) crate owns the domain schema.
 
 ## Structure
 
@@ -47,6 +47,6 @@ The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), shared
 ## Local rules
 
 - Follow the `rust-conventions` skill.
-- Run the backend locally with `cargo run` in `apps/backend/`, with `DATABASE_URL` set. Apply the migrations first with `moon run migration:migrate`.
-- Integration tests start PostgreSQL with `testcontainers`. Use the same image tag as `libs/migration/tests/migrate.rs`.
+- Run the backend locally with `cargo run` in `apps/backend/`, with `DATABASE_URL` set. Apply the migrations first with `moon run domain-migrations:migrate`.
+- Integration tests start PostgreSQL with `testcontainers`. Use the same image tag as `libs/domain-migrations/tests/migrate.rs`.
 - Add crates with `cargo add <crate>` inside `apps/backend/`. Commit `Cargo.lock`, since every task runs with `--locked`.

@@ -1,5 +1,5 @@
 [package]
-name = "migration"
+name = "domain-migrations"
 description = "SeaORM migrations for evie's domain schema."
 version.workspace = true
 edition.workspace = true
