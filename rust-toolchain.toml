@@ -1,0 +1,5 @@
+# The channel is synced from .prototools by moon (`syncToolchainConfig` in
+# .moon/toolchains.yml); change the version there.
+[toolchain]
+channel = "1.99.1"
+components = ["clippy", "rustfmt"]

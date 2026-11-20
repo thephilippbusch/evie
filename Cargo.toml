@@ -1,0 +1,11 @@
+[workspace]
+resolver = "3"
+# Listed one by one: a glob such as "apps/*" would also match apps without a
+# Cargo.toml, such as the frontend.
+members = ["apps/backend"]
+
+[workspace.package]
+# Written by release-please on every release; see release-please-config.json.
+version = "0.1.0"
+edition = "2024"
+publish = false

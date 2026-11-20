@@ -1,0 +1,9 @@
+{
+  "name": "evie",
+  "private": true,
+  "workspaces": ["apps/*", "libs/*"],
+  "devDependencies": {
+    "@biomejs/biome": "2.6.6",
+    "typescript": "^7.0.2"
+  }
+}
