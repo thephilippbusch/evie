@@ -6,3 +6,15 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
+anyhow = "1"
+sea-orm = { version = "2.0.4", default-features = false, features = ["runtime-tokio-rustls", "sqlx-postgres", "macros"] }
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal", "time"] }
+tokio-util = "0.7"
+tonic = "0.14.9"
+tonic-health = "0.14.9"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+[dev-dependencies]
+testcontainers-modules = { version = "0.15", features = ["postgres"] }
