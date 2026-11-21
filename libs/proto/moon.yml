@@ -21,6 +21,7 @@ tasks:
   check:
     deps:
       - '~:typecheck'
+      - '~:check-codegen'
 
   # Also lints the codegen binary, which needs the `codegen` feature.
   lint:
@@ -63,3 +64,29 @@ tasks:
     options:
       cache: false
       runInCI: false
+
+  # Generates into a temporary folder and compares it with gen/, so it writes
+  # nothing in the checkout. `diff -r` also reports deleted and extra files.
+  check-codegen:
+    description: 'Fail when gen/ differs from what codegen generates from the definitions.'
+    script: |
+      tmp=$(mktemp -d)
+      trap 'rm -rf "$tmp"' EXIT
+      cargo run --quiet --locked --features codegen --bin codegen -- "$tmp/gen/rust" || exit 1
+      buf generate --output "$tmp" || exit 1
+      if ! diff -r gen "$tmp/gen"; then
+        echo 'gen/ is stale or was edited by hand. Run `moon run proto:codegen` and commit the result.' >&2
+        exit 1
+      fi
+    type: 'test'
+    toolchains: ['rust', 'bun']
+    inputs:
+      - 'definitions/**/*'
+      - 'gen/**/*'
+      - 'buf.yaml'
+      - 'buf.gen.yaml'
+      - 'src/bin/codegen.rs'
+      - 'Cargo.toml'
+      - 'package.json'
+      - '/Cargo.lock'
+      - '/bun.lock'

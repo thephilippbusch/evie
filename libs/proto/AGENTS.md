@@ -23,21 +23,23 @@ The bun package `@evie/proto` holds the messages and service descriptors in Type
 
 ## Commands
 
-`codegen`, `lint-proto`, `typecheck` and the `lint` and `check` changes are in [`moon.yml`](moon.yml); the other tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml).
+`codegen`, `check-codegen`, `lint-proto`, `typecheck` and the `lint` and `check` changes are in [`moon.yml`](moon.yml); the other tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml).
 
-| Command                     | What it does                                                                       |
-| --------------------------- | ---------------------------------------------------------------------------------- |
-| `moon run proto:codegen`    | Regenerate `gen/rust/` with the `codegen` binary and `gen/ts/` with `buf generate` |
-| `moon run proto:lint-proto` | Lint the definitions with buf's `STANDARD` rules                                   |
-| `moon run proto:lint`       | Run `lint-proto`, then lint the crate and the generator with clippy                |
-| `moon run proto:typecheck`  | Check the types of `gen/ts/` with `tsc`                                            |
-| `moon run proto:check`      | Run `lint` and `typecheck`, then check the formatting with rustfmt                 |
-| `moon run proto:build`      | Compile the crate                                                                  |
-| `moon run proto:test`       | Run the crate's tests                                                              |
-| `moon run proto:format`     | Format the crate with rustfmt; the generated code isn't formatted or lint-checked  |
+| Command                        | What it does                                                                                                      |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `moon run proto:codegen`       | Regenerate `gen/rust/` with the `codegen` binary and `gen/ts/` with `buf generate`                                |
+| `moon run proto:check-codegen` | Fail when `gen/` differs from what `codegen` writes, including deleted or extra files. Writes nothing; CI runs it |
+| `moon run proto:lint-proto`    | Lint the definitions with buf's `STANDARD` rules                                                                  |
+| `moon run proto:lint`          | Run `lint-proto`, then lint the crate and the generator with clippy                                               |
+| `moon run proto:typecheck`     | Check the types of `gen/ts/` with `tsc`                                                                           |
+| `moon run proto:check`         | Run `lint`, `typecheck` and `check-codegen`, then check the formatting with rustfmt                               |
+| `moon run proto:build`         | Compile the crate                                                                                                 |
+| `moon run proto:test`          | Run the crate's tests                                                                                             |
+| `moon run proto:format`        | Format the crate with rustfmt; the generated code isn't formatted or lint-checked                                 |
 
 ## Local rules
 
-- Edit only `definitions/`, then run `moon run proto:codegen` and commit the output with the change. Never hand-edit `gen/`.
+- Edit only `definitions/`, then run `moon run proto:codegen` and commit the output with the change. Never hand-edit `gen/`; `check-codegen` fails on it.
+- If `codegen` fails to compile because `gen/rust/` is broken, restore it with `git checkout -- gen` and run `codegen` again. The generator binary links the crate, which includes `gen/rust/`.
 - Follow buf's [`STANDARD`](https://buf.build/docs/lint/rules/) style: versioned packages such as `evie.ping.v1`, folders that match the package, services named `…Service`, and `…Request` and `…Response` messages for each RPC.
 - Never reuse or renumber a field. Mark a removed field's number and name `reserved`.
