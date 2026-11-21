@@ -13,7 +13,7 @@ Until moon templates for new projects exist (issue #27), follow these steps by h
 
 1. Pick a short kebab-case name. It becomes the project ID. Check it's free: `moon query projects --id <name>` returns no projects.
 2. Create `libs/<name>/`. The `libs/*` glob in `.moon/workspace.yml` makes it a project; there's nothing to register.
-3. Set up the language's files, such as `Cargo.toml` or `package.json`, as the `rust-conventions` or `typescript-conventions` skill says. A Rust crate takes `version.workspace = true` and `edition.workspace = true`, joins `members` in the root `Cargo.toml`, and adds its `Cargo.lock` entry to `extra-files` in `release-please-config.json`, as `.agents/skills/moon-new-app/references/release-version.md` shows. A TypeScript project joins the bun workspace by itself; run `bun install` at the root.
+3. Set up the language's files, such as `Cargo.toml` or `package.json`, as the `rust-conventions` or `typescript-conventions` skill says. A Rust crate takes `version.workspace = true` and `edition.workspace = true`, joins `members` in the root `Cargo.toml`, and adds its `Cargo.lock` entry to `extra-files` in `release-please-config.json`, as `.agents/skills/moon-new-app/references/release-version.md` shows. A TypeScript package sets `version` to the current version from `.release-please-manifest.json` and adds its `package.json` entry to `extra-files`, as the same file shows. It joins the bun workspace by itself; run `bun install` at the root.
 4. Write `libs/<name>/moon.yml`:
 
    ```yaml
