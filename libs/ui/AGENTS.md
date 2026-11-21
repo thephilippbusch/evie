@@ -6,13 +6,14 @@ evie's own component library, `@evie/ui`: presentational components built on [Ko
 
 ## Structure
 
-| Path             | Contents                                                                                            |
-| ---------------- | --------------------------------------------------------------------------------------------------- |
-| `src/styles.css` | Tailwind CSS, the design tokens (light and dark) and base styles; imported as `@evie/ui/styles.css` |
-| `src/cn.ts`      | `cn`, which joins class names and resolves conflicting Tailwind classes; imported as `@evie/ui/cn`  |
-| `src/<name>.tsx` | One component per file, such as `button.tsx`; imported as `@evie/ui/<name>`                         |
+| Path                    | Contents                                                                                            |
+| ----------------------- | --------------------------------------------------------------------------------------------------- |
+| `src/styles.css`        | Tailwind CSS, the design tokens (light and dark) and base styles; imported as `@evie/ui/styles.css` |
+| `src/<name>/<name>.tsx` | One component and its parts, such as `src/button/button.tsx`; imported as `@evie/ui/<name>`         |
+| `src/<name>/`           | Everything else for that component: its variants (`<name>-variants.ts`), tests and helpers          |
+| `src/utils/`            | Library-wide helpers, such as `cn`; imported as `#utils/<name>` inside the library                  |
 
-The package ships its sources; the app's Vite build compiles them. It has no barrel file: every module has its own subpath in the `exports` of [`package.json`](package.json).
+The package ships its sources; the app's Vite build compiles them. It has no barrel file: the `./*` export of [`package.json`](package.json) maps `@evie/ui/<name>` to `src/<name>/<name>.tsx`, and `@evie/ui/cn` to `src/utils/cn.ts`.
 
 ## Commands
 
@@ -35,5 +36,5 @@ Use the `ui-component` skill.
 - Follow the `typescript-conventions` skill.
 - Components stay presentational: texts and data come in through props and children. No data loading, no Effect, no built-in texts.
 - Build interactive components on Kobalte primitives, and import each through its own subpath.
-- Import within the library with `./`. Unlike the frontend, the library has no `~/` alias, so its files resolve the same way inside any app.
+- Import within a folder with `./` and from `src/utils/` with `#utils/<name>`; never `../`. `#utils/*` is a package `imports` alias, so it resolves the same way inside any app, in `tsc` and in `bun test`.
 - Dark mode follows `prefers-color-scheme`. Change colours through the tokens in `src/styles.css`, not in components.

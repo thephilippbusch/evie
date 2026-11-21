@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { cn } from "#utils/cn";
 import { buttonVariants } from "./button-variants";
-import { cn } from "./cn";
 
 const SIZES = ["default", "sm", "lg", "icon"] as const;
 

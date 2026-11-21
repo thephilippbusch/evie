@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#utils/*": "./src/utils/*.ts"
+  },
   "exports": {
-    "./cn": "./src/cn.ts",
+    "./cn": "./src/utils/cn.ts",
     "./styles.css": "./src/styles.css",
-    "./*": "./src/*.tsx"
+    "./*": "./src/*/*.tsx"
   },
   "dependencies": {
     "@kobalte/core": "^0.13.14",
