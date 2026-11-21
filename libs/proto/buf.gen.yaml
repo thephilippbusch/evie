@@ -1,0 +1,12 @@
+version: v2
+
+# Deletes gen/ts before writing, so a deleted .proto file leaves no stale
+# output behind.
+clean: true
+
+plugins:
+  # The protoc-gen-es from package.json, found through node_modules/.bin,
+  # which moon puts on the PATH.
+  - local: protoc-gen-es
+    out: gen/ts
+    opt: target=ts

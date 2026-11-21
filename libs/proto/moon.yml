@@ -15,9 +15,13 @@ fileGroups:
   sources:
     - 'gen/rust/**/*'
 
-# build, check, test and format come from .moon/tasks/rust.yml; lint is merged
-# into the inherited one.
+# build, test and format come from .moon/tasks/rust.yml; lint and check are
+# merged into the inherited ones.
 tasks:
+  check:
+    deps:
+      - '~:typecheck'
+
   # Also lints the codegen binary, which needs the `codegen` feature.
   lint:
     command: 'cargo clippy --all-targets --all-features --locked -- -D warnings'
@@ -35,10 +39,25 @@ tasks:
       - 'definitions/**/*'
       - 'buf.yaml'
 
+  # Nothing imports gen/ts yet, so no other project's typecheck covers it.
+  typecheck:
+    description: 'Check the types of the generated TypeScript code with the TypeScript compiler.'
+    command: 'tsc --noEmit'
+    type: 'test'
+    toolchains: ['bun']
+    inputs:
+      - 'gen/ts/**/*'
+      - 'tsconfig.json'
+      - 'package.json'
+      - '/package.json'
+      - '/bun.lock'
+
   codegen:
-    description: 'Generate the Rust code in gen/rust from the protobuf definitions.'
-    command: 'cargo run --locked --features codegen --bin codegen -- gen/rust'
+    description: 'Generate the Rust code in gen/rust and the TypeScript code in gen/ts from the protobuf definitions.'
+    script: 'cargo run --locked --features codegen --bin codegen -- gen/rust && buf generate'
     type: 'run'
+    # bun puts node_modules/.bin, with buf and protoc-gen-es, on the PATH.
+    toolchains: ['rust', 'bun']
     # Run by hand after a change to the definitions; it rewrites gen/.
     inputs: []
     options:
