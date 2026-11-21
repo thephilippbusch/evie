@@ -16,7 +16,7 @@ The backend never migrates on start: it must run and report its health while Pos
 
 ## Commands
 
-The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), except `migrate`.
+`migrate` is defined in [`moon.yml`](moon.yml); the other tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), shared by every Rust crate.
 
 | Command                              | What it does                                                                        |
 | ------------------------------------ | ----------------------------------------------------------------------------------- |

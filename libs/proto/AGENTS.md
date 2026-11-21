@@ -17,13 +17,13 @@ The bun package `@evie/proto` holds the messages and service descriptors in Type
 | `scripts/check-codegen.sh` | Compares `gen/` with fresh output; run by the `check-codegen` task                    |
 | `buf.yaml`                 | The buf module and its lint rules                                                     |
 | `buf.gen.yaml`             | The TypeScript generation with protoc-gen-es                                          |
-| `tsconfig.json`            | Compiler options for the `typecheck` task                                             |
+| `tsconfig.json`            | Compiler options for the `typecheck` task; extends the root `tsconfig.base.json`      |
 | `Cargo.toml`               | Crate manifest; version and edition come from the workspace                           |
 | `package.json`             | The bun package `@evie/proto`, with buf and protoc-gen-es as dev dependencies         |
 
 ## Commands
 
-`codegen`, `check-codegen`, `lint-proto`, `typecheck` and the `lint` and `check` deps are in [`moon.yml`](moon.yml); the other tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml).
+`codegen`, `check-codegen`, `lint-proto`, `typecheck` and the `lint` and `check` deps are defined in [`moon.yml`](moon.yml); the other tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml).
 
 | Command                        | What it does                                                                                                      |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |

@@ -7,16 +7,18 @@ For now it renders one page inside the app shell; the backend call comes with th
 
 ## Structure
 
-| Path                   | Contents                                                                            |
-| ---------------------- | ----------------------------------------------------------------------------------- |
-| `src/app.tsx`          | The root component: the router with the file routes, inside the app shell           |
-| `src/shell/`           | The app shell: the layout around every page, such as the header and the main column |
-| `src/routes/`          | File routes; `index.tsx` is `/`                                                     |
-| `src/entry-server.tsx` | The HTML document rendered on the server                                            |
-| `src/entry-client.tsx` | Mounts the app in the browser                                                       |
-| `public/`              | Static files served as they are                                                     |
-| `vite.config.ts`       | Vite with the SolidStart, Tailwind CSS and Nitro plugins                            |
-| `.output/`             | The production build (`bun .output/server/index.mjs`), not committed                |
+| Path                   | Contents                                                                                        |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/app.tsx`          | The root component: the router with the file routes, inside the app shell                       |
+| `src/shell/`           | The app shell: the layout around every page, such as the header and the main column             |
+| `src/routes/`          | File routes; `index.tsx` is `/`                                                                 |
+| `src/entry-server.tsx` | The HTML document rendered on the server                                                        |
+| `src/entry-client.tsx` | Mounts the app in the browser                                                                   |
+| `src/global.d.ts`      | Loads the SolidStart types for the whole app                                                    |
+| `public/`              | Static files served as they are                                                                 |
+| `vite.config.ts`       | Vite with the SolidStart, Tailwind CSS and Nitro plugins                                        |
+| `tsconfig.json`        | Compiler options for Solid and the `~/` alias for `src/`; extends the root `tsconfig.base.json` |
+| `.output/`             | The production build (`bun .output/server/index.mjs`), not committed                            |
 
 Biome and TypeScript are dev dependencies of the root `package.json`, and `biome.json` at the root configures Biome. Dependencies install into the root `bun.lock`.
 

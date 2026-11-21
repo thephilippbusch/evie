@@ -12,6 +12,7 @@ evie's own component library, `@evie/ui`: presentational components built on [Ko
 | `src/<name>/<name>.tsx` | One component and its parts, such as `src/button/button.tsx`; imported as `@evie/ui/<name>`         |
 | `src/<name>/`           | Everything else for that component: its variants (`<name>-variants.ts`), tests and helpers          |
 | `src/utils/`            | Library-wide helpers, such as `cn`; imported as `#utils/<name>` inside the library                  |
+| `tsconfig.json`         | Compiler options for Solid and bun; extends the root `tsconfig.base.json`                           |
 
 The package ships its sources; the app's Vite build compiles them. It has no barrel file: the `./*` export of [`package.json`](package.json) maps `@evie/ui/<name>` to `src/<name>/<name>.tsx`, and `@evie/ui/cn` to `src/utils/cn.ts`.
 
