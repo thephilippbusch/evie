@@ -100,7 +100,7 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 - **moon:** [`moon-query`](.agents/skills/moon-query/SKILL.md), [`moon-run`](.agents/skills/moon-run/SKILL.md), [`moon-new-library`](.agents/skills/moon-new-library/SKILL.md), [`moon-new-app`](.agents/skills/moon-new-app/SKILL.md), [`moon-add-task`](.agents/skills/moon-add-task/SKILL.md)
 - **Quality:** [`verify`](.agents/skills/verify/SKILL.md), [`writing-style`](.agents/skills/writing-style/SKILL.md), [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
 - **Planning:** [`plan`](.agents/skills/plan/SKILL.md)
-- **UI:** [`ui-component`](.agents/skills/ui-component/SKILL.md)
+- **Stack:** [`seaorm-migration`](.agents/skills/seaorm-migration/SKILL.md), [`ui-component`](.agents/skills/ui-component/SKILL.md)
 - **Investigation:** [`debug`](.agents/skills/debug/SKILL.md), [`benchmark`](.agents/skills/benchmark/SKILL.md)
 - **Review:** [`review-security`](.agents/skills/review-security/SKILL.md), [`review-architecture`](.agents/skills/review-architecture/SKILL.md), [`review-code-quality`](.agents/skills/review-code-quality/SKILL.md), [`review-tests`](.agents/skills/review-tests/SKILL.md), [`review-project-rules`](.agents/skills/review-project-rules/SKILL.md) · workflow [`review`](.agents/skills/review/SKILL.md)
 - **Meta:** [`authoring-skills`](.agents/skills/authoring-skills/SKILL.md)

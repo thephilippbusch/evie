@@ -32,6 +32,7 @@ For other CLI commands, run it from `libs/domain-migrations/`, e.g. `cargo run -
 ## Local rules
 
 - Follow the `rust-conventions` skill.
+- Add or change a migration with the `seaorm-migration` skill.
 - Never edit a migration that has been merged to `main`; add a new one that changes the schema further.
 - Add each migration to `Migrator::migrations` in order, and keep `down` working.
 - The migration CLI reads a `.env` file in this folder if one exists. Never read or write it; pass `DATABASE_URL` in the environment.
