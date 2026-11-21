@@ -4,7 +4,7 @@ layer: 'library'
 language: 'typescript'
 project:
   title: 'ui'
-  description: 'The presentational solid-ui components, design tokens and Tailwind CSS setup that the frontend uses.'
+  description: 'evie''s presentational components on Kobalte, the design tokens and the Tailwind CSS setup that the frontend uses.'
 
 # Projects this one uses, so affected checks reach their dependents.
 dependsOn: []

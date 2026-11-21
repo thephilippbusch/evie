@@ -1,11 +1,10 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 /* Scan the library's components wherever an app imports this file. */
 @source "./";
 
 /*
- * Design tokens, with shadcn's names: a warm, friendly palette.
+ * Design tokens with semantic names: a warm, friendly palette.
  * Light by default; dark follows the system setting.
  */
 :root {
