@@ -41,10 +41,10 @@ For a PR, the working tree may not match the PR. Read a changed file with `git s
 - Drizzle owns the `auth` schema and nothing else.
 - No foreign keys between the two schemas. The domain stores the BetterAuth user ID as an opaque value, with no join to `auth` tables.
 
-**Apps and libraries**
+**Apps, libraries and tools**
 
-- Deployable code lives in `apps/`, shared code in `libs/`. A library never depends on an app.
-- `moon.yml` sets `layer: 'application'` for apps and `layer: 'library'` for libraries.
+- Deployable code lives in `apps/`, shared code in `libs/`, and development tools that never run in production, such as code generators, in `tools/`. A library never depends on an app, or on a tool other than a `scaffolding` generator.
+- `moon.yml` sets `layer: 'application'` for apps, `layer: 'library'` for libraries and `layer: 'tool'` for tools, or `layer: 'scaffolding'` for a code generator that a library depends on.
 - `dependsOn` lists every library the project uses, so moon sees the change as affecting it.
 
 **Effect** (frontend server and shared code)

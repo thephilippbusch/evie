@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package evie.ping.v1;
+
+// Checks that the frontend server reaches the backend.
+service PingService {
+  // Returns the backend's version.
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message PingRequest {}
+
+message PingResponse {
+  // The backend's crate version, such as "0.1.0".
+  string version = 1;
+}

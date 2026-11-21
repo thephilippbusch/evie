@@ -1,0 +1,95 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'library'
+language: 'rust'
+project:
+  title: 'proto'
+  description: 'The protobuf definitions of the gRPC API between the frontend server and the backend, and the Rust and TypeScript code generated from them.'
+
+# Projects this one uses, so affected checks reach their dependents.
+dependsOn:
+  - 'proto-codegen'
+
+# Added to the `sources` group of .moon/tasks/rust.yml, so a change to the
+# generated Rust code reruns build, lint, check and test.
+fileGroups:
+  sources:
+    - 'gen/rust/**/*'
+  # The protobuf definitions and the buf module that holds them.
+  definitions:
+    - 'definitions/**/*'
+    - 'buf.yaml'
+  # The bun package, with the versions of buf, protoc-gen-es and the protobuf
+  # runtime that the generated TypeScript code needs.
+  packages:
+    - 'package.json'
+    - '/package.json'
+    - '/bun.lock'
+  # What else decides the output of codegen: the TypeScript generation config
+  # and the proto-codegen generator in tools/.
+  generator:
+    - 'buf.gen.yaml'
+    - '/tools/proto-codegen/src/**/*'
+    - '/tools/proto-codegen/Cargo.toml'
+    - '/Cargo.lock'
+
+# build, test and format come from .moon/tasks/rust.yml; lint and check are
+# merged into the inherited ones. codegen and check-codegen build the
+# proto-codegen generator in tools/ first.
+tasks:
+  check:
+    deps:
+      - '~:typecheck'
+      - '~:check-codegen'
+
+  lint:
+    deps:
+      - '~:lint-proto'
+
+  lint-proto:
+    description: 'Lint the protobuf definitions with buf, using the rules in buf.yaml.'
+    command: 'buf lint'
+    type: 'test'
+    inputs:
+      - '@group(definitions)'
+
+  # Nothing imports gen/ts yet, so no other project's typecheck covers it.
+  typecheck:
+    description: 'Check the types of the generated TypeScript code with the TypeScript compiler.'
+    command: 'tsc --noEmit'
+    type: 'test'
+    toolchains: ['bun']
+    inputs:
+      - 'gen/ts/**/*'
+      - 'tsconfig.json'
+      - '@group(packages)'
+
+  codegen:
+    description: 'Generate the Rust code in gen/rust and the TypeScript code in gen/ts from the protobuf definitions.'
+    command: 'cargo run --locked -p proto-codegen -- .'
+    type: 'run'
+    deps:
+      - '^:build'
+    # bun puts node_modules/.bin, with buf and protoc-gen-es, on the PATH.
+    toolchains: ['rust', 'bun']
+    # Run by hand after a change to the definitions; it rewrites gen/.
+    inputs: []
+    options:
+      cache: false
+      runInCI: false
+
+  check-codegen:
+    description: 'Fail when gen/ differs from what codegen generates from the definitions.'
+    command: 'sh scripts/check-codegen.sh'
+    type: 'test'
+    deps:
+      - '^:build'
+    toolchains: ['rust', 'bun']
+    inputs:
+      - '@group(definitions)'
+      # moon doesn't hash the ^:build dep into this task, so the generator's
+      # files are inputs too: a change to it must rerun the check.
+      - '@group(generator)'
+      - '@group(packages)'
+      - 'gen/**/*'
+      - 'scripts/check-codegen.sh'

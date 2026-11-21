@@ -1,0 +1,10 @@
+version: v2
+
+modules:
+  - path: definitions
+
+# STANDARD enforces versioned packages, folders that match the package,
+# `…Service` names and `…Request`/`…Response` types.
+lint:
+  use:
+    - STANDARD

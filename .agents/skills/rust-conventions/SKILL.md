@@ -27,7 +27,7 @@ Stack-specific patterns (gRPC services, SeaORM entities and migrations) belong t
 
 ## Modules
 
-- Use `name.rs` next to a `name/` folder, never `name/mod.rs`. The only `mod.rs` is `tests/common/mod.rs`.
+- Use `name.rs` next to a `name/` folder, never `name/mod.rs`. The only `mod.rs` files are `tests/common/mod.rs` and `libs/proto/gen/rust/mod.rs`, which the `proto-codegen` tool generates.
 - Group code by domain feature (`booking`, `event`), not by layer (`models`, `services`).
 - `main.rs` only wires and starts things; the logic lives in `lib.rs` and its modules, so integration tests can reach it.
 - Items are private by default, `pub(crate)` for the rest of the crate, `pub` only for the crate's API.

@@ -1,0 +1,11 @@
+[package]
+name = "proto-codegen"
+description = "Generates the Rust and TypeScript code in libs/proto from its protobuf definitions."
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+anyhow = "1"
+protox = "0.10.0"
+tonic-prost-build = "0.14.9"

@@ -14,7 +14,6 @@ CHANGELOG.md                    Owned by release-please, which writes it from th
 .release-please-manifest.json   The release manifest is owned by release-please, which bumps the versions on release. Register new apps in release-please-config.json instead.
 
 # Generated code. Change the source and run `moon run :codegen`.
-# Fill in the real output paths once codegen exists (#22), for example:
-# libs/proto/gen/                     Generated from the protobuf definitions. Change the .proto source and run `moon run :codegen`.
-# apps/backend/src/proto/             Generated from the protobuf definitions. Change the .proto source and run `moon run :codegen`.
+libs/proto/gen/                 Generated from the protobuf definitions. Change the .proto file in libs/proto/definitions/ and run `moon run proto:codegen`.
+# Add the BetterAuth Drizzle schema once it exists, for example:
 # apps/frontend/src/**/auth-schema.ts Generated BetterAuth Drizzle schema. Change the BetterAuth config and run `moon run :codegen`.
