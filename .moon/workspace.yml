@@ -1,11 +1,14 @@
 $schema: 'https://moonrepo.dev/schemas/v2/workspace.json'
 
-# Every folder in apps/ and libs/ is a project. The repository root is the
-# `root` project, which hosts repo-wide tasks such as the commit hooks.
+# Every folder in apps/, libs/ and tools/ is a project. tools/ holds development
+# tools (`layer: 'tool'`), such as code generators, that never run in
+# production. The repository root is the `root` project, which hosts repo-wide
+# tasks such as the commit hooks.
 projects:
   globs:
     - 'apps/*'
     - 'libs/*'
+    - 'tools/*'
   sources:
     root: '.'
 
