@@ -1,18 +1,22 @@
-use std::time::Duration;
+use std::{net::SocketAddr, time::Duration};
 
 use backend::HealthSettings;
 use testcontainers_modules::{
     postgres::Postgres,
     testcontainers::{ContainerAsync, ImageExt, runners::AsyncRunner},
 };
-use tokio::{net::TcpListener, task::JoinHandle};
+use tokio::{
+    net::{TcpListener, TcpStream},
+    task::JoinHandle,
+};
 use tokio_util::sync::CancellationToken;
 use tonic::transport::Channel;
 use tonic_health::pb::{
     HealthCheckRequest, health_check_response::ServingStatus, health_client::HealthClient,
 };
 
-/// The PostgreSQL image the tests run against.
+/// The PostgreSQL image the tests run against. Keep it equal to the one in
+/// `libs/domain-migrations/tests/migrate.rs`.
 const POSTGRES_TAG: &str = "19-alpine";
 
 /// Fast checks, so the tests see a status change quickly. A failed ping takes
@@ -22,7 +26,7 @@ pub const HEALTH: HealthSettings = HealthSettings {
     timeout: Duration::from_millis(300),
 };
 
-/// How long a test waits for an expected status.
+/// How long a test waits for an expected status or for the shutdown.
 const STATUS_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Starts PostgreSQL in a container. Keep the container alive while you use
@@ -48,6 +52,7 @@ pub async fn unreachable_database_url() -> String {
 
 /// The backend, served on a free local port.
 pub struct TestServer {
+    addr: SocketAddr,
     client: HealthClient<Channel>,
     shutdown: CancellationToken,
     served: JoinHandle<Result<(), backend::ServeError>>,
@@ -67,6 +72,7 @@ impl TestServer {
             .unwrap();
         let client = HealthClient::new(channel);
         Self {
+            addr,
             client,
             shutdown,
             served,
@@ -109,9 +115,17 @@ impl TestServer {
             .unwrap_or_else(|_| panic!("the server didn't report {expected:?} in time"));
     }
 
-    /// Stops the server and checks that it shut down without an error.
+    /// Stops the server and checks the graceful shutdown: `serve` returns
+    /// without an error in time, and the port no longer accepts connections.
     pub async fn stop(self) {
+        drop(self.client);
         self.shutdown.cancel();
-        self.served.await.unwrap().unwrap();
+
+        tokio::time::timeout(STATUS_TIMEOUT, self.served)
+            .await
+            .expect("the server didn't stop in time")
+            .unwrap()
+            .unwrap();
+        assert!(TcpStream::connect(self.addr).await.is_err());
     }
 }
