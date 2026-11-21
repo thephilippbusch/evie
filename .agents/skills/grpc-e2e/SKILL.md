@@ -1,9 +1,9 @@
 ---
-name: grpc-rpc
+name: grpc-e2e
 description: Adds or changes one gRPC RPC end to end, from the protobuf definition over the Rust handler and the BFF client service to the server function and page that show its result. Use when a page needs backend data, or when asked to add a backend call, an RPC, or a gRPC service or method.
 ---
 
-# gRPC RPC
+# gRPC end to end
 
 A workflow: one RPC through every layer, bottom to top. The browser never talks gRPC; it calls a server function, which calls the backend through an Effect client service.
 

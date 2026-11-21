@@ -47,7 +47,7 @@ The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), shared
 ## Local rules
 
 - Follow the `rust-conventions` skill.
-- Add or change an RPC end to end with the `grpc-rpc` skill.
+- Add or change an RPC end to end with the `grpc-e2e` skill.
 - Run the backend locally with `cargo run` in `apps/backend/`, with `DATABASE_URL` set. Apply the migrations first with `moon run domain-migrations:migrate`.
 - Or run the whole stack with `docker compose up` at the repository root. Its `migrate` service applies the migrations, then the backend starts on the stack's network only, with no host port.
 - The root `Dockerfile` builds the images: `docker build --target backend .` for the backend, `--target migrate` for the one-shot migrations, both from the repository root. They are built from a moon scaffold: keep `dependsOn` in `moon.yml` complete, since `moon docker scaffold` copies only the sources of the backend and its `dependsOn`.

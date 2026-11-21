@@ -41,7 +41,7 @@ To run the app with the rest of the stack, run `docker compose up` at the reposi
 ## Local rules
 
 - Follow the `typescript-conventions` skill.
-- Write server code as Effect services, and server functions that run them, with the `effect-service` skill. Call the backend with the `grpc-rpc` skill.
+- Write server code as Effect services, and server functions that run them, with the `effect-service` skill. Call the backend with the `grpc-e2e` skill.
 - Add packages with `bun add <pkg>` inside `apps/frontend/`; shared dev tools go in the root `package.json`.
 - When the app uses a new library from `libs/`, add it to `dependsOn` in `moon.yml`. `moon docker scaffold` copies only the sources of the app and its `dependsOn` into the image.
 - UI primitives, design tokens and `cn` come from [`@evie/ui`](../../libs/ui/AGENTS.md), each through its subpath, such as `@evie/ui/button`. Add a missing component there with the `ui-component` skill, not here.

@@ -48,7 +48,7 @@ const parseBooking = (input: unknown) =>
   );
 ```
 
-A `ParseError` on data the backend sent means the BFF and the backend disagree: a bug, not a case to handle. Turn it into a defect with `Effect.catchTag("ParseError", Effect.die)`, as the client services of the `grpc-rpc` skill do.
+A `ParseError` on data the backend sent means the BFF and the backend disagree: a bug, not a case to handle. Turn it into a defect with `Effect.catchTag("ParseError", Effect.die)`, as the client services of the `grpc-e2e` skill do.
 
 ## Rules
 
