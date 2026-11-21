@@ -15,6 +15,23 @@ dependsOn:
 fileGroups:
   sources:
     - 'gen/rust/**/*'
+  # The protobuf definitions and the buf module that holds them.
+  definitions:
+    - 'definitions/**/*'
+    - 'buf.yaml'
+  # The bun package, with the versions of buf, protoc-gen-es and the protobuf
+  # runtime that the generated TypeScript code needs.
+  packages:
+    - 'package.json'
+    - '/package.json'
+    - '/bun.lock'
+  # What else decides the output of codegen: the TypeScript generation config
+  # and the proto-codegen generator in tools/.
+  generator:
+    - 'buf.gen.yaml'
+    - '/tools/proto-codegen/src/**/*'
+    - '/tools/proto-codegen/Cargo.toml'
+    - '/Cargo.lock'
 
 # build, test and format come from .moon/tasks/rust.yml; lint and check are
 # merged into the inherited ones. codegen and check-codegen build the
@@ -34,8 +51,7 @@ tasks:
     command: 'buf lint'
     type: 'test'
     inputs:
-      - 'definitions/**/*'
-      - 'buf.yaml'
+      - '@group(definitions)'
 
   # Nothing imports gen/ts yet, so no other project's typecheck covers it.
   typecheck:
@@ -46,9 +62,7 @@ tasks:
     inputs:
       - 'gen/ts/**/*'
       - 'tsconfig.json'
-      - 'package.json'
-      - '/package.json'
-      - '/bun.lock'
+      - '@group(packages)'
 
   codegen:
     description: 'Generate the Rust code in gen/rust and the TypeScript code in gen/ts from the protobuf definitions.'
@@ -72,15 +86,10 @@ tasks:
       - '^:build'
     toolchains: ['rust', 'bun']
     inputs:
-      - 'definitions/**/*'
-      - 'gen/**/*'
-      - 'buf.yaml'
-      - 'buf.gen.yaml'
-      - 'scripts/check-codegen.sh'
-      - 'package.json'
+      - '@group(definitions)'
       # moon doesn't hash the ^:build dep into this task, so the generator's
       # files are inputs too: a change to it must rerun the check.
-      - '/tools/proto-codegen/src/**/*'
-      - '/tools/proto-codegen/Cargo.toml'
-      - '/Cargo.lock'
-      - '/bun.lock'
+      - '@group(generator)'
+      - '@group(packages)'
+      - 'gen/**/*'
+      - 'scripts/check-codegen.sh'
