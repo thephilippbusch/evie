@@ -51,7 +51,7 @@ const canCancel = (status: BookingStatus): boolean => {
 
 ## Decode external data, never cast it
 
-Request bodies, responses, storage, URL params and environment values enter as `unknown`. Decode them with a `Schema` where they enter; inside, trust the types. How to use `Schema` is part of the `effect-service` skill (once it exists).
+Request bodies, responses, storage, URL params and environment values enter as `unknown`. Decode them with a `Schema` where they enter; inside, trust the types. How to use `Schema` is part of the `effect-service` skill.
 
 ```ts
 import { Schema } from "effect";
