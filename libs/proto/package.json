@@ -1,0 +1,9 @@
+{
+  "name": "@evie/proto",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@bufbuild/buf": "1.75.0"
+  }
+}

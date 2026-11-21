@@ -1,0 +1,18 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'library'
+project:
+  title: 'proto'
+  description: 'The protobuf definitions of the gRPC API between the frontend server and the backend.'
+
+# Projects this one uses, so affected checks reach their dependents.
+dependsOn: []
+
+tasks:
+  lint-proto:
+    description: 'Lint the protobuf definitions with buf, using the rules in buf.yaml.'
+    command: 'buf lint'
+    type: 'test'
+    inputs:
+      - 'definitions/**/*'
+      - 'buf.yaml'
