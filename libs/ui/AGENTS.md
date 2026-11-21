@@ -35,7 +35,7 @@ Components come from [solid-ui](https://www.solid-ui.com), the Solid port of sha
 2. Install the dependencies the component imports, if they're missing: `bun add <pkg>`.
 3. Rewrite the CLI's `src/…` imports to `./`: `perl -pi -e 's#from "src/#from "./#' src/<name>.tsx`.
 4. Format: `moon run ui:format`.
-5. Check that interactive parts stay at least 44 px tall and wide, as `button.tsx` does with `min-h-11 min-w-11`.
+5. Check that interactive parts stay at least 44 px tall and wide, as `button-variants.ts` does with `min-h-11 min-w-11`. Keep `cva` variants in their own `<name>-variants.ts`, so `bun test` can test them: it can't load Solid JSX.
 6. Check: `moon run ui:check`.
 
 The CLI writes Tailwind CSS v3 classes. Most work in v4 unchanged; fix the ones that don't.
