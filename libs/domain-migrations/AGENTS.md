@@ -7,12 +7,12 @@ The backend never migrates on start: it must run and report its health while Pos
 
 ## Structure
 
-| Path               | Contents                                                    |
-| ------------------ | ----------------------------------------------------------- |
-| `src/lib.rs`       | `Migrator`, which lists every migration, oldest first       |
-| `src/main.rs`      | The SeaORM migration CLI, run by the `migrate` task         |
-| `tests/migrate.rs` | Applies every migration to a fresh PostgreSQL container     |
-| `Cargo.toml`       | Crate manifest; version and edition come from the workspace |
+| Path               | Contents                                                            |
+| ------------------ | ------------------------------------------------------------------- |
+| `src/lib.rs`       | `Migrator`, which lists every migration, oldest first               |
+| `src/main.rs`      | The SeaORM migration CLI, run by the `migrate` task                 |
+| `tests/migrate.rs` | Applies and reverts every migration on a fresh PostgreSQL container |
+| `Cargo.toml`       | Crate manifest; version and edition come from the workspace         |
 
 ## Commands
 
