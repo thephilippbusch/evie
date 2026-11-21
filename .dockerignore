@@ -1,0 +1,12 @@
+# The build context is the repository root for every image. Keep build
+# artefacts, dependencies, git data and secrets out of it.
+.git
+**/target
+**/node_modules
+**/.output
+**/.vinxi
+.moon/cache
+.moon/docker
+.moon/hooks
+**/.env
+**/.env.*
