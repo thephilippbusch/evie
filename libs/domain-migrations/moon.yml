@@ -1,0 +1,25 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'library'
+language: 'rust'
+project:
+  title: 'domain-migrations'
+  description: 'SeaORM migrations for the domain schema, applied with the migrate task.'
+
+# Projects this one uses, so affected checks reach their dependents.
+dependsOn: []
+
+# build, lint, check, test and format come from .moon/tasks/rust.yml.
+tasks:
+  migrate:
+    description: 'Apply the pending migrations to the database in DATABASE_URL.'
+    command: 'cargo run --locked -- up'
+    type: 'run'
+    inputs:
+      - '@group(sources)'
+      - '@group(manifests)'
+    options:
+      # The result depends on the database, not only on the inputs.
+      cache: false
+      runInCI: false
+      outputStyle: 'stream'

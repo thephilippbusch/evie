@@ -1,0 +1,13 @@
+[package]
+name = "domain-migrations"
+description = "SeaORM migrations for evie's domain schema."
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+sea-orm-migration = { version = "2.0.4", features = ["runtime-tokio-rustls", "sqlx-postgres"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[dev-dependencies]
+testcontainers-modules = { version = "0.15", features = ["postgres"] }

@@ -7,16 +7,16 @@ Work is tracked in [GitHub milestones](https://github.com/thephilippbusch/evie/m
 
 ## Repo map
 
-| Path              | Contents                                                                                                                                          |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/`           | Deployable apps, one Docker image each: [`frontend`](apps/frontend/AGENTS.md) (SolidStart + BFF), [`backend`](apps/backend/AGENTS.md) (Rust gRPC) |
-| `libs/`           | Libraries used by apps, never deployed: protobuf definitions, shared crates and packages (_planned_)                                              |
-| `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                                                     |
-| `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates                                      |
-| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                                                           |
-| `.claude/agents/` | Claude Code subagents                                                                                                                             |
-| `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks                                                 |
-| `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                                                             |
+| Path              | Contents                                                                                                                                                                                |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/`           | Deployable apps, one Docker image each: [`frontend`](apps/frontend/AGENTS.md) (SolidStart + BFF), [`backend`](apps/backend/AGENTS.md) (Rust gRPC)                                       |
+| `libs/`           | Libraries and tools for apps, never deployed: [`domain-migrations`](libs/domain-migrations/AGENTS.md) (SeaORM migrations); protobuf definitions, shared crates and packages (_planned_) |
+| `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                                                                                           |
+| `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates                                                                            |
+| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                                                                                                 |
+| `.claude/agents/` | Claude Code subagents                                                                                                                                                                   |
+| `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks                                                                                       |
+| `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                                                                                                   |
 
 Every moon project has its own `AGENTS.md` (with a `CLAUDE.md` symlink) covering its purpose, structure, commands and local rules.
 Read it before you change that project. Where it differs from this file, the project file wins.
