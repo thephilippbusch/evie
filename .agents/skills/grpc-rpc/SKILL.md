@@ -1,6 +1,6 @@
 ---
 name: grpc-rpc
-description: Adds or changes one gRPC RPC end to end, layer by layer, from the protobuf definition over the Rust handler and the BFF client service to the server function and page that show its result. Use when a page needs data from the backend, or when asked to add a backend call, an RPC, or a gRPC service or method.
+description: Adds or changes one gRPC RPC end to end, from the protobuf definition over the Rust handler and the BFF client service to the server function and page that show its result. Use when a page needs backend data, or when asked to add a backend call, an RPC, or a gRPC service or method.
 ---
 
 # gRPC RPC
@@ -47,7 +47,8 @@ The first RPC of the app sets up what every later one reuses. Do each item in th
 - Never hand-edit `libs/proto/gen/`; change the definitions and run `codegen`.
 - Never reuse or renumber a field number; mark a removed field `reserved`.
 - Domain code never builds a `tonic::Status`; one `From` impl per domain error does, at the gRPC edge.
-- The browser never imports `@evie/proto`, `@connectrpc/*`, services or `appRuntime`; only server function bodies use them.
+- The browser never imports `@evie/proto`, `@connectrpc/*`, services or `appRuntime`; only server function bodies use them. The `effect-service` skill shows how to check the built bundle.
+- An RPC that returns or changes someone's data needs the verified user and an access check on both sides: the server function checks the session, and the backend returns `permission_denied` or `not_found` to a user without access. #34 (_planned_) defines how the BFF passes the user; until then, add only RPCs for public data.
 - Every text the page shows exists in German and English.
 
 ## Output

@@ -1,6 +1,6 @@
 ---
 name: effect-service
-description: Builds a service for evie's frontend server (BFF) in idiomatic Effect, with a Context.Tag, a Layer, Config, Schema decoding, tagged errors, the shared runtime, a server function and tests with a test layer. Use when adding server-side logic, settings or a server function to apps/frontend, or when asked to write Effect code.
+description: Builds a service for evie's frontend server (BFF) in idiomatic Effect, with a Context.Tag, a Layer, Config, Schema, tagged errors, a server function and test layers. Use when adding server-side logic, settings or a server function to apps/frontend, or when asked to write Effect code.
 ---
 
 # Effect service
@@ -67,7 +67,7 @@ export class Invites extends Context.Tag("Invites")<
 export const invitesLive = Layer.effect(
   Invites,
   Effect.gen(function* () {
-    const appUrl = yield* Config.string("APP_URL").pipe(Config.withDefault("http://localhost:3000"));
+    const appUrl = yield* Config.string("APP_URL");
     return Invites.of({
       linkFor: (eventId) => new URL(`/invites/${eventId}`, appUrl),
       parse: (params) =>
@@ -81,19 +81,19 @@ export const invitesLive = Layer.effect(
 
 ## Config
 
-| Setting               | Read it with                                                                  |
-| --------------------- | ----------------------------------------------------------------------------- |
-| text                  | `Config.string("NAME")`                                                       |
-| number or flag        | `Config.integer("NAME")`, `Config.boolean("NAME")`                            |
-| secret                | `Config.redacted("NAME")`; unwrap with `Redacted.value` only where it is used |
-| optional with default | `.pipe(Config.withDefault(value))`                                            |
+| Setting               | Read it with                                                                            |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| text                  | `Config.string("NAME")`                                                                 |
+| number or flag        | `Config.integer("NAME")`, `Config.boolean("NAME")`                                      |
+| secret                | `Config.redacted("NAME")`; unwrap with `Redacted.value` only where it is used           |
+| optional with default | `.pipe(Config.withDefault(value))`, only when the default is right in every environment |
 
 A missing or invalid variable fails the layer, and with it the server function, with a `ConfigError` that names the variable.
 
 ## Rules
 
 - Tags and errors are classes, because Effect declares them that way; everything else follows the `typescript-conventions` skill. `Effect.gen` takes a `function*` expression, since arrow functions can't be generators.
-- Never read `process.env`, never `throw`, never call `Effect.runPromise` outside tests and `appRuntime`.
+- Never read `process.env` and never `throw`. Effects run only through `appRuntime`, in server function bodies; outside tests, never call `Effect.runPromise` elsewhere.
 - Only server code imports services, layers and `appRuntime`. `@evie/ui` and components stay free of Effect.
 - One concept per module: a service and its own errors and schemas share a file; anything a second module needs moves to its own file.
 - Never read or write `.env` files.

@@ -23,9 +23,20 @@ Kobalte sets `data-*` attributes on its parts for each state, and native element
 Put the state classes in the `cva` base or variants, and assert on them in `<name>-variants.test.ts`, as `button-variants.test.ts` asserts the touch target:
 
 ```ts
-test("shows the focus ring in every variant", () => {
+// libs/ui/src/thing/thing-variants.test.ts
+import { describe, expect, test } from "bun:test";
+import { thingVariants } from "./thing-variants";
+
+const VARIANTS = ["default", "brand"] as const;
+
+/** Splits a class string, so `toContain` matches whole classes, not substrings. */
+const classesOf = (value: string): ReadonlyArray<string> => value.split(/\s+/);
+
+describe("thingVariants", () => {
   for (const variant of VARIANTS) {
-    expect(classesOf(thingVariants({ variant }))).toContain("focus-visible:outline-ring");
+    test(`shows the focus ring in the ${variant} variant`, () => {
+      expect(classesOf(thingVariants({ variant }))).toContain("focus-visible:outline-ring");
+    });
   }
 });
 ```

@@ -53,7 +53,7 @@ impl ping_service_server::PingService for PingApi {
 }
 ```
 
-With a domain service, the handler checks the input, calls the service and lets `?` map its error:
+With a domain service, the handler checks the input, calls the service and lets `?` map its error. The example leaves out who calls: once #34 (_planned_) passes the verified user from the BFF, a user-scoped handler also reads that user and lets the service return `permission_denied` or `not_found` when the user has no access.
 
 ```rust
 // src/grpc/place.rs
@@ -83,7 +83,9 @@ impl place_service_server::PlaceService for PlaceApi {
         let place_id = Uuid::parse_str(&request.get_ref().place_id)
             .map_err(|_| Status::invalid_argument("place_id is not a UUID"))?;
 
-        let place = self.places.get(place_id).await?; // PlaceError -> Status
+        // The ID check is request validation at the edge, so it builds its
+        // own Status; domain errors go through the `From` impls in error.rs.
+        let place = self.places.get(place_id).await?;
 
         Ok(Response::new(proto::GetPlaceResponse {
             place: Some(proto::Place {
@@ -154,7 +156,32 @@ async fn ping_returns_the_backend_version() {
 ```
 
 - An RPC that needs no database runs against `unreachable_database_url`, which needs no Docker.
-- An RPC that reads tables starts a migrated database; the `seaorm-migration` skill shows the helper.
-- Test each status code the RPC's comment names: `assert_eq!(err.code(), tonic::Code::NotFound)`.
+- An RPC that reads tables starts a migrated database with `start_migrated_postgres`, which the `seaorm-migration` skill adds to `tests/common/mod.rs` with the first table.
+- Test each status code the RPC's comment names, and assert on the code, not the message:
+
+```rust
+// tests/place.rs
+mod common;
+
+use common::TestServer;
+use evie_proto::evie::place::v1::{GetPlaceRequest, place_service_client::PlaceServiceClient};
+use uuid::Uuid;
+
+#[tokio::test]
+async fn get_place_returns_not_found_for_an_unknown_id() {
+    let (_postgres, database_url) = common::start_migrated_postgres().await;
+    let server = TestServer::start(&database_url).await;
+    let mut client = PlaceServiceClient::new(server.channel());
+
+    let err = client
+        .get_place(GetPlaceRequest { place_id: Uuid::new_v4().to_string() })
+        .await
+        .unwrap_err();
+
+    assert_eq!(err.code(), tonic::Code::NotFound);
+    drop(client);
+    server.stop().await;
+}
+```
 
 Run with `moon run backend:test`, or one test with `moon run backend:test -- ping_returns`. Docker must run for the PostgreSQL container.

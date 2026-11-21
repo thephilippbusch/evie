@@ -119,11 +119,11 @@ export default Home;
 ## Texts
 
 Every text the page shows exists in German and English. Components take their texts as props; `@evie/ui` holds none.
-The app has no i18n setup yet; #31 adds it with locale detection (_planned_). Until then, keep a `de` and an `en` object per component, as `ping-status-texts.ts` does, and render `en`. The i18n setup replaces the choice.
+The app has no i18n setup yet; #31 adds it with locale detection (_planned_). Until then, keep a `de` and an `en` object per component, as the `ping-status-texts.ts` example above does. The page renders `en` only until #31 adds locale detection, which then picks the object.
 
 ## Check in the running app
 
 1. Apply the migrations and start the backend: `moon run domain-migrations:migrate`, then `cargo run` in `apps/backend/`, both with `DATABASE_URL` set.
-2. Start the frontend: `bun run dev` in `apps/frontend/`, and open the URL it prints.
+2. Start the frontend: `BACKEND_URL=http://127.0.0.1:50051 bun run dev` in `apps/frontend/`, and open the URL it prints. Or run the whole stack with `docker compose up` at the repository root and open http://127.0.0.1:3000.
 3. Check the page shows the result. Stop the backend, reload, and check the page shows the unreachable state, not an error page.
 4. Check it on a phone-sized window and in light and dark mode.

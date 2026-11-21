@@ -14,13 +14,36 @@ Once, the first time the backend touches a domain table:
 
 ## Entity
 
-`apps/backend/src/<feature>/entity.rs`, declared as a private `mod entity;` in `src/<feature>.rs`, the way the `rust-conventions` skill lays out modules.
+`apps/backend/src/<feature>/entity.rs`, declared as a private `mod entity;` in `src/<feature>.rs`, the way the `rust-conventions` skill lays out modules. The parent module holds the feature's error and re-exports what the rest of the crate uses; add it to `src/lib.rs` as a private `mod place;`:
+
+```rust
+// apps/backend/src/place.rs
+//! Places to sleep that hosts offer at an event.
+mod entity;
+mod service;
+
+use thiserror::Error;
+use uuid::Uuid;
+
+pub(crate) use service::{Place, PlaceService};
+
+#[derive(Debug, Error)]
+pub(crate) enum PlaceError {
+    #[error("place {0} not found")]
+    NotFound(Uuid),
+
+    #[error("database error")]
+    Database(#[from] sea_orm::DbErr),
+}
+```
 
 ```rust
 // apps/backend/src/place/entity.rs
 use sea_orm::entity::prelude::*;
 
 /// A row of the `place` table, created by `m20261121_143000_create_place`.
+/// `pub` as `DeriveEntityModel` expects; the private `entity` module keeps it
+/// inside the feature.
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "place")]
 pub struct Model {
@@ -60,23 +83,23 @@ use uuid::Uuid;
 
 use super::{PlaceError, entity};
 
-pub struct Place {
-    pub id: Uuid,
-    pub name: String,
-    pub capacity: i32,
+pub(crate) struct Place {
+    pub(crate) id: Uuid,
+    pub(crate) name: String,
+    pub(crate) capacity: i32,
 }
 
 #[derive(Clone)]
-pub struct PlaceService {
+pub(crate) struct PlaceService {
     db: DatabaseConnection,
 }
 
 impl PlaceService {
-    pub fn new(db: DatabaseConnection) -> Self {
+    pub(crate) fn new(db: DatabaseConnection) -> Self {
         Self { db }
     }
 
-    pub async fn get(&self, id: Uuid) -> Result<Place, PlaceError> {
+    pub(crate) async fn get(&self, id: Uuid) -> Result<Place, PlaceError> {
         let row = entity::Entity::find_by_id(id)
             .one(&self.db)
             .await?
@@ -90,7 +113,7 @@ impl PlaceService {
 }
 ```
 
-`PlaceError` wraps `sea_orm::DbErr` with `#[from]`, as the `rust-conventions` skill shows for errors.
+`PlaceError` in `src/place.rs` wraps `sea_orm::DbErr` with `#[from]`, as the `rust-conventions` skill shows for errors.
 
 ## Integration tests against the schema
 

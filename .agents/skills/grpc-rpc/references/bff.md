@@ -8,7 +8,7 @@ The frontend server calls the backend with [Connect-ES](https://connectrpc.com/d
 2. Add `"@evie/proto": "workspace:*"` to `dependencies` in `apps/frontend/package.json`, next to `@evie/ui`, and run `bun install`.
 3. Add `'proto'` to `dependsOn` in `apps/frontend/moon.yml`.
 4. Create the two shared files below, and `src/lib/runtime.ts` as the `effect-service` skill shows.
-5. Document `BACKEND_URL` under Configuration in `apps/frontend/AGENTS.md`, and set it on the `frontend` service in `compose.yaml` (once it exists): `BACKEND_URL: http://backend:50051`.
+5. Document `BACKEND_URL` under Configuration in `apps/frontend/AGENTS.md`, and set it on the `frontend` service in `compose.yaml`: `BACKEND_URL: http://backend:50051`. For `bun run dev` next to `cargo run`, set `BACKEND_URL=http://127.0.0.1:50051`.
 
 ### `src/lib/backend-transport.ts`
 
@@ -22,14 +22,12 @@ export class BackendTransport extends Context.Tag("BackendTransport")<BackendTra
 
 export const backendTransportLive = Layer.effect(
   BackendTransport,
-  Effect.map(
-    Config.string("BACKEND_URL").pipe(Config.withDefault("http://127.0.0.1:50051")),
-    (baseUrl) => createGrpcTransport({ baseUrl }),
-  ),
+  Effect.map(Config.string("BACKEND_URL"), (baseUrl) => createGrpcTransport({ baseUrl })),
 );
 ```
 
-The default matches the backend's `GRPC_ADDR` default, for `bun run dev` next to `cargo run`.
+- `BACKEND_URL` has no default: a missing value fails the layer with a `ConfigError` on the first call, instead of silently calling localhost.
+- The backend serves plaintext gRPC with no auth of its own, so it stays on the internal network: no host port in `compose.yaml` or a deployment, and `BACKEND_URL` always points to an internal address.
 
 ### `src/lib/call-backend.ts`
 

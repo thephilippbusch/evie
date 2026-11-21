@@ -44,6 +44,7 @@ When the service under test needs another service, provide a test layer for that
 
 ```ts
 // src/events/event-page.test.ts
+import { describe, expect, test } from "bun:test";
 import { Effect, Layer } from "effect";
 import { Invites } from "~/invites/invites";
 import { EventPage, eventPageLive } from "./event-page";
@@ -58,9 +59,40 @@ const invitesTest = Layer.succeed(
 
 const run = <A, E>(effect: Effect.Effect<A, E, EventPage>) =>
   Effect.runPromise(effect.pipe(Effect.provide(eventPageLive.pipe(Layer.provide(invitesTest)))));
+
+describe("EventPage", () => {
+  test("shares the invite link of the event", async () => {
+    const link = await run(Effect.map(EventPage, (page) => page.shareLink("event-1")));
+
+    expect(link.href).toBe("https://evie.test/invites/event-1");
+  });
+});
 ```
 
 Give the test layer only the behaviour the test needs; a method the test never calls can `Effect.die`.
+
+## Time
+
+Code that waits or reads the time uses Effect's `Clock`, `Effect.sleep` or `Effect.timeout`, never `Date.now()` or `setTimeout`. Tests then move the time with `TestClock` instead of waiting:
+
+```ts
+import { expect, test } from "bun:test";
+import { Duration, Effect, Fiber, TestClock, TestContext } from "effect";
+
+test("gives up on the backend after 5 seconds", async () => {
+  const result = await Effect.runPromise(
+    Effect.gen(function* () {
+      const fiber = yield* Effect.fork(Effect.never.pipe(Effect.timeoutOption(Duration.seconds(5))));
+      yield* TestClock.adjust(Duration.seconds(5));
+      return yield* Fiber.join(fiber);
+    }).pipe(Effect.provide(TestContext.TestContext)),
+  );
+
+  expect(result._tag).toBe("None");
+});
+```
+
+Fork the effect that waits, move the clock past its deadline, then join the fiber.
 
 ## Server functions
 

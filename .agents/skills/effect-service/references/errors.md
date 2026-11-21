@@ -67,3 +67,4 @@ A server function handles every failure the page shows to people and returns it 
 - Never `throw` in Effect code, and never `catch` with `try`/`catch`; use `Effect.try` or `Effect.tryPromise`.
 - Never put a message for people into an error. The page picks the text from the tag, in German and English.
 - Don't widen errors to `unknown` or `Error`; keep the union of tags in the type.
+- Keep secrets, tokens and request bodies out of errors and logs. Settings stay `Redacted` in error fields; a rejected server function shows the browser only a generic error.
