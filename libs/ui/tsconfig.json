@@ -1,17 +1,9 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "strict": true,
-    "noEmit": true,
-    "types": ["bun"],
-    "isolatedModules": true,
-    "skipLibCheck": true
+    "types": ["bun"]
   },
   "include": ["src"]
 }
