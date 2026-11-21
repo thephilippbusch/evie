@@ -1,14 +1,32 @@
 $schema: 'https://moonrepo.dev/schemas/v2/project.json'
 
 layer: 'library'
+language: 'rust'
 project:
   title: 'proto'
-  description: 'The protobuf definitions of the gRPC API between the frontend server and the backend.'
+  description: 'The protobuf definitions of the gRPC API between the frontend server and the backend, and the Rust and TypeScript code generated from them.'
 
 # Projects this one uses, so affected checks reach their dependents.
 dependsOn: []
 
+# Added to the `sources` group of .moon/tasks/rust.yml, so a change to the
+# generated Rust code reruns build, lint, check and test.
+fileGroups:
+  sources:
+    - 'gen/rust/**/*'
+
+# build, check, test and format come from .moon/tasks/rust.yml; lint is merged
+# into the inherited one.
 tasks:
+  # Also lints the codegen binary, which needs the `codegen` feature.
+  lint:
+    command: 'cargo clippy --all-targets --all-features --locked -- -D warnings'
+    deps:
+      - '~:lint-proto'
+    options:
+      # moon appends the arguments to the inherited ones by default.
+      mergeArgs: 'replace'
+
   lint-proto:
     description: 'Lint the protobuf definitions with buf, using the rules in buf.yaml.'
     command: 'buf lint'
@@ -16,3 +34,13 @@ tasks:
     inputs:
       - 'definitions/**/*'
       - 'buf.yaml'
+
+  codegen:
+    description: 'Generate the Rust code in gen/rust from the protobuf definitions.'
+    command: 'cargo run --locked --features codegen --bin codegen -- gen/rust'
+    type: 'run'
+    # Run by hand after a change to the definitions; it rewrites gen/.
+    inputs: []
+    options:
+      cache: false
+      runInCI: false
