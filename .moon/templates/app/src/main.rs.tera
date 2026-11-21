@@ -1,0 +1,6 @@
+---
+{% if language != "rust" %}skip: true{% endif %}
+---
+//! Starts {{ name }}. Startup and wiring only; the logic lives in `lib.rs`.
+
+fn main() {}

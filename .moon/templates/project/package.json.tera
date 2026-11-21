@@ -1,0 +1,13 @@
+---
+{% if language != "typescript" %}skip: true{% endif %}
+---
+{
+  "name": "{% if layer == "application" %}{{ name }}{% else %}@evie/{{ name }}{% endif %}",
+  "description": "{{ description | replace(from='"', to=`\"`) }}",
+  "version": "{{ package_version }}",
+  "private": true,
+  "type": "module"{% if layer != "application" %},
+  "exports": {
+    "./*": "./src/*.ts"
+  }{% endif %}
+}

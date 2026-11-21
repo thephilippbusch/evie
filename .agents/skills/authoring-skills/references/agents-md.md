@@ -22,6 +22,10 @@ A project file has these sections, in this order:
 3. **Commands**: the project's moon tasks, as `moon run <project>:<task>`.
 4. **Local rules**: rules that hold only here, or that differ from the root.
 
+Add other sections, such as Configuration, where they read best, but keep the four in this order.
+
+New projects get their file from the `moon generate` templates: `.moon/templates/project/AGENTS.md.tera` writes these sections for Rust and TypeScript, apps and libraries.
+
 Where a project file differs from the root, the project file wins. Say so explicitly ("Unlike the root rule, …") so the override is deliberate.
 
 ## Link, don't repeat
@@ -50,6 +54,7 @@ A change that adds or changes a workflow updates the matching `AGENTS.md` and sk
 - a new or renamed skill or subagent → the root index
 - a new or changed moon task → the project's Commands section
 - a new or changed rule → the file it applies to, root or project
+- a change to the project file sections, or to the standard tasks in `.moon/tasks/` → `.moon/templates/project/AGENTS.md.tera`
 
 ## Style
 

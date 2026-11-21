@@ -16,6 +16,7 @@ fileGroups:
     - '/package.json'
     - '/bun.lock'
     - '/biome.json'
+    - '/tsconfig.base.json'
 
 tasks:
   lint:

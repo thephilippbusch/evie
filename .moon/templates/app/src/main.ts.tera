@@ -1,0 +1,5 @@
+---
+{% if language != "typescript" %}skip: true{% endif %}
+---
+// The entry point of {{ name }}.
+export {};

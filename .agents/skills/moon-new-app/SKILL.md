@@ -7,35 +7,28 @@ description: Adds a deployable app to apps/ as a moon project and registers it f
 
 An app is deployed as one Docker image. Code that only apps use belongs in a library: use the `moon-new-library` skill.
 
-Until moon templates for new projects exist (issue #27), follow these steps by hand.
-
 ## Steps
 
 1. Pick a short kebab-case name. It becomes the project ID. Check it's free: `moon query projects --id <name>` returns no projects.
-2. Create `apps/<name>/`. The `apps/*` glob in `.moon/workspace.yml` makes it a project; there's nothing to register with moon.
-3. Set up the language's files, such as `Cargo.toml` or `package.json`, as the `rust-conventions` or `typescript-conventions` skill says. A Rust crate takes `version.workspace = true` and `edition.workspace = true`, and joins `members` in the root `Cargo.toml`. A TypeScript project joins the bun workspace by itself; run `bun install` at the root.
-4. Write `apps/<name>/moon.yml`:
+2. Generate the project from the `app` template, first with `--dry-run` to see the files, then without:
 
-   ```yaml
-   $schema: 'https://moonrepo.dev/schemas/v2/project.json'
-
-   layer: 'application'
-   language: 'rust' # or 'typescript'
-   project:
-     title: '<name>'
-     description: '<One sentence: what the app does and who uses it.>'
-
-   # Libraries this app uses, so changes to them affect it.
-   dependsOn: []
-
-   tasks: {}
+   ```sh
+   moon generate app --to apps/<name> --defaults -- \
+     --name <name> --language rust \
+     --description "<One sentence: what the app does and who uses it.>"
    ```
 
-5. With `language: 'rust'` or `'typescript'`, the project inherits its standard tasks from `.moon/tasks/` (see the `moon-add-task` skill). Add only what's missing with the `moon-add-task` skill, such as a TypeScript project's `build`, or `codegen` and `migrate`.
-6. Write `apps/<name>/AGENTS.md` with the sections Purpose, Structure, Commands and Local rules, as the `authoring-skills` skill describes. Then add the symlink beside it: `ln -s AGENTS.md apps/<name>/CLAUDE.md`.
+   For TypeScript, pass `--language typescript --package_version <version>` with the current version from `.release-please-manifest.json`. The moon MCP `generate` tool takes the same values as `variables`. The template writes `moon.yml`, `AGENTS.md`, the manifest and the entry point. The `apps/*` glob in `.moon/workspace.yml` makes the folder a project.
+
+3. Add the symlink for Claude Code: `ln -s AGENTS.md apps/<name>/CLAUDE.md`.
+4. Join the language's workspace:
+   - Rust: add `apps/<name>` to `members` in the root `Cargo.toml`, then run `cargo update --workspace` so `Cargo.lock` lists the crate. Every task runs with `--locked`.
+   - TypeScript: run `bun install` at the root.
+5. The project inherits its standard tasks from `.moon/tasks/`. Add only what's missing with the `moon-add-task` skill, such as a TypeScript app's `build`. List each new task under Commands in `AGENTS.md`.
+6. Write the app's real code with the `rust-conventions` or `typescript-conventions` skill. Keep `AGENTS.md` current as it grows: Structure, Commands and Local rules, as the `authoring-skills` skill describes.
 7. Work through the [Adding an app](#adding-an-app) checklist.
 8. Check the result:
-   - `moon project <name>` shows the source `apps/<name>`, the layer and the tasks.
+   - `moon project <name>` shows the source `apps/<name>`, the layer `application` and the tasks.
    - `moon check <name>` passes.
    - `moon run root:validate-agent-files` passes.
 
@@ -51,4 +44,4 @@ Every app is released with the repository version and published as an image. Iss
 
 ## Output
 
-A new project in `apps/<name>/` with `moon.yml`, `AGENTS.md`, a `CLAUDE.md` symlink and a `Dockerfile`, listed by `moon projects`, and every checklist item done or marked as waiting for its issue.
+A new project in `apps/<name>/`, generated from the `app` template, with a `CLAUDE.md` symlink, listed by `moon projects`, and every checklist item done or marked as waiting for its issue.

@@ -1,0 +1,13 @@
+$schema: 'https://moonrepo.dev/schemas/v2/template.json'
+
+title: 'Library'
+description: 'A library in libs/ or a development tool in tools/, in Rust or TypeScript, with its moon.yml, manifest, entry point and AGENTS.md.'
+extends: 'project'
+
+variables:
+  layer:
+    type: 'enum'
+    values: ['library', 'tool', 'scaffolding']
+    default: 'library'
+    prompt: 'Layer: library for libs/, tool for tools/, scaffolding for a generator that a library depends on'
+    order: 4

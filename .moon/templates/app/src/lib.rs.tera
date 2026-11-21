@@ -1,0 +1,4 @@
+---
+{% if language != "rust" %}skip: true{% endif %}
+---
+//! {{ description }}

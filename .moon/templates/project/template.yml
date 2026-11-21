@@ -1,0 +1,27 @@
+$schema: 'https://moonrepo.dev/schemas/v2/template.json'
+
+title: 'Project base'
+description: 'The files every app and library shares. Generate from the `app` or `library` template instead; they extend this one.'
+
+variables:
+  name:
+    type: 'string'
+    prompt: 'Project ID, in kebab-case'
+    required: true
+    order: 1
+  language:
+    type: 'enum'
+    values: ['rust', 'typescript']
+    default: 'rust'
+    prompt: 'Language'
+    order: 2
+  description:
+    type: 'string'
+    prompt: 'One sentence: what the project does and who uses it'
+    required: true
+    order: 3
+  package_version:
+    type: 'string'
+    default: ''
+    prompt: 'Current version from .release-please-manifest.json (TypeScript only)'
+    order: 5

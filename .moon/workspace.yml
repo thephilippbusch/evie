@@ -30,3 +30,9 @@ vcs:
       - 'moon run root:format-staged'
     commit-msg:
       - 'moon run root:lint-commit-msg -- "$ARG1"'
+
+# Templates for new projects: `app` and `library`, which extend the shared
+# `project` base. The moon-new-app and moon-new-library skills use them.
+generator:
+  templates:
+    - './.moon/templates'

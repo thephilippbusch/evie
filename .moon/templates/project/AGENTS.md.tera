@@ -1,0 +1,67 @@
+{%- set dir = dest_rel_dir -%}
+# {{ name }}
+
+## Purpose
+
+{{ description }}
+
+## Structure
+
+| Path | Contents |
+| ---- | -------- |
+{% if language == "rust" -%}
+{% if layer == "application" -%}
+| `src/main.rs` | Startup and wiring only |
+| `src/lib.rs` | The crate's modules and public API, so integration tests can use it |
+{% else -%}
+| `src/lib.rs` | The crate's modules and public API |
+{% endif -%}
+| `Cargo.toml` | Crate manifest; version and edition come from the workspace |
+
+The workspace files live at the repository root: `Cargo.toml`, `Cargo.lock` and `rust-toolchain.toml`.
+{%- else -%}
+{% if layer == "application" -%}
+| `src/main.ts` | The entry point |
+| `package.json` | The bun package `{{ name }}` |
+{% else -%}
+| `src/<module>.ts` | One module each, imported as `@evie/{{ name }}/<module>` |
+| `package.json` | The bun package `@evie/{{ name }}`; its `./*` export maps each subpath to `src/` |
+{% endif -%}
+| `tsconfig.json` | Compiler options for `typecheck`; extends the root `tsconfig.base.json` |
+
+Biome and TypeScript are dev dependencies of the root `package.json`, and `biome.json` at the root configures Biome. Dependencies install into the root `bun.lock`.
+{%- endif %}
+
+## Commands
+
+{% if language == "rust" -%}
+The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), shared by every Rust crate.
+
+| Command | What it does |
+| ------- | ------------ |
+| `moon run {{ name }}:build` | Compile the crate |
+| `moon run {{ name }}:lint` | Lint with clippy |
+| `moon run {{ name }}:check` | Run `lint` (clippy also checks the types), then check the formatting with rustfmt |
+| `moon run {{ name }}:test` | Run the unit and integration tests |
+| `moon run {{ name }}:format` | Format the crate with rustfmt |
+{%- else -%}
+The tasks come from [`.moon/tasks/typescript.yml`](../../.moon/tasks/typescript.yml), shared by every TypeScript project.
+
+| Command | What it does |
+| ------- | ------------ |
+| `moon run {{ name }}:lint` | Lint with Biome |
+| `moon run {{ name }}:check` | Run `lint` and `typecheck`, then check formatting and imports with Biome |
+| `moon run {{ name }}:typecheck` | Check the types with `tsc` |
+| `moon run {{ name }}:test` | Run the tests with `bun test` |
+| `moon run {{ name }}:format` | Format the code and organize imports with Biome |
+{%- endif %}
+
+## Local rules
+
+{% if language == "rust" -%}
+- Follow the `rust-conventions` skill.
+- Add crates with `cargo add <crate>` inside `{{ dir }}/`. Commit `Cargo.lock`, since every task runs with `--locked`.
+{%- else -%}
+- Follow the `typescript-conventions` skill.
+- Add packages with `bun add <pkg>` inside `{{ dir }}/`; shared dev tools go in the root `package.json`.
+{%- endif %}

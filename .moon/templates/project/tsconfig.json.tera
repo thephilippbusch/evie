@@ -1,0 +1,10 @@
+---
+{% if language != "typescript" %}skip: true{% endif %}
+---
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["bun"]
+  },
+  "include": ["src"]
+}

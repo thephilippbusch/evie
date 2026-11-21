@@ -1,0 +1,27 @@
+{%- if name == "" or description == "" -%}
+{{ throw(message="Pass --name and --description; --defaults doesn't ask for them.") }}
+{%- endif -%}
+{%- if language == "typescript" and package_version == "" -%}
+{{ throw(message="Pass --package_version with the version from .release-please-manifest.json.") }}
+{%- endif -%}
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: '{{ layer }}'
+language: '{{ language }}'
+project:
+  title: '{{ name }}'
+  description: '{{ description | replace(from="'", to="''") }}'
+
+{% if layer == "application" -%}
+# Libraries this app uses, so changes to them affect it.
+{%- else -%}
+# Projects this one uses, so affected checks reach their dependents.
+{%- endif %}
+dependsOn: []
+
+{% if language == "rust" -%}
+# build, lint, check, test and format come from .moon/tasks/rust.yml.
+{%- else -%}
+# lint, check, typecheck, test and format come from .moon/tasks/typescript.yml.
+{%- endif %}
+tasks: {}
