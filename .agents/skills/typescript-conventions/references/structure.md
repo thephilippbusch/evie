@@ -44,9 +44,7 @@ export type Capacity = {
   readonly booked: number;
 };
 
-export function freePlaces({ places, booked }: Capacity): number {
-  return Math.max(places - booked, 0);
-}
+export const freePlaces = ({ places, booked }: Capacity): number => Math.max(places - booked, 0);
 ```
 
 ## Exports
@@ -58,10 +56,12 @@ Named exports only. Default exports only where a framework requires one, such as
 import { useParams } from "@solidjs/router";
 import { EventCard } from "~/events/event-card";
 
-export default function EventPage() {
+const EventPage = () => {
   const params = useParams<{ eventId: string }>();
   return <EventCard eventId={params.eventId} />;
-}
+};
+
+export default EventPage;
 ```
 
 Export only what another module uses. Helpers stay unexported, so they can change freely.

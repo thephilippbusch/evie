@@ -43,10 +43,10 @@ Don't replace your own modules with `mock.module`. Take the dependency as a para
 // src/bookings/reminder.ts
 type Clock = { readonly now: () => Date };
 
-export function isReminderDue(startsAt: Date, clock: Clock): boolean {
+export const isReminderDue = (startsAt: Date, clock: Clock): boolean => {
   const oneDay = 24 * 60 * 60 * 1000;
   return startsAt.getTime() - clock.now().getTime() <= oneDay;
-}
+};
 ```
 
 ```ts

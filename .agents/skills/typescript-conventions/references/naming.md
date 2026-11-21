@@ -44,13 +44,10 @@ Functions start with a verb. Booleans read as a yes/no question: `is`, `has`, `c
 ```ts
 type Place = { readonly capacity: number; readonly booked: number };
 
-function isFull(place: Place): boolean {
-  return place.booked >= place.capacity;
-}
+const isFull = (place: Place): boolean => place.booked >= place.capacity;
 
-function canBook(place: Place, guests: number): boolean {
-  return place.booked + guests <= place.capacity;
-}
+const canBook = (place: Place, guests: number): boolean =>
+  place.booked + guests <= place.capacity;
 ```
 
 Not `full(place)`, `bookable`, `checkPlace(place)`.

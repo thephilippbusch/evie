@@ -20,6 +20,7 @@ Stack-specific patterns belong to their own skills (once they exist): Effect ser
 - Group code by feature in `src/<feature>/` (`events/`, `bookings/`); helpers that belong to no feature go in `src/lib/`.
 - Route files in `src/routes/` stay thin: they load data and render components from feature folders.
 - One concept per module: a file exports one main thing plus its own types. A second concept gets its own file.
+- Write functions and components as `const` arrow functions, not `function` declarations. A route defines its component as a `const` and ends with `export default <Name>;`.
 - Named exports only. Default exports only where a framework requires them, such as SolidStart route files.
 - No barrel `index.ts` files; import from the file that defines the thing.
 - Import across folders with the `~/` alias and within a folder with `./`; never `../`.
