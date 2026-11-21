@@ -5,19 +5,7 @@ version.workspace = true
 edition.workspace = true
 publish.workspace = true
 
-[features]
-# Builds the generator binary. The library doesn't need it, so the backend
-# doesn't compile protox and tonic-prost-build.
-codegen = ["dep:anyhow", "dep:protox", "dep:tonic-prost-build"]
-
-[[bin]]
-name = "codegen"
-required-features = ["codegen"]
-
 [dependencies]
 prost = "0.14.6"
 tonic = "0.14.9"
 tonic-prost = "0.14.9"
-anyhow = { version = "1", optional = true }
-protox = { version = "0.10.0", optional = true }
-tonic-prost-build = { version = "0.14.9", optional = true }

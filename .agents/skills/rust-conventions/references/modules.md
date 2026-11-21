@@ -2,7 +2,7 @@
 
 ## Layout
 
-Group by domain feature. A module with children is `name.rs` plus a `name/` folder; never `name/mod.rs`.
+Group by domain feature. A module with children is `name.rs` plus a `name/` folder; never `name/mod.rs`. The exceptions are `tests/common/mod.rs` and `libs/proto/gen/rust/mod.rs`, which the `proto-codegen` tool generates.
 
 ```text
 src/
@@ -17,7 +17,7 @@ src/
     └── error.rs     # domain error -> tonic::Status
 tests/
 ├── common/
-│   └── mod.rs       # shared test helpers; the only mod.rs
+│   └── mod.rs       # shared test helpers; mod.rs is allowed here
 └── booking.rs       # integration tests for booking
 ```
 

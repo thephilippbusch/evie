@@ -16,21 +16,17 @@ fileGroups:
     - 'gen/rust/**/*'
 
 # build, test and format come from .moon/tasks/rust.yml; lint and check are
-# merged into the inherited ones.
+# merged into the inherited ones. The generator is the proto-codegen tool in
+# tools/; a library can't depend on a tool, so its files are listed as inputs.
 tasks:
   check:
     deps:
       - '~:typecheck'
       - '~:check-codegen'
 
-  # Also lints the codegen binary, which needs the `codegen` feature.
   lint:
-    command: 'cargo clippy --all-targets --all-features --locked -- -D warnings'
     deps:
       - '~:lint-proto'
-    options:
-      # moon appends the arguments to the inherited ones by default.
-      mergeArgs: 'replace'
 
   lint-proto:
     description: 'Lint the protobuf definitions with buf, using the rules in buf.yaml.'
@@ -55,7 +51,7 @@ tasks:
 
   codegen:
     description: 'Generate the Rust code in gen/rust and the TypeScript code in gen/ts from the protobuf definitions.'
-    script: 'cargo run --locked --features codegen --bin codegen -- gen/rust && buf generate'
+    command: 'cargo run --locked -p proto-codegen -- .'
     type: 'run'
     # bun puts node_modules/.bin, with buf and protoc-gen-es, on the PATH.
     toolchains: ['rust', 'bun']
@@ -65,19 +61,9 @@ tasks:
       cache: false
       runInCI: false
 
-  # Generates into a temporary folder and compares it with gen/, so it writes
-  # nothing in the checkout. `diff -r` also reports deleted and extra files.
   check-codegen:
     description: 'Fail when gen/ differs from what codegen generates from the definitions.'
-    script: |
-      tmp=$(mktemp -d)
-      trap 'rm -rf "$tmp"' EXIT
-      cargo run --quiet --locked --features codegen --bin codegen -- "$tmp/gen/rust" || exit 1
-      buf generate --output "$tmp" || exit 1
-      if ! diff -r gen "$tmp/gen"; then
-        echo 'gen/ is stale or was edited by hand. Run `moon run proto:codegen` and commit the result.' >&2
-        exit 1
-      fi
+    command: 'sh scripts/check-codegen.sh'
     type: 'test'
     toolchains: ['rust', 'bun']
     inputs:
@@ -85,8 +71,9 @@ tasks:
       - 'gen/**/*'
       - 'buf.yaml'
       - 'buf.gen.yaml'
-      - 'src/bin/codegen.rs'
-      - 'Cargo.toml'
+      - 'scripts/check-codegen.sh'
       - 'package.json'
+      - '/tools/proto-codegen/src/**/*'
+      - '/tools/proto-codegen/Cargo.toml'
       - '/Cargo.lock'
       - '/bun.lock'

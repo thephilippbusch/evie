@@ -1,0 +1,13 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'tool'
+language: 'rust'
+project:
+  title: 'proto-codegen'
+  description: 'Generates the Rust and TypeScript code in libs/proto from its protobuf definitions; run by the proto codegen tasks.'
+
+# Projects this one uses, so affected checks reach their dependents.
+dependsOn: []
+
+# build, lint, check, test and format come from .moon/tasks/rust.yml.
+tasks: {}

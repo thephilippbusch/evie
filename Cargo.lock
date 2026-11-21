@@ -996,12 +996,9 @@ dependencies = [
 name = "evie-proto"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "prost",
- "protox",
  "tonic",
  "tonic-prost",
- "tonic-prost-build",
 ]
 
 [[package]]
@@ -2498,6 +2495,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f29a7c4c7a84cef41a53d338a2d10d4f1b043ea5c3dde26db22ee2c9c1b1c75b"
 dependencies = [
  "prost",
+]
+
+[[package]]
+name = "proto-codegen"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "protox",
+ "tonic-prost-build",
 ]
 
 [[package]]
