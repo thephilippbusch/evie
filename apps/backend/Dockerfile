@@ -3,14 +3,11 @@
 #   docker build -f apps/backend/Dockerfile .                   # the backend
 #   docker build -f apps/backend/Dockerfile --target migrate .  # the migrations
 
-# The Rust version matches .prototools and rust-toolchain.toml.
+# The Rust version matches .prototools and rust-toolchain.toml. The image tag
+# pins it, so rust-toolchain.toml stays out of the image: it would make rustup
+# install clippy and rustfmt, which a release build doesn't need.
 FROM rust:1.99.1-slim-trixie AS builder
 WORKDIR /app
-
-# Installs the components that rust-toolchain.toml lists in a layer of its
-# own, so a source change doesn't download them again.
-COPY rust-toolchain.toml ./
-RUN rustup toolchain install
 
 # cargo resolves the whole workspace, so it needs every member, not only the
 # crates it builds.
