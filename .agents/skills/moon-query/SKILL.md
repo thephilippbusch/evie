@@ -17,6 +17,7 @@ Prefer the moon MCP tools. Fall back to the CLI when they aren't available, or w
 | One task: command, inputs, options, type          | `get_task` with `target`, e.g. `root:validate-agent-files` |
 | Uncommitted changed files                         | `get_changed_files` with `remote: false`                   |
 | Files changed on the branch, compared with `main` | `get_changed_files` with `remote: true`                    |
+| Templates for new projects, with their variables  | `get_templates`, `get_template` with `id`                  |
 
 ## CLI
 
@@ -25,6 +26,7 @@ Prefer the moon MCP tools. Fall back to the CLI when they aren't available, or w
 | Question                                 | Command                                                             |
 | ---------------------------------------- | ------------------------------------------------------------------- |
 | All projects or tasks                    | `moon projects`, `moon tasks`                                       |
+| Templates for new projects               | `moon templates`                                                    |
 | One project or task                      | `moon project <id>`, `moon task <project>:<task>`                   |
 | Project IDs and sources                  | `moon query projects \| jq -r '.projects[] \| "\(.id) \(.source)"'` |
 | Projects by layer or task                | `moon query projects --layer library`, `--tasks build`              |

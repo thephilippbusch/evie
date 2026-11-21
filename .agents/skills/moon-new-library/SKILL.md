@@ -9,32 +9,25 @@ A library is code that apps use, such as protobuf definitions or a shared crate 
 
 The steps are the same for both. A library goes in `libs/<name>/` with `layer: 'library'`, a tool in `tools/<name>/` with `layer: 'tool'`. moon lets a library depend only on the `library`, `scaffolding` and `configuration` layers, so a code generator that a library lists in `dependsOn` takes `layer: 'scaffolding'`, like `tools/proto-codegen`.
 
-Until moon templates for new projects exist (issue #27), follow these steps by hand.
-
 ## Steps
 
 1. Pick a short kebab-case name. It becomes the project ID. Check it's free: `moon query projects --id <name>` returns no projects.
-2. Create `libs/<name>/`, or `tools/<name>/` for a tool. The `libs/*` and `tools/*` globs in `.moon/workspace.yml` make it a project; there's nothing to register.
-3. Set up the language's files, such as `Cargo.toml` or `package.json`, as the `rust-conventions` or `typescript-conventions` skill says. A Rust crate takes `version.workspace = true` and `edition.workspace = true`, joins `members` in the root `Cargo.toml`, and adds its `Cargo.lock` entry to `extra-files` in `release-please-config.json`, as `.agents/skills/moon-new-app/references/release-version.md` shows. A TypeScript package sets `version` to the current version from `.release-please-manifest.json` and adds its `package.json` entry to `extra-files`, as the same file shows. It joins the bun workspace by itself; run `bun install` at the root.
-4. Write `moon.yml` in the project folder:
+2. Generate the project from the `library` template, first with `--dry-run` to see the files, then without:
 
-   ```yaml
-   $schema: 'https://moonrepo.dev/schemas/v2/project.json'
-
-   layer: 'library' # or 'tool', or 'scaffolding' for a generator a library uses
-   language: 'rust' # or 'typescript'
-   project:
-     title: '<name>'
-     description: '<One sentence: what the library provides and who uses it.>'
-
-   # Projects this one uses, so affected checks reach their dependents.
-   dependsOn: []
-
-   tasks: {}
+   ```sh
+   moon generate library --to libs/<name> --defaults -- \
+     --name <name> --language rust --layer library \
+     --description "<One sentence: what the library provides and who uses it.>"
    ```
 
-5. With `language: 'rust'` or `'typescript'`, the project inherits its standard tasks from `.moon/tasks/` (see the `moon-add-task` skill). Add only what's missing with the `moon-add-task` skill, such as a TypeScript project's `build`, or `codegen` and `migrate`.
-6. Write `AGENTS.md` in the project folder with the sections Purpose, Structure, Commands and Local rules, as the `authoring-skills` skill describes. Then add the symlink beside it: `ln -s AGENTS.md <folder>/CLAUDE.md`.
+   For a tool, pass `--to tools/<name> --layer tool`, or `--layer scaffolding`. For TypeScript, pass `--language typescript --package_version <version>` with the current version from `.release-please-manifest.json`; the package is named `@evie/<name>`. The moon MCP `generate` tool takes the same values as `variables`. The template writes `moon.yml`, `AGENTS.md`, the manifest and the entry point. The `libs/*` and `tools/*` globs in `.moon/workspace.yml` make the folder a project.
+
+3. Add the symlink for Claude Code: `ln -s AGENTS.md <folder>/CLAUDE.md`.
+4. Join the language's workspace and register the version, as `.agents/skills/moon-new-app/references/release-version.md` shows:
+   - Rust: add the folder to `members` in the root `Cargo.toml`, then run `cargo update --workspace` so `Cargo.lock` lists the crate. Every task runs with `--locked`. Add the crate's `Cargo.lock` entry to `extra-files` in `release-please-config.json`.
+   - TypeScript: run `bun install` at the root. The root `package.json` workspaces cover `libs/*` only, so a TypeScript tool in `tools/` needs its folder added there first. Add the `package.json` entry to `extra-files`.
+5. The project inherits its standard tasks from `.moon/tasks/`. Add only what's missing with the `moon-add-task` skill, such as `codegen` or `migrate`. List each new task under Commands in `AGENTS.md`, and the projects it uses under `dependsOn` in `moon.yml`.
+6. Write the real code with the `rust-conventions` or `typescript-conventions` skill. A TypeScript library has no barrel file: replace the placeholder `src/<name>.ts` with modules imported as `@evie/<name>/<module>`. Keep `AGENTS.md` current as it grows, as the `authoring-skills` skill describes.
 7. Check the result:
    - `moon project <name>` shows the source `libs/<name>` or `tools/<name>`, the layer and the tasks.
    - `moon check <name>` passes.
@@ -42,4 +35,4 @@ Until moon templates for new projects exist (issue #27), follow these steps by h
 
 ## Output
 
-A new project in `libs/<name>/` or `tools/<name>/` with `moon.yml`, `AGENTS.md` and a `CLAUDE.md` symlink, listed by `moon projects`.
+A new project in `libs/<name>/` or `tools/<name>/`, generated from the `library` template, with a `CLAUDE.md` symlink, listed by `moon projects`.
