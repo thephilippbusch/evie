@@ -1,51 +1,39 @@
 # syntax=docker/dockerfile:1
-# Builds the frontend from a moon scaffold, so this file lists no libraries
-# and no tool versions. Run from the repository root:
+# Builds the frontend from a moon scaffold. Run from the repository root:
 #   docker build -f apps/frontend/Dockerfile .
 
-# moon, at the version pinned in .prototools. `moon docker setup` installs
-# proto and bun itself, at their pinned versions.
-FROM debian:trixie-slim AS base
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl git xz-utils \
-    && rm -rf /var/lib/apt/lists/*
-ENV PATH="/root/.moon/bin:/root/.proto/shims:/root/.proto/bin:$PATH"
+#### BASE: moon on the bun image. moon uses the image's bun instead of
+#### installing its own, so keep the tag at the bun version in .prototools.
+FROM oven/bun:1.4.4-alpine AS base
 WORKDIR /app
+RUN apk --no-cache add bash curl
 COPY .prototools ./
 RUN curl -fsSL https://moonrepo.dev/install/moon.sh \
     | bash -s -- "$(sed -n 's/^moon = "\(.*\)"$/\1/p' .prototools)"
+ENV PATH="/root/.moon/bin:$PATH" \
+    MOON_TOOLCHAIN_FORCE_GLOBALS=1
 
-# The skeleton: moon copies the manifests and lockfiles of the whole workspace
-# to .moon/docker/configs, and the sources of the frontend and its `dependsOn`
-# to .moon/docker/sources.
+#### SKELETON: the workspace manifests, and the sources of the frontend and
+#### its `dependsOn`.
 FROM base AS skeleton
 COPY . .
 RUN moon docker scaffold frontend
 
-# Installs bun and the dependencies while only the manifests are here, so a
-# source change reuses that layer. No `moon docker prune`: the build bundles
-# the server and its dependencies into .output, and the runtime stage copies
-# only that and the bun binary.
-FROM base AS builder
+#### BUILD: installs the dependencies, then builds .output.
+FROM base AS build
 COPY --from=skeleton /app/.moon/docker/configs .
-# proto puts a shim for bun on the PATH, which only works next to proto, so
-# copy the real binary out of proto's tools folder; the setup installs one
-# version. Package bins such as vite start with `#!/usr/bin/env node`, so
-# `node` links to bun during the build, as the official bun images do.
-RUN moon docker setup \
-    && cp /root/.proto/tools/bun/*/bun /usr/local/bin/bun \
-    && ln -s /usr/local/bin/bun /usr/local/bin/node
+RUN moon docker setup
 COPY --from=skeleton /app/.moon/docker/sources .
 RUN moon run frontend:build
 
-FROM debian:trixie-slim
-RUN useradd --system --uid 10001 --create-home evie
-COPY --from=builder /usr/local/bin/bun /usr/local/bin/bun
+#### START: the build bundles the server and its dependencies into .output,
+#### so the image needs only bun and that folder.
+FROM oven/bun:1.4.4-alpine AS start
 WORKDIR /app
-COPY --from=builder /app/apps/frontend/.output .output
+COPY --from=build /app/apps/frontend/.output .output
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=3000
-USER evie
+USER bun
 EXPOSE 3000
 CMD ["bun", ".output/server/index.mjs"]
