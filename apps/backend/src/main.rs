@@ -10,7 +10,7 @@ use tokio_util::sync::CancellationToken;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let config = Config::from_env().context("reading the config")?;
-    backend::init_tracing(config.log_format);
+    backend::init_tracing(config.log_format).context("reading RUST_LOG")?;
 
     let db = backend::connect(&config.database_url)
         .await
@@ -18,6 +18,7 @@ async fn main() -> anyhow::Result<()> {
     let listener = TcpListener::bind(config.grpc_addr)
         .await
         .with_context(|| format!("binding {}", config.grpc_addr))?;
+    let mut interrupt = signal(SignalKind::interrupt()).context("listening for SIGINT")?;
     let mut terminate = signal(SignalKind::terminate()).context("listening for SIGTERM")?;
 
     let shutdown = CancellationToken::new();
@@ -25,7 +26,7 @@ async fn main() -> anyhow::Result<()> {
         let shutdown = shutdown.clone();
         async move {
             tokio::select! {
-                _ = tokio::signal::ctrl_c() => {}
+                _ = interrupt.recv() => {}
                 _ = terminate.recv() => {}
             }
             tracing::info!("shutting down");

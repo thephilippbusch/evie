@@ -45,8 +45,10 @@ pub async fn serve(
         )
         .await;
 
-    // Stops the watcher also when the server failed on its own.
+    // Stops the watcher also when the server failed on its own. The server's
+    // error comes first: it is the cause, a watcher failure at most a symptom.
     shutdown.cancel();
-    watcher.await?;
-    Ok(served?)
+    let watched = watcher.await;
+    served?;
+    Ok(watched?)
 }

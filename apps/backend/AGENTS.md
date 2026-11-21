@@ -4,7 +4,7 @@
 
 evie's Rust gRPC backend. It owns the domain data; the frontend server calls it, and the browser never does.
 For now it serves only the standard gRPC health service (`grpc.health.v1`). The server-wide status (service `""`) is `SERVING` while PostgreSQL answers a ping and `NOT_SERVING` otherwise; it starts as `NOT_SERVING` and is checked every 5 seconds.
-The backend starts without a database and never migrates. The [`domain-migrations`](../../libs/domain-migrations/AGENTS.md) crate owns the domain schema.
+The backend starts without a database and never migrates. The [`domain-migrations`](../../libs/domain-migrations/AGENTS.md) crate owns the domain schema. The backend doesn't depend on it yet; the first SeaORM entities add it to `dependsOn` in `moon.yml` and to `Cargo.toml`, so migration changes affect the backend.
 
 ## Structure
 
@@ -25,12 +25,12 @@ The workspace files live at the repository root: `Cargo.toml`, `Cargo.lock` and 
 
 ## Configuration
 
-| Variable       | Default         | Meaning                                                    |
-| -------------- | --------------- | ---------------------------------------------------------- |
-| `DATABASE_URL` | required        | PostgreSQL URL, e.g. `postgres://user:pass@localhost/evie` |
-| `GRPC_ADDR`    | `0.0.0.0:50051` | Address the gRPC server listens on                         |
-| `LOG_FORMAT`   | `json`          | `json` for one object per line, `pretty` for local reading |
-| `RUST_LOG`     | `info`          | Log filter, e.g. `backend=debug,info`                      |
+| Variable       | Default           | Meaning                                                               |
+| -------------- | ----------------- | --------------------------------------------------------------------- |
+| `DATABASE_URL` | required          | PostgreSQL URL, e.g. `postgres://user:pass@localhost/evie`            |
+| `GRPC_ADDR`    | `127.0.0.1:50051` | Address the gRPC server listens on; containers set `0.0.0.0:50051`    |
+| `LOG_FORMAT`   | `json`            | `json` for one object per line, `pretty` for local reading            |
+| `RUST_LOG`     | `info`            | Log filter, e.g. `backend=debug,info`; an invalid one stops the start |
 
 ## Commands
 

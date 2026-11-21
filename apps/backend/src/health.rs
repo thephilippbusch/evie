@@ -45,7 +45,11 @@ pub(crate) async fn watch_database(
             _ = ticks.tick() => {}
         }
 
-        let ping = tokio::time::timeout(settings.timeout, db.ping()).await;
+        // A ping only reads, so dropping it on shutdown is safe.
+        let ping = tokio::select! {
+            () = shutdown.cancelled() => return,
+            ping = tokio::time::timeout(settings.timeout, db.ping()) => ping,
+        };
         let reachable = matches!(ping, Ok(Ok(())));
         if serving == Some(reachable) {
             continue;

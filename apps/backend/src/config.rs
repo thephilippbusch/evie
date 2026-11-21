@@ -1,11 +1,14 @@
-use std::net::SocketAddr;
+use std::{fmt, net::SocketAddr};
 
 use thiserror::Error;
 
-const DEFAULT_GRPC_ADDR: &str = "0.0.0.0:50051";
+/// Loopback only: the server has no auth or TLS yet. Containers set
+/// `GRPC_ADDR=0.0.0.0:50051` and keep the port on their internal network.
+const DEFAULT_GRPC_ADDR: &str = "127.0.0.1:50051";
 
-/// The backend's settings, read from environment variables.
-#[derive(Debug, Clone)]
+/// The backend's settings, read from environment variables. `Debug` hides the
+/// database URL, which holds the password.
+#[derive(Clone)]
 pub struct Config {
     /// `DATABASE_URL`: the PostgreSQL connection URL. Required.
     pub database_url: String,
@@ -22,6 +25,16 @@ pub enum LogFormat {
     Json,
     /// Multi-line, human-readable output for local use.
     Pretty,
+}
+
+impl fmt::Debug for Config {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Config")
+            .field("database_url", &"[redacted]")
+            .field("grpc_addr", &self.grpc_addr)
+            .field("log_format", &self.log_format)
+            .finish()
+    }
 }
 
 #[derive(Debug, Error)]
@@ -105,6 +118,17 @@ mod tests {
 
         assert_eq!(config.grpc_addr, "127.0.0.1:6000".parse().unwrap());
         assert_eq!(config.log_format, LogFormat::Pretty);
+    }
+
+    #[test]
+    fn debug_hides_the_database_url() {
+        let config =
+            config_from(&[("DATABASE_URL", "postgres://evie:secret@localhost/evie")]).unwrap();
+
+        let debug = format!("{config:?}");
+
+        assert!(!debug.contains("secret"));
+        assert!(debug.contains("[redacted]"));
     }
 
     #[test]
