@@ -36,8 +36,8 @@ An app is deployed as one Docker image. Code that only apps use belongs in a lib
 
 Every app is released with the repository version and published as an image. Issue #19 completes this checklist.
 
-- [ ] **Docker image:** one `Dockerfile` that builds the app's image, in `apps/<name>/`.
-- [ ] **Local stack:** add the app as a service to the Docker Compose file (once it exists).
+- [ ] **Docker image:** one multi-stage `Dockerfile` in `apps/<name>/` that builds the app's image, with the repository root as the build context. Start from the example for the language: `apps/backend/Dockerfile` for Rust, `apps/frontend/Dockerfile` for TypeScript. Use the versions pinned in `.prototools`, and run the app as a non-root user. Check it with `docker build -f apps/<name>/Dockerfile .`. A Rust app is a new Cargo workspace member, so also add its folder to the `COPY` lines of every other Rust `Dockerfile`; cargo resolves the whole workspace.
+- [ ] **Local stack:** add the app as a service to the root `compose.yaml`, shaped like the `backend` and `frontend` services: `build` with `context: .` and the `dockerfile`, the `environment` the app needs, and `depends_on` for the services it calls. Publish a host port only if a person opens the app, and bind it to `127.0.0.1`. Check that `docker compose up --build` starts it.
 - [ ] **Release version:** add the app's manifest to `extra-files` in `release-please-config.json`, so every release writes the version to it: a `package.json` directly; a Rust crate takes `version.workspace = true` from the root `Cargo.toml`, and its `Cargo.lock` entry is a toml extra-file too, so the lockfile changes in the same release commit. Entries in [references/release-version.md](references/release-version.md).
 - [ ] **Image publishing:** add the app to the list of images built and published on every release (once it exists, issues #19 and #42).
 - [ ] **Repo map:** name the app in the `apps/` row of the root `AGENTS.md`.
