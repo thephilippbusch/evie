@@ -1,9 +1,11 @@
-import { Card, CardHeader } from "@evie/ui/card";
+import { Card, CardHeader, CardTitle } from "@evie/ui/card";
 
 const Home = () => (
   <Card>
     <CardHeader>
-      <h1 class="font-semibold text-2xl tracking-tight">evie</h1>
+      <CardTitle as="h1" class="text-2xl">
+        evie
+      </CardTitle>
     </CardHeader>
   </Card>
 );
