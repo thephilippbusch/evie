@@ -1,22 +1,37 @@
 # syntax=docker/dockerfile:1
-# Builds the backend and the domain migrations. Run from the repository root:
+# Builds the backend and the domain migrations from a moon scaffold, so this
+# file lists no libraries and no tool versions. Run from the repository root:
 #   docker build -f apps/backend/Dockerfile .                   # the backend
 #   docker build -f apps/backend/Dockerfile --target migrate .  # the migrations
 
-# The Rust version matches .prototools and rust-toolchain.toml. The image tag
-# pins it, so rust-toolchain.toml stays out of the image: it would make rustup
-# install clippy and rustfmt, which a release build doesn't need.
-FROM rust:1.99.1-slim-trixie AS builder
+# proto and moon. The Rust image brings rustup, which proto's Rust plugin
+# needs; the Rust version comes from .prototools and rust-toolchain.toml.
+FROM rust:slim-trixie AS base
+ARG PROTO_VERSION=0.63.1
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl git xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+ENV PATH="/root/.proto/shims:/root/.proto/bin:$PATH"
+RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash -s -- "$PROTO_VERSION" --yes
 WORKDIR /app
+COPY .prototools ./
+RUN proto install moon
 
-# cargo resolves the whole workspace, so it needs every member, not only the
-# crates it builds.
-COPY Cargo.toml Cargo.lock ./
-COPY apps/backend apps/backend
-COPY libs/domain-migrations libs/domain-migrations
-COPY libs/proto libs/proto
-COPY tools/proto-codegen tools/proto-codegen
+# The skeleton: moon copies the manifests and lockfiles of the whole workspace
+# to .moon/docker/configs, with empty stub sources for every Cargo workspace
+# member, and the sources of these projects and their `dependsOn` to
+# .moon/docker/sources.
+FROM base AS skeleton
+COPY . .
+RUN moon docker scaffold backend domain-migrations
 
+# Installs the toolchain while only the manifests are here, so a source change
+# reuses that layer. No `moon docker prune`: the runtime stages copy only the
+# two binaries.
+FROM base AS builder
+COPY --from=skeleton /app/.moon/docker/configs .
+RUN moon docker setup
+COPY --from=skeleton /app/.moon/docker/sources .
 # target/ is a cache mount and gone after this step, so the binaries are
 # copied out in the same step.
 RUN --mount=type=cache,target=/usr/local/cargo/registry \

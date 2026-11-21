@@ -36,3 +36,11 @@ vcs:
 generator:
   templates:
     - './.moon/templates'
+
+# Files `moon docker scaffold` adds to the skeleton of every image, next to
+# the manifests and lockfiles it finds by itself. The TypeScript projects'
+# tsconfig.json files extend the root tsconfig.base.json.
+docker:
+  scaffold:
+    configsPhaseGlobs:
+      - 'tsconfig.base.json'
