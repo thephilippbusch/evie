@@ -28,19 +28,19 @@ RUN moon docker scaffold frontend
 # only that and the bun binary.
 FROM base AS builder
 COPY --from=skeleton /app/.moon/docker/configs .
-# Package bins such as vite start with `#!/usr/bin/env node`; bun runs them,
-# as the official bun images do with the same link. The link exists only in
-# this build stage; the runtime stage gets bun alone.
+# proto puts a shim for bun on the PATH, which only works next to proto, so
+# copy the real binary out of proto's tools folder; the setup installs one
+# version. Package bins such as vite start with `#!/usr/bin/env node`, so
+# `node` links to bun during the build, as the official bun images do.
 RUN moon docker setup \
-    && ln -s "$(command -v bun)" /usr/local/bin/node
+    && cp /root/.proto/tools/bun/*/bun /usr/local/bin/bun \
+    && ln -s /usr/local/bin/bun /usr/local/bin/node
 COPY --from=skeleton /app/.moon/docker/sources .
-RUN moon run frontend:build \
-    && mkdir -p /out \
-    && cp -L "$(command -v bun)" /out/bun
+RUN moon run frontend:build
 
 FROM debian:trixie-slim
 RUN useradd --system --uid 10001 --create-home evie
-COPY --from=builder /out/bun /usr/local/bin/bun
+COPY --from=builder /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 COPY --from=builder /app/apps/frontend/.output .output
 ENV NODE_ENV=production \
