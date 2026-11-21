@@ -12,35 +12,36 @@ import { describe, expect, test } from "bun:test";
 import { ConfigProvider, Effect } from "effect";
 import { Invites, invitesLive } from "./invites";
 
-const config = ConfigProvider.fromMap(new Map([["APP_URL", "https://evie.test"]]));
+const config = ConfigProvider.layer(ConfigProvider.fromUnknown({ APP_URL: "https://evie.test" }));
 
 const run = <A, E>(effect: Effect.Effect<A, E, Invites>) =>
-  Effect.runPromise(effect.pipe(Effect.provide(invitesLive), Effect.withConfigProvider(config)));
+  Effect.runPromise(effect.pipe(Effect.provide(invitesLive), Effect.provide(config)));
 
 describe("Invites", () => {
   test("links to the invite page of the event", async () => {
     const eventId = "0190f5a4-7b1c-7cc2-9d2e-3f1a2b3c4d5e";
 
-    const link = await run(Effect.map(Invites, (invites) => invites.linkFor(eventId)));
+    const link = await run(Invites.useSync((invites) => invites.linkFor(eventId)));
 
     expect(link.href).toBe(`https://evie.test/invites/${eventId}`);
   });
 
   test("rejects params without a valid event ID", async () => {
-    const error = await run(Effect.flip(Effect.flatMap(Invites, (invites) => invites.parse({ eventId: "nope" }))));
+    const error = await run(Effect.flip(Invites.use((invites) => invites.parse({ eventId: "nope" }))));
 
     expect(error._tag).toBe("InvalidInvite");
   });
 });
 ```
 
-- `Effect.withConfigProvider` wraps the whole run, so the live layer reads its `Config` from the map.
+- `ConfigProvider.layer` replaces the environment for the whole run, so the live layer reads its `Config` from the object.
+- `use` runs an effect with the service, `useSync` a plain function; inside `Effect.gen`, `yield* Invites` does the same.
 - `Effect.flip` swaps the error and success channels, so a test can assert on the failure.
 - Assert on `_tag` and fields, not on messages.
 
 ## A dependency
 
-When the service under test needs another service, provide a test layer for that one. `Layer.succeed` with `Tag.of` builds it from plain values:
+When the service under test needs another service, provide a test layer for that one. `Layer.succeed` with the service's `of` builds it from plain values:
 
 ```ts
 // src/events/event-page.test.ts
@@ -62,7 +63,7 @@ const run = <A, E>(effect: Effect.Effect<A, E, EventPage>) =>
 
 describe("EventPage", () => {
   test("shares the invite link of the event", async () => {
-    const link = await run(Effect.map(EventPage, (page) => page.shareLink("event-1")));
+    const link = await run(EventPage.useSync((page) => page.shareLink("event-1")));
 
     expect(link.href).toBe("https://evie.test/invites/event-1");
   });
@@ -77,15 +78,16 @@ Code that waits or reads the time uses Effect's `Clock`, `Effect.sleep` or `Effe
 
 ```ts
 import { expect, test } from "bun:test";
-import { Duration, Effect, Fiber, TestClock, TestContext } from "effect";
+import { Duration, Effect, Fiber } from "effect";
+import { TestClock } from "effect/testing";
 
 test("gives up on the backend after 5 seconds", async () => {
   const result = await Effect.runPromise(
     Effect.gen(function* () {
-      const fiber = yield* Effect.fork(Effect.never.pipe(Effect.timeoutOption(Duration.seconds(5))));
+      const fiber = yield* Effect.forkChild(Effect.never.pipe(Effect.timeoutOption(Duration.seconds(5))));
       yield* TestClock.adjust(Duration.seconds(5));
       return yield* Fiber.join(fiber);
-    }).pipe(Effect.provide(TestContext.TestContext)),
+    }).pipe(Effect.provide(TestClock.layer())),
   );
 
   expect(result._tag).toBe("None");

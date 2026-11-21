@@ -24,7 +24,7 @@ export const getPing = query(async (): Promise<PingView> => {
     return { _tag: "Reachable", version } satisfies PingView;
   }).pipe(
     Effect.catchTag("BackendUnavailable", () => Effect.succeed<PingView>({ _tag: "Unreachable" })),
-    Effect.tapErrorCause(Effect.logError),
+    Effect.tapCause(Effect.logError),
   );
   return appRuntime.runPromise(view);
 }, "ping");

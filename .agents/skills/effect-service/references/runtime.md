@@ -44,7 +44,7 @@ export const getInvite = query(async (params: unknown): Promise<InviteView> => {
     return { _tag: "Valid", eventId: invite.eventId } satisfies InviteView;
   }).pipe(
     Effect.catchTag("InvalidInvite", () => Effect.succeed<InviteView>({ _tag: "Invalid" })),
-    Effect.tapErrorCause(Effect.logError),
+    Effect.tapCause(Effect.logError),
   );
   return appRuntime.runPromise(view);
 }, "invite");

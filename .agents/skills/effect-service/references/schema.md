@@ -19,36 +19,38 @@ The schema is a value; its type has the same name.
 import { Schema } from "effect";
 
 const NewBooking = Schema.Struct({
-  placeId: Schema.UUID,
-  guests: Schema.Int.pipe(Schema.between(1, 8)),
-  note: Schema.optional(Schema.Trim.pipe(Schema.maxLength(500))),
+  placeId: Schema.String.check(Schema.isUUID()),
+  guests: Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 8 })),
+  note: Schema.optional(Schema.Trim.check(Schema.isMaxLength(500))),
 });
 type NewBooking = typeof NewBooking.Type;
 ```
 
-| Need                            | Schema                                        |
-| ------------------------------- | --------------------------------------------- |
-| ID                              | `Schema.UUID`                                 |
-| text a person types             | `Schema.Trim`, `Schema.NonEmptyTrimmedString` |
-| whole number                    | `Schema.Int`, with `Schema.between(min, max)` |
-| number from a URL or form field | `Schema.NumberFromString`                     |
-| date from an ISO string         | `Schema.Date`                                 |
-| one of a few values             | `Schema.Literal("pending", "confirmed")`      |
-| optional field                  | `Schema.optional(…)`                          |
-| list                            | `Schema.Array(…)`                             |
+| Need                            | Schema                                                              |
+| ------------------------------- | ------------------------------------------------------------------- |
+| ID                              | `Schema.String.check(Schema.isUUID())`                              |
+| text a person types             | `Schema.Trim`; required: `Schema.Trim.check(Schema.isNonEmpty())`   |
+| whole number                    | `Schema.Int`, with `.check(Schema.isBetween({ minimum, maximum }))` |
+| number from a URL or form field | `Schema.NumberFromString`                                           |
+| date from an ISO string         | `Schema.DateFromString` (`Schema.Date` takes a `Date`)              |
+| one of a few values             | `Schema.Literals(["pending", "confirmed"])`                         |
+| optional field                  | `Schema.optional(…)`                                                |
+| list                            | `Schema.Array(…)`                                                   |
+
+Constraints are checks: `.check(Schema.isMaxLength(500))`, `.check(Schema.isMinLength(1))`.
 
 ## Decode
 
-`Schema.decodeUnknown(schema)(input)` is an `Effect` that fails with a `ParseError`. Map it to the feature's tagged error where the caller can act on it:
+`Schema.decodeUnknownEffect(schema)(input)` is an `Effect` that fails with a `Schema.SchemaError`. Map it to the feature's tagged error where the caller can act on it:
 
 ```ts
 const parseBooking = (input: unknown) =>
-  Schema.decodeUnknown(NewBooking)(input).pipe(
+  Schema.decodeUnknownEffect(NewBooking)(input).pipe(
     Effect.mapError((cause) => new InvalidBooking({ cause })),
   );
 ```
 
-A `ParseError` on data the backend sent means the BFF and the backend disagree: a bug, not a case to handle. Turn it into a defect with `Effect.catchTag("ParseError", Effect.die)`, as the client services of the `grpc-e2e` skill do.
+A `SchemaError` on data the backend sent means the BFF and the backend disagree: a bug, not a case to handle. Turn it into a defect with `Effect.catchTag("SchemaError", Effect.die)`, as the client services of the `grpc-e2e` skill do.
 
 ## Rules
 

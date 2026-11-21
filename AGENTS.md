@@ -64,7 +64,7 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 - The browser never talks gRPC; SolidStart server functions call the backend.
 - SeaORM owns the domain schema, Drizzle owns the `auth` schema. No foreign keys between them; the domain stores the BetterAuth user ID as an opaque value.
 - `drizzle-kit push` runs in local dev only. Everywhere else, generate and review migrations and apply them with `moon run :migrate`.
-- Frontend server and shared code is idiomatic Effect: `Context.Tag` + `Layer`, `Config`, `Schema`, `Data.TaggedError`.
+- Frontend server and shared code is idiomatic Effect 4: `Context.Service` + `Layer`, `Config`, `Schema`, `Data.TaggedError`.
 - Never hand-edit generated code (protobuf output, the BetterAuth Drizzle schema). Change the source and run `codegen`.
 - Never edit `CHANGELOG.md` or the release manifest; release-please owns them.
 - Never push to `main` or force-push. Work on a branch and open a PR.

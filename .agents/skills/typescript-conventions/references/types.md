@@ -65,8 +65,8 @@ type Booking = typeof Booking.Type;
 // wrong: claims a type nobody checked
 const cast = (await response.json()) as Booking;
 
-// right: an Effect that fails with a ParseError on bad data
-const decoded = Schema.decodeUnknown(Booking)(await response.json());
+// right: an Effect that fails with a SchemaError on bad data
+const decoded = Schema.decodeUnknownEffect(Booking)(await response.json());
 ```
 
 `as const` is fine; it narrows a literal you wrote yourself.

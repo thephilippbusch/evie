@@ -56,7 +56,7 @@ For a PR, the working tree may not match the PR. Read a changed file with `git s
 
 **Error handling**
 
-- Errors are handled or passed on, never swallowed: no empty `catch`, no `let _ =` on a `Result`, no `Effect.orDie` or `Effect.catchAll` that hides a failure.
+- Errors are handled or passed on, never swallowed: no empty `catch`, no `let _ =` on a `Result`, no `Effect.orDie` or `Effect.catch` that hides a failure.
 - Each error carries what the caller needs to act on it, and is logged once, at the edge.
 
 **Complexity**

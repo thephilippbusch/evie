@@ -7,7 +7,7 @@ A failure the caller can act on is a `Data.TaggedError` in the error channel of 
 One class per failure, named for what went wrong. Its fields hold what a caller needs to react, and the `cause` when there is one.
 
 ```ts
-import { Data, type ParseResult } from "effect";
+import { Data, type Schema } from "effect";
 
 /** The place has no room for the guests. */
 export class PlaceFull extends Data.TaggedError("PlaceFull")<{
@@ -17,7 +17,7 @@ export class PlaceFull extends Data.TaggedError("PlaceFull")<{
 
 /** The booking request doesn't decode. */
 export class InvalidBooking extends Data.TaggedError("InvalidBooking")<{
-  readonly cause: ParseResult.ParseError;
+  readonly cause: Schema.SchemaError;
 }> {}
 ```
 
@@ -60,7 +60,7 @@ const view = loadEvent(eventId).pipe(
 );
 ```
 
-A server function handles every failure the page shows to people and returns it as a variant of its result (see [runtime.md](runtime.md)). What's left is unexpected: log it once at that boundary with `Effect.tapErrorCause(Effect.logError)` and let it reject.
+A server function handles every failure the page shows to people and returns it as a variant of its result (see [runtime.md](runtime.md)). What's left is unexpected: log it once at that boundary with `Effect.tapCause(Effect.logError)` and let it reject.
 
 ## Rules
 

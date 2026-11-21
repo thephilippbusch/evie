@@ -4,7 +4,7 @@ The frontend server calls the backend with [Connect-ES](https://connectrpc.com/d
 
 ## First RPC
 
-1. In `apps/frontend/`: `bun add effect@^3 @connectrpc/connect@^2 @connectrpc/connect-node@^2`.
+1. In `apps/frontend/`: `bun add effect@^4 @connectrpc/connect@^2 @connectrpc/connect-node@^2`.
 2. Add `"@evie/proto": "workspace:*"` to `dependencies` in `apps/frontend/package.json`, next to `@evie/ui`, and run `bun install`.
 3. Add `'proto'` to `dependsOn` in `apps/frontend/moon.yml`.
 4. Create the two shared files below, and `src/lib/runtime.ts` as the `effect-service` skill shows.
@@ -18,11 +18,11 @@ import { createGrpcTransport } from "@connectrpc/connect-node";
 import { Config, Context, Effect, Layer } from "effect";
 
 /** The gRPC connection to the backend, shared by every client service. */
-export class BackendTransport extends Context.Tag("BackendTransport")<BackendTransport, Transport>() {}
+export class BackendTransport extends Context.Service<BackendTransport, Transport>()("BackendTransport") {}
 
 export const backendTransportLive = Layer.effect(
   BackendTransport,
-  Effect.map(Config.string("BACKEND_URL"), (baseUrl) => createGrpcTransport({ baseUrl })),
+  Effect.map(Config.String("BACKEND_URL"), (baseUrl) => createGrpcTransport({ baseUrl })),
 );
 ```
 
@@ -77,14 +77,14 @@ import { Context, Effect, Layer, Schema } from "effect";
 import { BackendTransport } from "~/lib/backend-transport";
 import { type BackendError, type BackendUnavailable, callBackend } from "~/lib/call-backend";
 
-const Ping = Schema.Struct({ version: Schema.NonEmptyTrimmedString });
+const Ping = Schema.Struct({ version: Schema.Trim.check(Schema.isNonEmpty()) });
 export type Ping = typeof Ping.Type;
 
 /** Checks that the backend answers. */
-export class PingClient extends Context.Tag("PingClient")<
+export class PingClient extends Context.Service<
   PingClient,
   { readonly ping: Effect.Effect<Ping, BackendUnavailable | BackendError> }
->() {}
+>()("PingClient") {}
 
 export const pingClientLive = Layer.effect(
   PingClient,
@@ -92,9 +92,9 @@ export const pingClientLive = Layer.effect(
     const client = createClient(PingService, yield* BackendTransport);
     return PingClient.of({
       ping: callBackend((options) => client.ping({}, options)).pipe(
-        Effect.flatMap(Schema.decodeUnknown(Ping)),
+        Effect.flatMap(Schema.decodeUnknownEffect(Ping)),
         // Both sides share the definitions, so a response that doesn't decode is a bug.
-        Effect.catchTag("ParseError", Effect.die),
+        Effect.catchTag("SchemaError", Effect.die),
       ),
     });
   }),
@@ -107,10 +107,10 @@ Turn a status code the page handles into the feature's own error; leave the rest
 getPlace: (placeId) =>
   callBackend((options) => client.getPlace({ placeId }, options)).pipe(
     Effect.catchTag("BackendError", (error) =>
-      error.code === Code.NotFound ? Effect.fail(new PlaceNotFound({ placeId })) : Effect.fail(error),
+      Effect.fail(error.code === Code.NotFound ? new PlaceNotFound({ placeId }) : error),
     ),
-    Effect.flatMap((response) => Schema.decodeUnknown(Place)(response.place)),
-    Effect.catchTag("ParseError", Effect.die),
+    Effect.flatMap((response) => Schema.decodeUnknownEffect(Place)(response.place)),
+    Effect.catchTag("SchemaError", Effect.die),
   ),
 ```
 
@@ -150,7 +150,7 @@ const backendAnswering = (ping: () => { version: string }) =>
     ),
   );
 
-const ping = Effect.flatMap(PingClient, (client) => client.ping);
+const ping = PingClient.use((client) => client.ping);
 
 describe("PingClient", () => {
   test("returns the backend's version", async () => {
