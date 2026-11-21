@@ -1,6 +1,6 @@
 ---
 name: ui-component
-description: Builds a presentational component for evie's `@evie/ui` library on a Kobalte primitive, with its own folder, variants, accessible names, focus and disabled states, tests and export. Use when adding or changing a UI component, button, dialog, menu, form control or other primitive in libs/ui.
+description: Builds a presentational component for evie's `@evie/ui` library on a Kobalte primitive, with its own folder, variants, accessibility, states, tests and export. Use when adding or changing a UI component in libs/ui.
 ---
 
 # UI component
