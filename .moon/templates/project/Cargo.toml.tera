@@ -1,0 +1,9 @@
+---
+{% if language != "rust" %}skip: true{% endif %}
+---
+[package]
+name = "{{ name }}"
+description = "{{ description | replace(from='"', to=`\"`) }}"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true

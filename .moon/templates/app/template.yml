@@ -1,0 +1,11 @@
+$schema: 'https://moonrepo.dev/schemas/v2/template.json'
+
+title: 'App'
+description: 'A deployable app in apps/, in Rust or TypeScript, with its moon.yml, manifest, entry point and AGENTS.md.'
+extends: 'project'
+
+variables:
+  layer:
+    type: 'string'
+    default: 'application'
+    internal: true
