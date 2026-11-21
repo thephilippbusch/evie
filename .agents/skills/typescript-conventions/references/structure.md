@@ -31,7 +31,7 @@ src/
 └── utils/
 ```
 
-UI primitives from shadcn/ui follow their own skill, `shadcn-component` (once it exists).
+UI components live in `libs/ui` and follow their own skill, `ui-component`.
 
 ## One concept per module
 

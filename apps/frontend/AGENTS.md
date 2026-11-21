@@ -39,6 +39,6 @@ For a dev server, run `bun run dev` in `apps/frontend/`.
 
 - Follow the `typescript-conventions` skill.
 - Add packages with `bun add <pkg>` inside `apps/frontend/`; shared dev tools go in the root `package.json`.
-- UI primitives, design tokens and `cn` come from [`@evie/ui`](../../libs/ui/AGENTS.md), each through its subpath, such as `@evie/ui/button`. Add a missing component there, not here.
+- UI primitives, design tokens and `cn` come from [`@evie/ui`](../../libs/ui/AGENTS.md), each through its subpath, such as `@evie/ui/button`. Add a missing component there with the `ui-component` skill, not here.
 - Layout that only this app uses, such as the app shell, stays here.
 - Keep touch targets at least 44 px (`min-h-11`) and build mobile-first: base classes for phones, `sm:` and up for larger screens.
