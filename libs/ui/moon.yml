@@ -1,0 +1,14 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'library'
+language: 'typescript'
+project:
+  title: 'ui'
+  description: 'evie''s presentational components on Kobalte, the design tokens and the Tailwind CSS setup that the frontend uses.'
+
+# Projects this one uses, so affected checks reach their dependents.
+dependsOn: []
+
+# lint, check, typecheck, test and format come from .moon/tasks/typescript.yml.
+# The package ships its sources, so it needs no build.
+tasks: {}

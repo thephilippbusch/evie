@@ -7,24 +7,24 @@ Work is tracked in [GitHub milestones](https://github.com/thephilippbusch/evie/m
 
 ## Repo map
 
-| Path              | Contents                                                                                                                                                                                                                           |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/`           | Deployable apps, one Docker image each: [`frontend`](apps/frontend/AGENTS.md) (SolidStart + BFF), [`backend`](apps/backend/AGENTS.md) (Rust gRPC)                                                                                  |
-| `libs/`           | Libraries for apps, never deployed: [`domain-migrations`](libs/domain-migrations/AGENTS.md) (SeaORM migrations), [`proto`](libs/proto/AGENTS.md) (protobuf definitions and generated code); shared crates and packages (_planned_) |
-| `tools/`          | Development tools for apps and libraries, such as code generators; never deployed or used in production: [`proto-codegen`](tools/proto-codegen/AGENTS.md) (generates the code in `libs/proto`)                                     |
-| `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                                                                                                                                      |
-| `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates                                                                                                                       |
-| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                                                                                                                                            |
-| `.claude/agents/` | Claude Code subagents                                                                                                                                                                                                              |
-| `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks                                                                                                                                  |
-| `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                                                                                                                                              |
+| Path              | Contents                                                                                                                                                                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/`           | Deployable apps, one Docker image each: [`frontend`](apps/frontend/AGENTS.md) (SolidStart + BFF), [`backend`](apps/backend/AGENTS.md) (Rust gRPC)                                                                                                                                                       |
+| `libs/`           | Libraries for apps, never deployed: [`domain-migrations`](libs/domain-migrations/AGENTS.md) (SeaORM migrations), [`proto`](libs/proto/AGENTS.md) (protobuf definitions and generated code), [`ui`](libs/ui/AGENTS.md) (components on Kobalte and design tokens); shared crates and packages (_planned_) |
+| `tools/`          | Development tools for apps and libraries, such as code generators; never deployed or used in production: [`proto-codegen`](tools/proto-codegen/AGENTS.md) (generates the code in `libs/proto`)                                                                                                          |
+| `docs/adr/`       | Architecture Decision Records: the reasons behind the rules below (_planned_)                                                                                                                                                                                                                           |
+| `docs/templates/` | GitHub [issue](docs/templates/github-issue.md) and [milestone](docs/templates/github-milestone.md) templates                                                                                                                                                                                            |
+| `.agents/skills/` | Agent Skills shared by every agent; `.claude/skills` is a symlink to it                                                                                                                                                                                                                                 |
+| `.claude/agents/` | Claude Code subagents                                                                                                                                                                                                                                                                                   |
+| `.moon/`          | moon workspace config. The root [`moon.yml`](moon.yml) is the `root` project, for repo-wide tasks                                                                                                                                                                                                       |
+| `scripts/`        | Scripts run by `root` tasks, such as the commit hooks                                                                                                                                                                                                                                                   |
 
 Every moon project has its own `AGENTS.md` (with a `CLAUDE.md` symlink) covering its purpose, structure, commands and local rules.
 Read it before you change that project. Where it differs from this file, the project file wins.
 
 ## Stack
 
-- **Frontend:** SolidStart + shadcn/ui (Solid port), written in idiomatic Effect. The SolidStart server is the BFF.
+- **Frontend:** SolidStart + evie's own component library on Kobalte (`libs/ui`), written in idiomatic Effect. The SolidStart server is the BFF.
 - **Backend:** Rust, Tokio, Tonic (gRPC), SeaORM.
 - **Database:** PostgreSQL.
 - **Auth:** BetterAuth in the BFF, persisted through Drizzle.
@@ -76,15 +76,15 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 
 ## Workflow
 
-| Step         | What to do                                                  | Skill                                        |
-| ------------ | ----------------------------------------------------------- | -------------------------------------------- |
-| 1. Plan      | Read the issue and its milestone; plan by kind of work      | `plan`                                       |
-| 2. Branch    | Branch off `main`                                           | `branch`                                     |
-| 3. Implement | Follow the project's `AGENTS.md` and the conventions skills | `rust-conventions`, `typescript-conventions` |
-| 4. Verify    | Format, lint and test the affected projects                 | `verify`                                     |
-| 5. Commit    | Small commits with Conventional Commit messages             | `commit`, `conventional-commits`             |
-| 6. PR        | Conventional Commit title, link the issue                   | `pull-request`                               |
-| 7. Review    | Run the focus reviewers and address the findings            | `review`                                     |
+| Step         | What to do                                                  | Skill                                                        |
+| ------------ | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| 1. Plan      | Read the issue and its milestone; plan by kind of work      | `plan`                                                       |
+| 2. Branch    | Branch off `main`                                           | `branch`                                                     |
+| 3. Implement | Follow the project's `AGENTS.md` and the conventions skills | `rust-conventions`, `typescript-conventions`, `ui-component` |
+| 4. Verify    | Format, lint and test the affected projects                 | `verify`                                                     |
+| 5. Commit    | Small commits with Conventional Commit messages             | `commit`, `conventional-commits`                             |
+| 6. PR        | Conventional Commit title, link the issue                   | `pull-request`                                               |
+| 7. Review    | Run the focus reviewers and address the findings            | `review`                                                     |
 
 `ship` chains steps 4–6. `check-milestone` shows what is still missing in a milestone.
 
@@ -99,6 +99,7 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 - **moon:** [`moon-query`](.agents/skills/moon-query/SKILL.md), [`moon-run`](.agents/skills/moon-run/SKILL.md), [`moon-new-library`](.agents/skills/moon-new-library/SKILL.md), [`moon-new-app`](.agents/skills/moon-new-app/SKILL.md), [`moon-add-task`](.agents/skills/moon-add-task/SKILL.md)
 - **Quality:** [`verify`](.agents/skills/verify/SKILL.md), [`writing-style`](.agents/skills/writing-style/SKILL.md), [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
 - **Planning:** [`plan`](.agents/skills/plan/SKILL.md)
+- **UI:** [`ui-component`](.agents/skills/ui-component/SKILL.md)
 - **Investigation:** [`debug`](.agents/skills/debug/SKILL.md), [`benchmark`](.agents/skills/benchmark/SKILL.md)
 - **Review:** [`review-security`](.agents/skills/review-security/SKILL.md), [`review-architecture`](.agents/skills/review-architecture/SKILL.md), [`review-code-quality`](.agents/skills/review-code-quality/SKILL.md), [`review-tests`](.agents/skills/review-tests/SKILL.md), [`review-project-rules`](.agents/skills/review-project-rules/SKILL.md) · workflow [`review`](.agents/skills/review/SKILL.md)
 - **Meta:** [`authoring-skills`](.agents/skills/authoring-skills/SKILL.md)

@@ -36,7 +36,7 @@ type Host =
 End every `switch` over a union with a `default` that only compiles when every case is handled. Adding a variant then fails the build where it needs handling.
 
 ```ts
-function canCancel(status: BookingStatus): boolean {
+const canCancel = (status: BookingStatus): boolean => {
   switch (status) {
     case "pending":
     case "confirmed":
@@ -46,7 +46,7 @@ function canCancel(status: BookingStatus): boolean {
     default:
       return status satisfies never;
   }
-}
+};
 ```
 
 ## Decode external data, never cast it
@@ -78,9 +78,10 @@ const decoded = Schema.decodeUnknown(Booking)(await response.json());
 ```ts
 type Place = { readonly name: string; readonly guestIds: ReadonlyArray<string> };
 
-function addGuest(place: Place, guestId: string): Place {
-  return { ...place, guestIds: [...place.guestIds, guestId] };
-}
+const addGuest = (place: Place, guestId: string): Place => ({
+  ...place,
+  guestIds: [...place.guestIds, guestId],
+});
 
 // not: place.guestIds.push(guestId);
 ```

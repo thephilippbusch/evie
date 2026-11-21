@@ -3,18 +3,20 @@
 ## Purpose
 
 evie's SolidStart web app, used by everyone in the browser. Its server is the BFF: server functions call the backend over gRPC.
-For now it renders one empty page; layout, theming and the backend call come with the [v0.2 milestone](https://github.com/thephilippbusch/evie/milestone/2) issues.
+For now it renders one page inside the app shell; the backend call comes with the [v0.2 milestone](https://github.com/thephilippbusch/evie/milestone/2) issues.
 
 ## Structure
 
-| Path                   | Contents                                                             |
-| ---------------------- | -------------------------------------------------------------------- |
-| `src/app.tsx`          | The root component                                                   |
-| `src/entry-server.tsx` | The HTML document rendered on the server                             |
-| `src/entry-client.tsx` | Mounts the app in the browser                                        |
-| `public/`              | Static files served as they are                                      |
-| `vite.config.ts`       | Vite with the SolidStart and Nitro plugins                           |
-| `.output/`             | The production build (`bun .output/server/index.mjs`), not committed |
+| Path                   | Contents                                                                            |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| `src/app.tsx`          | The root component: the router with the file routes, inside the app shell           |
+| `src/shell/`           | The app shell: the layout around every page, such as the header and the main column |
+| `src/routes/`          | File routes; `index.tsx` is `/`                                                     |
+| `src/entry-server.tsx` | The HTML document rendered on the server                                            |
+| `src/entry-client.tsx` | Mounts the app in the browser                                                       |
+| `public/`              | Static files served as they are                                                     |
+| `vite.config.ts`       | Vite with the SolidStart, Tailwind CSS and Nitro plugins                            |
+| `.output/`             | The production build (`bun .output/server/index.mjs`), not committed                |
 
 Biome and TypeScript are dev dependencies of the root `package.json`, and `biome.json` at the root configures Biome. Dependencies install into the root `bun.lock`.
 
@@ -37,3 +39,6 @@ For a dev server, run `bun run dev` in `apps/frontend/`.
 
 - Follow the `typescript-conventions` skill.
 - Add packages with `bun add <pkg>` inside `apps/frontend/`; shared dev tools go in the root `package.json`.
+- UI primitives, design tokens and `cn` come from [`@evie/ui`](../../libs/ui/AGENTS.md), each through its subpath, such as `@evie/ui/button`. Add a missing component there with the `ui-component` skill, not here.
+- Layout that only this app uses, such as the app shell, stays here.
+- Keep touch targets at least 44 px (`min-h-11`) and build mobile-first: base classes for phones, `sm:` and up for larger screens.
