@@ -7,7 +7,8 @@ project:
   description: 'The protobuf definitions of the gRPC API between the frontend server and the backend, and the Rust and TypeScript code generated from them.'
 
 # Projects this one uses, so affected checks reach their dependents.
-dependsOn: []
+dependsOn:
+  - 'proto-codegen'
 
 # Added to the `sources` group of .moon/tasks/rust.yml, so a change to the
 # generated Rust code reruns build, lint, check and test.
@@ -16,8 +17,8 @@ fileGroups:
     - 'gen/rust/**/*'
 
 # build, test and format come from .moon/tasks/rust.yml; lint and check are
-# merged into the inherited ones. The generator is the proto-codegen tool in
-# tools/; a library can't depend on a tool, so its files are listed as inputs.
+# merged into the inherited ones. codegen and check-codegen build the
+# proto-codegen generator in tools/ first.
 tasks:
   check:
     deps:
@@ -53,6 +54,8 @@ tasks:
     description: 'Generate the Rust code in gen/rust and the TypeScript code in gen/ts from the protobuf definitions.'
     command: 'cargo run --locked -p proto-codegen -- .'
     type: 'run'
+    deps:
+      - '^:build'
     # bun puts node_modules/.bin, with buf and protoc-gen-es, on the PATH.
     toolchains: ['rust', 'bun']
     # Run by hand after a change to the definitions; it rewrites gen/.
@@ -65,6 +68,8 @@ tasks:
     description: 'Fail when gen/ differs from what codegen generates from the definitions.'
     command: 'sh scripts/check-codegen.sh'
     type: 'test'
+    deps:
+      - '^:build'
     toolchains: ['rust', 'bun']
     inputs:
       - 'definitions/**/*'
@@ -73,6 +78,8 @@ tasks:
       - 'buf.gen.yaml'
       - 'scripts/check-codegen.sh'
       - 'package.json'
+      # moon doesn't hash the ^:build dep into this task, so the generator's
+      # files are inputs too: a change to it must rerun the check.
       - '/tools/proto-codegen/src/**/*'
       - '/tools/proto-codegen/Cargo.toml'
       - '/Cargo.lock'

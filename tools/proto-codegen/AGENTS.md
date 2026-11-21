@@ -4,6 +4,7 @@
 
 A development tool that generates the code in [`libs/proto`](../../libs/proto/AGENTS.md) from its protobuf definitions. It never runs in production.
 It writes the Rust code with protox and tonic-prost-build, so no `protoc` is needed, and runs `buf generate` for the TypeScript code. It doesn't depend on the `evie-proto` crate, so it builds even when `libs/proto/gen/` is broken.
+Its moon layer is `scaffolding`, not `tool`: moon lets a library depend on a generator only in that layer, and `libs/proto` lists this project in `dependsOn`.
 
 ## Structure
 

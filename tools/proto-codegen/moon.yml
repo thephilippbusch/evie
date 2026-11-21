@@ -1,6 +1,8 @@
 $schema: 'https://moonrepo.dev/schemas/v2/project.json'
 
-layer: 'tool'
+# A generator, not a plain tool: moon lets a library depend on the scaffolding
+# layer but not on the tool layer, and libs/proto lists this project in dependsOn.
+layer: 'scaffolding'
 language: 'rust'
 project:
   title: 'proto-codegen'

@@ -7,7 +7,7 @@ description: Adds a library to libs/ or a development tool to tools/ as a moon p
 
 A library is code that apps use, such as protobuf definitions or a shared crate or package. A tool is a development tool for apps and libraries, such as a code generator, that never runs in production. Neither is deployed. For something that ships as its own Docker image, use the `moon-new-app` skill.
 
-The steps are the same for both. A library goes in `libs/<name>/` with `layer: 'library'`, a tool in `tools/<name>/` with `layer: 'tool'`. A library never depends on a tool; only apps can.
+The steps are the same for both. A library goes in `libs/<name>/` with `layer: 'library'`, a tool in `tools/<name>/` with `layer: 'tool'`. moon lets a library depend only on the `library`, `scaffolding` and `configuration` layers, so a code generator that a library lists in `dependsOn` takes `layer: 'scaffolding'`, like `tools/proto-codegen`.
 
 Until moon templates for new projects exist (issue #27), follow these steps by hand.
 
@@ -21,7 +21,7 @@ Until moon templates for new projects exist (issue #27), follow these steps by h
    ```yaml
    $schema: 'https://moonrepo.dev/schemas/v2/project.json'
 
-   layer: 'library' # or 'tool'
+   layer: 'library' # or 'tool', or 'scaffolding' for a generator a library uses
    language: 'rust' # or 'typescript'
    project:
      title: '<name>'
