@@ -1,6 +1,6 @@
 ---
 name: seaorm-migration
-description: Adds a SeaORM migration to evie's domain schema in libs/domain-migrations, with a working down, a test and the backend entity that reads the table. Use when adding or changing a domain table, column, index or enum, or when asked to write, apply or roll back a database migration.
+description: Adds a SeaORM migration to evie's domain schema in libs/domain-migrations, with a working down and its tests, and prepares the backend to read the table. Use when adding or changing a domain table, column, index or enum, or when asked to write, apply or roll back a database migration.
 ---
 
 # SeaORM migration
@@ -12,7 +12,7 @@ Not for the `auth` schema: Drizzle in the frontend owns it.
 | -------------------------------------------------- | ------------------------------------------------------------ |
 | [references/migration.md](references/migration.md) | write the migration file: create, alter, index, enum, `down` |
 | [references/testing.md](references/testing.md)     | extend `tests/migrate.rs`                                    |
-| [references/entity.md](references/entity.md)       | read or write the table from the backend                     |
+| [references/entity.md](references/entity.md)       | read or write the table from the backend (entities: #127)    |
 
 ## Steps
 
@@ -23,7 +23,7 @@ Not for the `auth` schema: Drizzle in the frontend owns it.
 5. Check with `moon run domain-migrations:check domain-migrations:test`. The tests start PostgreSQL with testcontainers, so Docker must run. Use the `moon-run` skill.
 6. Apply it to your local database: `moon run domain-migrations:migrate`, with `DATABASE_URL` set in the environment.
 7. Check `down` against the same database: in `libs/domain-migrations/`, run `cargo run -- down`, then `moon run domain-migrations:migrate` again.
-8. If the backend reads or writes the table, add its entity with [references/entity.md](references/entity.md).
+8. If the backend reads or writes the table, follow [references/entity.md](references/entity.md).
 
 ## Schema conventions
 
@@ -45,4 +45,4 @@ Not for the `auth` schema: Drizzle in the frontend owns it.
 
 ## Output
 
-The new migration file, its line in `src/lib.rs`, the extended `tests/migrate.rs` and, if the backend uses the table, its entity, with `moon run domain-migrations:check domain-migrations:test` passing.
+The new migration file, its line in `src/lib.rs`, the extended `tests/migrate.rs` and, if the backend uses the table, the steps of [references/entity.md](references/entity.md), with `moon run domain-migrations:check domain-migrations:test` passing.
