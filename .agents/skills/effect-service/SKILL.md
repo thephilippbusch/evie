@@ -6,7 +6,7 @@ description: Builds a service for evie's frontend server (BFF) in idiomatic Effe
 # Effect service
 
 Server and shared code in `apps/frontend` is idiomatic Effect 3. A service is a `Context.Tag` that says what it offers, a `Layer` that builds it, and tests that swap the layer. Server functions run effects with one app runtime and return plain data; components never import Effect.
-For a client of a backend RPC, use the `grpc-rpc` skill (once it exists), which builds on this one.
+For a client of a backend RPC, use the `grpc-rpc` skill, which builds on this one.
 
 | Read                                           | When you                                                     |
 | ---------------------------------------------- | ------------------------------------------------------------ |

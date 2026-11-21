@@ -39,6 +39,7 @@ The bun package `@evie/proto` holds the messages and service descriptors in Type
 
 ## Local rules
 
+- Add or change an RPC end to end with the `grpc-rpc` skill.
 - Edit only `definitions/`, then run `moon run proto:codegen` and commit the output with the change. Never hand-edit `gen/`; `check-codegen` fails on it.
 - Follow buf's [`STANDARD`](https://buf.build/docs/lint/rules/) style: versioned packages such as `evie.ping.v1`, folders that match the package, services named `…Service`, and `…Request` and `…Response` messages for each RPC.
 - Never reuse or renumber a field. Mark a removed field's number and name `reserved`.

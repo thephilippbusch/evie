@@ -63,6 +63,7 @@ use super::{PlaceError, entity};
 pub struct Place {
     pub id: Uuid,
     pub name: String,
+    pub capacity: i32,
 }
 
 #[derive(Clone)]
@@ -83,6 +84,7 @@ impl PlaceService {
         Ok(Place {
             id: row.id,
             name: row.name,
+            capacity: row.capacity,
         })
     }
 }
