@@ -3,18 +3,17 @@
 # and no tool versions. Run from the repository root:
 #   docker build -f apps/frontend/Dockerfile .
 
-# proto and moon. proto only bootstraps moon here; `moon docker setup`
-# installs bun at the version pinned in .prototools.
+# moon, at the version pinned in .prototools. `moon docker setup` installs
+# proto and bun itself, at their pinned versions.
 FROM debian:trixie-slim AS base
-ARG PROTO_VERSION=0.63.1
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl git xz-utils \
     && rm -rf /var/lib/apt/lists/*
-ENV PATH="/root/.proto/shims:/root/.proto/bin:$PATH"
-RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash -s -- "$PROTO_VERSION" --yes
+ENV PATH="/root/.moon/bin:/root/.proto/shims:/root/.proto/bin:$PATH"
 WORKDIR /app
 COPY .prototools ./
-RUN proto install moon
+RUN curl -fsSL https://moonrepo.dev/install/moon.sh \
+    | bash -s -- "$(sed -n 's/^moon = "\(.*\)"$/\1/p' .prototools)"
 
 # The skeleton: moon copies the manifests and lockfiles of the whole workspace
 # to .moon/docker/configs, and the sources of the frontend and its `dependsOn`
@@ -30,13 +29,14 @@ RUN moon docker scaffold frontend
 FROM base AS builder
 COPY --from=skeleton /app/.moon/docker/configs .
 # Package bins such as vite start with `#!/usr/bin/env node`; bun runs them,
-# as the official bun images do with the same link.
+# as the official bun images do with the same link. The link exists only in
+# this build stage; the runtime stage gets bun alone.
 RUN moon docker setup \
-    && ln -s "$(proto bin bun)" /usr/local/bin/node
+    && ln -s "$(command -v bun)" /usr/local/bin/node
 COPY --from=skeleton /app/.moon/docker/sources .
 RUN moon run frontend:build \
     && mkdir -p /out \
-    && cp "$(proto bin bun)" /out/bun
+    && cp -L "$(command -v bun)" /out/bun
 
 FROM debian:trixie-slim
 RUN useradd --system --uid 10001 --create-home evie

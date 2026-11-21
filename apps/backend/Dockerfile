@@ -4,18 +4,19 @@
 #   docker build -f apps/backend/Dockerfile .                   # the backend
 #   docker build -f apps/backend/Dockerfile --target migrate .  # the migrations
 
-# proto and moon. The Rust image brings rustup, which proto's Rust plugin
-# needs; the Rust version comes from .prototools and rust-toolchain.toml.
+# moon, at the version pinned in .prototools. `moon docker setup` installs
+# proto and the other tools itself. The Rust image only brings rustup, which
+# proto's Rust plugin needs, so its tag floats: the Rust version comes from
+# .prototools and rust-toolchain.toml.
 FROM rust:slim-trixie AS base
-ARG PROTO_VERSION=0.63.1
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl git xz-utils \
     && rm -rf /var/lib/apt/lists/*
-ENV PATH="/root/.proto/shims:/root/.proto/bin:$PATH"
-RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash -s -- "$PROTO_VERSION" --yes
+ENV PATH="/root/.moon/bin:/root/.proto/shims:/root/.proto/bin:$PATH"
 WORKDIR /app
 COPY .prototools ./
-RUN proto install moon
+RUN curl -fsSL https://moonrepo.dev/install/moon.sh \
+    | bash -s -- "$(sed -n 's/^moon = "\(.*\)"$/\1/p' .prototools)"
 
 # The skeleton: moon copies the manifests and lockfiles of the whole workspace
 # to .moon/docker/configs, with empty stub sources for every Cargo workspace
@@ -23,7 +24,7 @@ RUN proto install moon
 # .moon/docker/sources.
 FROM base AS skeleton
 COPY . .
-RUN moon docker scaffold backend domain-migrations
+RUN moon docker scaffold backend
 
 # Installs the toolchain while only the manifests are here, so a source change
 # reuses that layer. No `moon docker prune`: the runtime stages copy only the

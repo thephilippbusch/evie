@@ -6,8 +6,10 @@ project:
   title: 'backend'
   description: 'The gRPC backend that owns the domain data; the frontend server calls it.'
 
-# Libraries this app uses, so changes to them affect it.
-dependsOn: []
+# Libraries this app uses, so changes to them affect it. The image ships the
+# domain-migrations binary as its `migrate` target, so `moon docker scaffold`
+# needs it here.
+dependsOn: ['domain-migrations']
 
 # build, lint, check, test and format come from .moon/tasks/rust.yml.
 tasks: {}
