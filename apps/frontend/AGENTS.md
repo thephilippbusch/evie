@@ -36,11 +36,13 @@ Biome and TypeScript are dev dependencies of the root `package.json`, and `biome
 | `moon run frontend:format`    | Format the code and organize imports with Biome                          |
 
 For a dev server, run `bun run dev` in `apps/frontend/`.
+To run the app with the rest of the stack, run `docker compose up` at the repository root and open `http://127.0.0.1:3000`. Build the image alone from the repository root with `docker build --target frontend .`. The root `Dockerfile` builds it from a moon scaffold and runs `.output` with bun on port 3000.
 
 ## Local rules
 
 - Follow the `typescript-conventions` skill.
 - Add packages with `bun add <pkg>` inside `apps/frontend/`; shared dev tools go in the root `package.json`.
+- When the app uses a new library from `libs/`, add it to `dependsOn` in `moon.yml`. `moon docker scaffold` copies only the sources of the app and its `dependsOn` into the image.
 - UI primitives, design tokens and `cn` come from [`@evie/ui`](../../libs/ui/AGENTS.md), each through its subpath, such as `@evie/ui/button`. Add a missing component there with the `ui-component` skill, not here.
 - Layout that only this app uses, such as the app shell, stays here.
 - Keep touch targets at least 44 px (`min-h-11`) and build mobile-first: base classes for phones, `sm:` and up for larger screens.

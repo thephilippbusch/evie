@@ -1,0 +1,70 @@
+# The local stack: `docker compose up` at the repository root. Host ports bind
+# to 127.0.0.1 only.
+#
+# The credentials below are for local development only. Never reuse them for
+# a shared or deployed database.
+
+name: evie
+
+services:
+  postgres:
+    # The same tag as the integration tests use.
+    image: postgres:19-alpine
+    environment:
+      POSTGRES_USER: evie
+      POSTGRES_PASSWORD: evie
+      POSTGRES_DB: evie
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    # Published so `moon run domain-migrations:migrate` and `cargo run` work
+    # from the host.
+    ports:
+      - '127.0.0.1:5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U evie -d evie']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  # Catches every mail the app sends. Web UI on http://127.0.0.1:8025.
+  mailpit:
+    image: axllent/mailpit:v1.34.0
+    ports:
+      - '127.0.0.1:8025:8025'
+      - '127.0.0.1:1025:1025'
+
+  # One-shot: applies the pending domain migrations, then exits. The backend
+  # never migrates on start.
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      DATABASE_URL: postgres://evie:evie@postgres:5432/evie
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # No host port: the browser never talks gRPC, only the frontend server does.
+  backend:
+    build:
+      context: .
+      target: backend
+    environment:
+      DATABASE_URL: postgres://evie:evie@postgres:5432/evie
+      LOG_FORMAT: pretty
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  frontend:
+    build:
+      context: .
+      target: frontend
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:

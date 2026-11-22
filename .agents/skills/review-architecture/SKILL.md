@@ -61,7 +61,7 @@ For a PR, the working tree may not match the PR. Read a changed file with `git s
 
 **New apps**
 
-- A new directory in `apps/` follows the `moon-new-app` checklist: `Dockerfile`, Docker Compose service, `release-please-config.json` entry, image publishing, and the `apps/` row of the repo map in the root `AGENTS.md`.
+- A new directory in `apps/` follows the `moon-new-app` checklist: its targets in the root `Dockerfile`, Docker Compose service, `release-please-config.json` entry, image publishing, and the `apps/` row of the repo map in the root `AGENTS.md`.
 - A new project has an `AGENTS.md` and a `CLAUDE.md` symlink beside it.
 
 **Project rules**

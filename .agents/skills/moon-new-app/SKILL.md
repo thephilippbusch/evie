@@ -36,8 +36,8 @@ An app is deployed as one Docker image. Code that only apps use belongs in a lib
 
 Every app is released with the repository version and published as an image. Issue #19 completes this checklist.
 
-- [ ] **Docker image:** one `Dockerfile` that builds the app's image, in `apps/<name>/`.
-- [ ] **Local stack:** add the app as a service to the Docker Compose file (once it exists).
+- [ ] **Docker image:** add three stages for the app to the root `Dockerfile`, shaped like those of the backend for Rust and the frontend for TypeScript: `<name>-skeleton` from `sources`, which runs `moon docker scaffold <name>` to copy the manifests and the sources of the app and its `dependsOn`; `<name>-build` from `base`, which runs `moon docker setup` to install the tools at the versions in `.prototools`, then builds; and the `<name>` target from `runtime`, which holds only the built output and runs as the non-root `evie` user. Never list libraries in the `Dockerfile`; keep `dependsOn` in `moon.yml` complete instead. Check it with `docker build --target <name> .`.
+- [ ] **Local stack:** add the app as a service to the root `compose.yaml`, shaped like the `backend` and `frontend` services: `build` with `context: .` and `target: <name>`, the `environment` the app needs, and `depends_on` for the services it calls. Publish a host port only if a person opens the app, and bind it to `127.0.0.1`. Check that `docker compose up --build` starts it.
 - [ ] **Release version:** add the app's manifest to `extra-files` in `release-please-config.json`, so every release writes the version to it: a `package.json` directly; a Rust crate takes `version.workspace = true` from the root `Cargo.toml`, and its `Cargo.lock` entry is a toml extra-file too, so the lockfile changes in the same release commit. Entries in [references/release-version.md](references/release-version.md).
 - [ ] **Image publishing:** add the app to the list of images built and published on every release (once it exists, issues #19 and #42).
 - [ ] **Repo map:** name the app in the `apps/` row of the root `AGENTS.md`.
