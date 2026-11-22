@@ -70,7 +70,7 @@ description: Builds a presentational component for evie's `@evie/ui` library on 
 - Presentational only: no data loading, no Effect, no built-in texts. Labels, accessible names and content come in through props and children, so apps can translate them.
 - Colours only from the tokens in `libs/ui/src/styles.css`; dark mode follows from them.
 - Touch targets at least 44 px (`min-h-11 min-w-11`); mobile-first classes (base for phones, `sm:` and up for larger screens).
-- Never remove the focus ring without a visible replacement.
+- Focus, disabled and other states follow [references/states.md](references/states.md).
 - One component family per folder; no barrel files.
 - Follow the `typescript-conventions` skill.
 

@@ -33,14 +33,10 @@ Each step ends with its check passing. If a check fails, fix it before the next 
 
 ## First RPC
 
-The first RPC of the app sets up what every later one reuses. Do each item in the step that needs it:
+The first RPC of the app sets up what every later one reuses. The First RPC section of each step's reference lists it:
 
-| Step | Once                                                                                                                         |
-| ---- | ---------------------------------------------------------------------------------------------------------------------------- |
-| 3    | `evie-proto` as a dependency of the backend, and `proto` in its `dependsOn` ([references/backend.md](references/backend.md)) |
-| 3    | `src/grpc/` as the parent of the handlers, and `TestServer::channel` in `tests/common/mod.rs`                                |
-| 4    | `effect`, `@connectrpc/connect`, `@connectrpc/connect-node` and `@evie/proto` in the frontend, `proto` in its `dependsOn`    |
-| 4    | `src/lib/backend-transport.ts`, `src/lib/call-backend.ts` and `src/lib/runtime.ts`, with `BACKEND_URL`                       |
+- Step 3: [references/backend.md](references/backend.md#first-rpc)
+- Step 4: [references/bff.md](references/bff.md#first-rpc)
 
 ## Rules
 

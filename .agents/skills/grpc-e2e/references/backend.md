@@ -80,11 +80,11 @@ impl place_service_server::PlaceService for PlaceApi {
         &self,
         request: Request<proto::GetPlaceRequest>,
     ) -> Result<Response<proto::GetPlaceResponse>, Status> {
+        // Request validation at the edge builds its own Status; domain errors
+        // go through the `From` impls in error.rs.
         let place_id = Uuid::parse_str(&request.get_ref().place_id)
             .map_err(|_| Status::invalid_argument("place_id is not a UUID"))?;
 
-        // The ID check is request validation at the edge, so it builds its
-        // own Status; domain errors go through the `From` impls in error.rs.
         let place = self.places.get(place_id).await?;
 
         Ok(Response::new(proto::GetPlaceResponse {

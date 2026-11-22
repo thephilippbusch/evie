@@ -4,11 +4,12 @@ The frontend server calls the backend with [Connect-ES](https://connectrpc.com/d
 
 ## First RPC
 
-1. In `apps/frontend/`: `bun add effect@^4 @connectrpc/connect@^2 @connectrpc/connect-node@^2`.
-2. Add `"@evie/proto": "workspace:*"` to `dependencies` in `apps/frontend/package.json`, next to `@evie/ui`, and run `bun install`.
-3. Add `'proto'` to `dependsOn` in `apps/frontend/moon.yml`.
-4. Create the two shared files below, and `src/lib/runtime.ts` as the `effect-service` skill shows.
-5. Document `BACKEND_URL` under Configuration in `apps/frontend/AGENTS.md`, and set it on the `frontend` service in `compose.yaml`: `BACKEND_URL: http://backend:50051`. For `bun run dev` next to `cargo run`, set `BACKEND_URL=http://127.0.0.1:50051`.
+1. Follow the First service only steps of the `effect-service` skill: they install `effect` and create `src/lib/runtime.ts`.
+2. In `apps/frontend/`: `bun add @connectrpc/connect@^2 @connectrpc/connect-node@^2`.
+3. Add `"@evie/proto": "workspace:*"` to `dependencies` in `apps/frontend/package.json`, next to `@evie/ui`, and run `bun install`.
+4. Add `'proto'` to `dependsOn` in `apps/frontend/moon.yml`.
+5. Create the two shared files below.
+6. Document `BACKEND_URL` under Configuration in `apps/frontend/AGENTS.md`, and set it on the `frontend` service in `compose.yaml`: `BACKEND_URL: http://backend:50051`. For `bun run dev` next to `cargo run`, set `BACKEND_URL=http://127.0.0.1:50051`.
 
 ### `src/lib/backend-transport.ts`
 
