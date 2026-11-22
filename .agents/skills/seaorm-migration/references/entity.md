@@ -10,9 +10,8 @@ Once, the first time the backend touches a domain table:
 
 1. Turn on the column types the backend needs, e.g. in `apps/backend/`: `cargo add sea-orm --features with-uuid,with-chrono` and `cargo add uuid --features v4`.
 2. Add the migrations as a dev dependency, so integration tests can migrate their database: `cargo add --dev --path ../../libs/domain-migrations`. The backend itself never migrates.
-3. Check that `'domain-migrations'` is in `dependsOn` in `apps/backend/moon.yml`, and add it if it's missing. It makes a migration change rerun the backend's checks, and `moon docker scaffold` needs it for the `migrate` image.
-4. Update the sentence about `domain-migrations` under Purpose in `apps/backend/AGENTS.md`, so it names the dev dependency.
-5. Commit `Cargo.lock` with the change.
+3. Update the sentence about `domain-migrations` under Purpose in `apps/backend/AGENTS.md`, so it names the dev dependency.
+4. Commit `Cargo.lock` with the change.
 
 ## Using it
 
