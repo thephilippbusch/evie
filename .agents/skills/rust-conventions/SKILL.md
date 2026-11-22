@@ -6,7 +6,7 @@ description: Sets evie's Rust conventions that clippy and rustfmt don't enforce,
 # Rust conventions
 
 Rules clippy and rustfmt don't check. For everything else, follow their output.
-Stack-specific patterns (gRPC services, SeaORM entities and migrations) belong to their own skills, such as `grpc-rpc` and `seaorm-migration` (once they exist).
+Stack-specific patterns belong to their own skills: SeaORM migrations and entities to `seaorm-migration`, gRPC services to `grpc-e2e`.
 
 | Read                                           | When you                                                 |
 | ---------------------------------------------- | -------------------------------------------------------- |

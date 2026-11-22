@@ -52,14 +52,14 @@ Before:
 
 ```ts
 // Changed this after the bug last week, see Slack. Don't touch!!
-const user = yield* Schema.decodeUnknown(User)(body);
+const user = yield* Schema.decodeUnknownEffect(User)(body);
 ```
 
 After:
 
 ```ts
 // Decode at the boundary: the body comes from the browser and is untrusted.
-const user = yield* Schema.decodeUnknown(User)(body);
+const user = yield* Schema.decodeUnknownEffect(User)(body);
 ```
 
 ## TODOs name an issue

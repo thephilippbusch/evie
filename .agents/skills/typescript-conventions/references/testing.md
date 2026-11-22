@@ -37,7 +37,7 @@ Test what a module exports. If a helper needs its own tests, it is a concept of 
 
 ## Pass dependencies in, don't mock modules
 
-Don't replace your own modules with `mock.module`. Take the dependency as a parameter and pass a test version. In Effect code, that is a test `Layer`; see the `effect-service` skill (once it exists).
+Don't replace your own modules with `mock.module`. Take the dependency as a parameter and pass a test version. In Effect code, that is a test `Layer`; see the `effect-service` skill.
 
 ```ts
 // src/bookings/reminder.ts

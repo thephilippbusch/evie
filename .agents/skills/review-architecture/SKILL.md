@@ -49,7 +49,7 @@ For a PR, the working tree may not match the PR. Read a changed file with `git s
 
 **Effect** (frontend server and shared code)
 
-- Services are a `Context.Tag` with a `Layer`; code gets them from the context, not by importing an instance.
+- Services are a `Context.Service` with a `Layer`; code gets them from the context, not by importing an instance.
 - Configuration comes from `Config`, never `process.env`.
 - Data at a boundary has a `Schema`; errors are `Data.TaggedError` classes, not `throw` or plain `Error`.
 - Effects run at the edge, in the server function or route; no `Effect.runPromise` inside services.

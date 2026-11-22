@@ -64,7 +64,7 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 - The browser never talks gRPC; SolidStart server functions call the backend.
 - SeaORM owns the domain schema, Drizzle owns the `auth` schema. No foreign keys between them; the domain stores the BetterAuth user ID as an opaque value.
 - `drizzle-kit push` runs in local dev only. Everywhere else, generate and review migrations and apply them with `moon run :migrate`.
-- Frontend server and shared code is idiomatic Effect: `Context.Tag` + `Layer`, `Config`, `Schema`, `Data.TaggedError`.
+- Frontend server and shared code is idiomatic Effect 4: `Context.Service` + `Layer`, `Config`, `Schema`, `Data.TaggedError`.
 - Never hand-edit generated code (protobuf output, the BetterAuth Drizzle schema). Change the source and run `codegen`.
 - Never edit `CHANGELOG.md` or the release manifest; release-please owns them.
 - Never push to `main` or force-push. Work on a branch and open a PR.
@@ -77,15 +77,15 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 
 ## Workflow
 
-| Step         | What to do                                                  | Skill                                                        |
-| ------------ | ----------------------------------------------------------- | ------------------------------------------------------------ |
-| 1. Plan      | Read the issue and its milestone; plan by kind of work      | `plan`                                                       |
-| 2. Branch    | Branch off `main`                                           | `branch`                                                     |
-| 3. Implement | Follow the project's `AGENTS.md` and the conventions skills | `rust-conventions`, `typescript-conventions`, `ui-component` |
-| 4. Verify    | Format, lint and test the affected projects                 | `verify`                                                     |
-| 5. Commit    | Small commits with Conventional Commit messages             | `commit`, `conventional-commits`                             |
-| 6. PR        | Conventional Commit title, link the issue                   | `pull-request`                                               |
-| 7. Review    | Run the focus reviewers and address the findings            | `review`                                                     |
+| Step         | What to do                                                  | Skill                                                                                                          |
+| ------------ | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 1. Plan      | Read the issue and its milestone; plan by kind of work      | `plan`                                                                                                         |
+| 2. Branch    | Branch off `main`                                           | `branch`                                                                                                       |
+| 3. Implement | Follow the project's `AGENTS.md` and the conventions skills | `rust-conventions`, `typescript-conventions`, `grpc-e2e`, `seaorm-migration`, `effect-service`, `ui-component` |
+| 4. Verify    | Format, lint and test the affected projects                 | `verify`                                                                                                       |
+| 5. Commit    | Small commits with Conventional Commit messages             | `commit`, `conventional-commits`                                                                               |
+| 6. PR        | Conventional Commit title, link the issue                   | `pull-request`                                                                                                 |
+| 7. Review    | Run the focus reviewers and address the findings            | `review`                                                                                                       |
 
 `ship` chains steps 4–6. `check-milestone` shows what is still missing in a milestone.
 
@@ -100,7 +100,7 @@ _Building blocks_ do one task and are reused by other skills; _workflows_ chain 
 - **moon:** [`moon-query`](.agents/skills/moon-query/SKILL.md), [`moon-run`](.agents/skills/moon-run/SKILL.md), [`moon-new-library`](.agents/skills/moon-new-library/SKILL.md), [`moon-new-app`](.agents/skills/moon-new-app/SKILL.md), [`moon-add-task`](.agents/skills/moon-add-task/SKILL.md)
 - **Quality:** [`verify`](.agents/skills/verify/SKILL.md), [`writing-style`](.agents/skills/writing-style/SKILL.md), [`rust-conventions`](.agents/skills/rust-conventions/SKILL.md), [`typescript-conventions`](.agents/skills/typescript-conventions/SKILL.md)
 - **Planning:** [`plan`](.agents/skills/plan/SKILL.md)
-- **UI:** [`ui-component`](.agents/skills/ui-component/SKILL.md)
+- **Stack:** [`seaorm-migration`](.agents/skills/seaorm-migration/SKILL.md), [`effect-service`](.agents/skills/effect-service/SKILL.md), [`ui-component`](.agents/skills/ui-component/SKILL.md) · workflow [`grpc-e2e`](.agents/skills/grpc-e2e/SKILL.md)
 - **Investigation:** [`debug`](.agents/skills/debug/SKILL.md), [`benchmark`](.agents/skills/benchmark/SKILL.md)
 - **Review:** [`review-security`](.agents/skills/review-security/SKILL.md), [`review-architecture`](.agents/skills/review-architecture/SKILL.md), [`review-code-quality`](.agents/skills/review-code-quality/SKILL.md), [`review-tests`](.agents/skills/review-tests/SKILL.md), [`review-project-rules`](.agents/skills/review-project-rules/SKILL.md) · workflow [`review`](.agents/skills/review/SKILL.md)
 - **Meta:** [`authoring-skills`](.agents/skills/authoring-skills/SKILL.md)

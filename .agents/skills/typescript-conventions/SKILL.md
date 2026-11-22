@@ -6,7 +6,7 @@ description: Sets evie's TypeScript conventions that the linter and formatter do
 # TypeScript conventions
 
 Rules the TypeScript compiler, linter and formatter don't check. For everything else, follow their output.
-Stack-specific patterns belong to their own skills (once they exist): Effect services, layers, `Config`, `Schema` and errors in `effect-service`, components in `ui-component`, backend calls in `grpc-rpc`.
+Stack-specific patterns belong to their own skills: Effect services, layers, `Config`, `Schema` and errors in `effect-service`, components in `ui-component`, backend calls in `grpc-e2e`.
 
 | Read                                               | When you                                             |
 | -------------------------------------------------- | ---------------------------------------------------- |

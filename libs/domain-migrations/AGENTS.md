@@ -7,12 +7,12 @@ The backend never migrates on start: it must run and report its health while Pos
 
 ## Structure
 
-| Path               | Contents                                                    |
-| ------------------ | ----------------------------------------------------------- |
-| `src/lib.rs`       | `Migrator`, which lists every migration, oldest first       |
-| `src/main.rs`      | The SeaORM migration CLI, run by the `migrate` task         |
-| `tests/migrate.rs` | Applies every migration to a fresh PostgreSQL container     |
-| `Cargo.toml`       | Crate manifest; version and edition come from the workspace |
+| Path               | Contents                                                            |
+| ------------------ | ------------------------------------------------------------------- |
+| `src/lib.rs`       | `Migrator`, which lists every migration, oldest first               |
+| `src/main.rs`      | The SeaORM migration CLI, run by the `migrate` task                 |
+| `tests/migrate.rs` | Applies and reverts every migration on a fresh PostgreSQL container |
+| `Cargo.toml`       | Crate manifest; version and edition come from the workspace         |
 
 ## Commands
 
@@ -32,6 +32,7 @@ For other CLI commands, run it from `libs/domain-migrations/`, e.g. `cargo run -
 ## Local rules
 
 - Follow the `rust-conventions` skill.
+- Add or change a migration with the `seaorm-migration` skill.
 - Never edit a migration that has been merged to `main`; add a new one that changes the schema further.
 - Add each migration to `Migrator::migrations` in order, and keep `down` working.
 - The migration CLI reads a `.env` file in this folder if one exists. Never read or write it; pass `DATABASE_URL` in the environment.

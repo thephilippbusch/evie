@@ -54,7 +54,7 @@ For a PR, the working tree may not match the PR. Read a changed file with `git s
 **Secrets**
 
 - No keys, tokens, passwords or `.env` files committed, including in tests, fixtures and docs.
-- Secrets are read through Effect `Config` (`Config.redacted`) or the Rust config at startup, never hard-coded.
+- Secrets are read through Effect `Config` (`Config.Redacted`) or the Rust config at startup, never hard-coded.
 - Logs and error messages never contain secrets, session tokens or passwords. Internal errors reach the client as a generic message.
 
 **GitHub workflows** (`.github/workflows/`)
