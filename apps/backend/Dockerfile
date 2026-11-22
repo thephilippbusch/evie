@@ -4,18 +4,15 @@
 #   docker build -f apps/backend/Dockerfile .                   # the backend
 #   docker build -f apps/backend/Dockerfile --target migrate .  # the migrations
 
-#### BASE: moon on the Rust image. moon uses the image's Rust instead of
-#### installing its own, so keep the tag at the Rust version in .prototools.
-FROM rust:1.99.1-slim-trixie AS base
+#### BASE: proto and moon. moon comes at the version in .prototools, and
+#### `moon docker setup` installs Rust from there too. The Rust image already
+#### has rustup and every tool proto needs, and the frontend shares this stage.
+FROM rust:latest AS base
 WORKDIR /app
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl xz-utils \
-    && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash -s -- --yes
+ENV PATH="/root/.proto/shims:/root/.proto/bin:$PATH"
 COPY .prototools ./
-RUN curl -fsSL https://moonrepo.dev/install/moon.sh \
-    | bash -s -- "$(sed -n 's/^moon = "\(.*\)"$/\1/p' .prototools)"
-ENV PATH="/root/.moon/bin:$PATH" \
-    MOON_TOOLCHAIN_FORCE_GLOBALS=1
+RUN proto install moon
 
 #### SKELETON: the workspace manifests, with stub sources for the other Cargo
 #### workspace members, and the sources of the backend and its `dependsOn`.
@@ -36,7 +33,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     && cp target/release/backend target/release/domain-migrations /out/
 
 #### START: one runtime for both binaries, as a non-root user.
-FROM debian:trixie-slim AS runtime
+FROM debian:stable-slim AS runtime
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/* \

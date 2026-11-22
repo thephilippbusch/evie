@@ -50,6 +50,6 @@ The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), shared
 - Follow the `rust-conventions` skill.
 - Run the backend locally with `cargo run` in `apps/backend/`, with `DATABASE_URL` set. Apply the migrations first with `moon run domain-migrations:migrate`.
 - Or run the whole stack with `docker compose up` at the repository root. Its `migrate` service applies the migrations, then the backend starts on the stack's network only, with no host port.
-- Build the images from the repository root, which is the build context: `docker build -f apps/backend/Dockerfile .` for the backend, `--target migrate` for the one-shot migrations. The image is built from a moon scaffold: keep `dependsOn` in `moon.yml` complete, since `moon docker scaffold` copies only the sources of the backend and its `dependsOn`. The base image tag carries the Rust version, so change it together with `.prototools`.
+- Build the images from the repository root, which is the build context: `docker build -f apps/backend/Dockerfile .` for the backend, `--target migrate` for the one-shot migrations. The image is built from a moon scaffold: keep `dependsOn` in `moon.yml` complete, since `moon docker scaffold` copies only the sources of the backend and its `dependsOn`.
 - Integration tests start PostgreSQL with `testcontainers`. Use the same image tag as `libs/domain-migrations/tests/migrate.rs`.
 - Add crates with `cargo add <crate>` inside `apps/backend/`. Commit `Cargo.lock`, since every task runs with `--locked`.
