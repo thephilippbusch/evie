@@ -38,7 +38,6 @@ services:
   migrate:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
       target: migrate
     environment:
       DATABASE_URL: postgres://evie:evie@postgres:5432/evie
@@ -50,7 +49,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
+      target: backend
     environment:
       DATABASE_URL: postgres://evie:evie@postgres:5432/evie
       LOG_FORMAT: pretty
@@ -61,7 +60,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: apps/frontend/Dockerfile
+      target: frontend
     ports:
       - '127.0.0.1:3000:3000'
     depends_on:

@@ -19,7 +19,6 @@ For now it renders one page inside the app shell; the backend call comes with th
 | `vite.config.ts`       | Vite with the SolidStart, Tailwind CSS and Nitro plugins                                        |
 | `tsconfig.json`        | Compiler options for Solid and the `~/` alias for `src/`; extends the root `tsconfig.base.json` |
 | `.output/`             | The production build (`bun .output/server/index.mjs`), not committed                            |
-| `Dockerfile`           | The image: builds the app from a moon scaffold and runs `.output` with bun on port 3000         |
 
 Biome and TypeScript are dev dependencies of the root `package.json`, and `biome.json` at the root configures Biome. Dependencies install into the root `bun.lock`.
 
@@ -37,7 +36,7 @@ Biome and TypeScript are dev dependencies of the root `package.json`, and `biome
 | `moon run frontend:format`    | Format the code and organize imports with Biome                          |
 
 For a dev server, run `bun run dev` in `apps/frontend/`.
-To run the app with the rest of the stack, run `docker compose up` at the repository root and open `http://127.0.0.1:3000`. Build the image alone from the repository root, which is the build context: `docker build -f apps/frontend/Dockerfile .`.
+To run the app with the rest of the stack, run `docker compose up` at the repository root and open `http://127.0.0.1:3000`. Build the image alone from the repository root with `docker build --target frontend .`. The root `Dockerfile` builds it from a moon scaffold and runs `.output` with bun on port 3000.
 
 ## Local rules
 

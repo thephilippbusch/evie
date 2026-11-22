@@ -20,7 +20,6 @@ The backend starts without a database and never migrates. The [`domain-migration
 | `tests/health.rs`     | Health checks with a reachable and an unreachable database          |
 | `tests/common/mod.rs` | Test helpers: a PostgreSQL container and a server on a free port    |
 | `Cargo.toml`          | Crate manifest; version and edition come from the workspace         |
-| `Dockerfile`          | The `backend` image (the default target) and the `migrate` image    |
 
 The workspace files live at the repository root: `Cargo.toml`, `Cargo.lock` and `rust-toolchain.toml`.
 
@@ -50,6 +49,6 @@ The tasks come from [`.moon/tasks/rust.yml`](../../.moon/tasks/rust.yml), shared
 - Follow the `rust-conventions` skill.
 - Run the backend locally with `cargo run` in `apps/backend/`, with `DATABASE_URL` set. Apply the migrations first with `moon run domain-migrations:migrate`.
 - Or run the whole stack with `docker compose up` at the repository root. Its `migrate` service applies the migrations, then the backend starts on the stack's network only, with no host port.
-- Build the images from the repository root, which is the build context: `docker build -f apps/backend/Dockerfile .` for the backend, `--target migrate` for the one-shot migrations. The image is built from a moon scaffold: keep `dependsOn` in `moon.yml` complete, since `moon docker scaffold` copies only the sources of the backend and its `dependsOn`.
+- The root `Dockerfile` builds the images: `docker build --target backend .` for the backend, `--target migrate` for the one-shot migrations, both from the repository root. They are built from a moon scaffold: keep `dependsOn` in `moon.yml` complete, since `moon docker scaffold` copies only the sources of the backend and its `dependsOn`.
 - Integration tests start PostgreSQL with `testcontainers`. Use the same image tag as `libs/domain-migrations/tests/migrate.rs`.
 - Add crates with `cargo add <crate>` inside `apps/backend/`. Commit `Cargo.lock`, since every task runs with `--locked`.
