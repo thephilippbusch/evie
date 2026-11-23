@@ -20,7 +20,7 @@ Run tasks through moon, not by calling `bun`, `cargo` or a script directly. moon
 | The build and test tasks of one project       | `moon check <project>`                                                 |
 | The build and test tasks a change affects     | `moon check --all --affected`                                          |
 | ... affected by the branch, vs. `main`        | `moon check --all --affected remote`                                   |
-| Everything CI runs for this branch            | `moon ci`                                                              |
+| The moon tasks CI runs for this branch        | `moon ci`                                                              |
 | Pass arguments to the underlying command      | `moon run <project>:<task> -- <args>`                                  |
 | Ignore the cache and the affected check       | add `--force`                                                          |
 | See a task's output live                      | add `--output-style stream`                                            |
@@ -29,7 +29,7 @@ Run tasks through moon, not by calling `bun`, `cargo` or a script directly. moon
 
 1. Find the affected projects with the `moon-query` skill, if you need the list.
 2. Run `moon check --all --affected` for uncommitted work, or `moon check --all --affected remote` for the whole branch.
-3. Before a PR, run `moon ci`. It compares the branch with `main` and runs exactly the tasks CI runs.
+3. Before a PR, run `moon ci`. It compares the branch with `main` and runs exactly the moon tasks CI runs. CI also builds the affected Docker images outside moon; the `verify` skill says how to build them locally.
 4. On a failure, rerun the failing target alone: `moon run <project>:<task> --output-style stream`.
 
 The `verify` skill wraps these steps.
