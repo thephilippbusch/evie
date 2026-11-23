@@ -1,5 +1,5 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@evie/ui/card";
-import type { PingView } from "./get-ping";
+import type { PingView } from "./ping-view";
 
 /** The texts of the backend status, in the reader's language. */
 export type PingStatusTexts = {
