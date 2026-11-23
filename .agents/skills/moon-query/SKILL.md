@@ -41,7 +41,7 @@ Prefer the moon MCP tools. Fall back to the CLI when they aren't available, or w
 
 - Every folder in `apps/`, `libs/` and `tools/` is a project, matched by the globs in `.moon/workspace.yml`. Its ID is the folder name and its `source` is the folder.
 - The repository root is the `root` project, with source `.`.
-- A file belongs to the project with the deepest `source` that contains it: `apps/web/src/app.tsx` → `web`, `scripts/format-staged.sh` → `root`.
+- A file belongs to the project with the deepest `source` that contains it: `apps/web/src/app.tsx` → `web`, `.prototools` → `root`.
 - Since `root` contains every file, moon lists `root` as affected by any change. Only `root` tasks whose `inputs` match a changed file run, such as `root:validate-agent-files` for skill and `AGENTS.md` changes.
 
 ## Steps: what does a change affect

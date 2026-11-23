@@ -44,5 +44,5 @@ A workflow step that runs `cargo update --workspace` on the release PR branch wo
 
 ## Check
 
-- `uvx check-jsonschema --schemafile https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json release-please-config.json` passes.
+- `release-please-config.json` is valid against the schema in its `$schema` field: an editor with JSON Schema support, such as VS Code, shows no errors in it.
 - The next release PR changes every registered file to the new version.

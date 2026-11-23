@@ -11,7 +11,7 @@ The root `moon.yml` is the style reference: read it before you add a task.
 
 1. Pick the file:
    - `<project>/moon.yml` for a task of one app or library.
-   - The root `moon.yml` for a repo-wide task. It runs from the repository root, as `root:<task>`, and its script goes in `scripts/`.
+   - The root `moon.yml` for a repo-wide task. It runs from the repository root, as `root:<task>`. Code it needs becomes an `evie-dev` subcommand, never a shell script: see `tools/evie-dev/AGENTS.md`.
    - A file in `.moon/tasks/` for a task that every project of a kind needs. See [Inherited tasks](#inherited-tasks).
 2. Name the task. Use a standard name where it fits, so `moon run :<task>` reaches every project: `build`, `lint`, `check`, `typecheck`, `format`, `test`, `codegen`, `migrate`. `lint` only lints. `check` is every static check without writing: it depends on the project's `lint` and `typecheck` tasks, runs the format check itself, and never builds or runs tests. Add a new static check to `check` too. Otherwise use a kebab-case name that starts with a verb, like `validate-agent-files`.
 3. Write the task with the keys below, in this order. Add a YAML comment for every choice that isn't obvious, such as why a task isn't cached.
@@ -37,7 +37,7 @@ tasks:
 | Key           | Rule                                                                                                                                                                                                                                                             |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `description` | One sentence on what it does. Name who runs it if that isn't a person, e.g. "Run by the pre-commit hook."                                                                                                                                                        |
-| `command`     | The command line. A root script runs as `sh scripts/<name>.sh`.                                                                                                                                                                                                  |
+| `command`     | The command line. A repo-wide script runs as `sh tools/evie-dev/bin/evie-dev <subcommand>`, which builds evie-dev when needed.                                                                                                                                   |
 | `type`        | `build` if it creates `outputs`; `test` for checks such as lint, typecheck, tests and validation; `run` for servers, hooks and tasks that change files, such as `format` and `migrate`. `moon check` and `moon ci` skip `run` tasks.                             |
 | `deps`        | Tasks that must run first: `~:<task>` in the same project, `^:<task>` in every project listed in `dependsOn`, `<project>:<task>` for one project.                                                                                                                |
 | `inputs`      | The files whose changes should rerun the task, relative to the project; `/` starts a repo-root path. Always set them: without `inputs`, every file in the project counts. `inputs: []` means the task is never affected, only for tasks run by hand or by hooks. |

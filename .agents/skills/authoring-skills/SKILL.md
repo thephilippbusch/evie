@@ -26,7 +26,7 @@ There is one skills directory, at the repo root. No per-project skill directorie
 
 ## Budgets
 
-The source of truth for the CI validator, `scripts/validate-agent-files.sh`. Lines are counted with `wc -l` over the whole file, frontmatter included. "Guide" rows are advice; CI doesn't check them.
+The source of truth for the CI validator, `evie-dev validate-agent-files` in `tools/evie-dev`. Lines are counted with `wc -l` over the whole file, frontmatter included. "Guide" rows are advice; CI doesn't check them.
 
 | What                                                | Limit                                                                                             | CI    |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----- |
@@ -51,6 +51,11 @@ The source of truth for the CI validator, `scripts/validate-agent-files.sh`. Lin
 - A _workflow_ chains building blocks as numbered steps and adds no task logic of its own, e.g. `ship` = `verify` → `commit` → `pull-request`.
 
 Details in [references/skills.md](references/skills.md#building-blocks-and-workflows).
+
+## Scripts
+
+- A skill's `scripts/` folder holds scripts the agent runs for that skill. They stay portable, since other agents use the skill too.
+- Every other repository script, such as a hook, a repo-wide check or a CI step that grows past a few lines, becomes an `evie-dev` subcommand in `tools/evie-dev`, not a shell script. Read `tools/evie-dev/AGENTS.md` before you add one, and call it from a moon task with the `moon-add-task` skill.
 
 ## Skills referencing each other
 
