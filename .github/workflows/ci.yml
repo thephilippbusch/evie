@@ -38,6 +38,12 @@ jobs:
         with:
           auto-install: true
       - run: moon ci
+      # The `check` tasks cover the code's formatting; dprint covers Markdown,
+      # JSON and YAML. Only the changed files, as the verify skill checks them.
+      - name: Check formatting
+        # bash with pipefail, so a failing moon query fails the step.
+        shell: bash
+        run: moon query changed-files --remote | jq -r '.files[]' | dprint check --stdin-files --allow-no-files --list-different
 
   # Image builds stay out of `moon ci`, so a local verify doesn't need Docker.
   # This job picks the Dockerfile targets the change can break.
