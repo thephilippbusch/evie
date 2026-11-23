@@ -1,3 +1,7 @@
+// Each test file compiles this module on its own and uses only some of the
+// helpers, so the rest would be dead code there.
+#![allow(dead_code)]
+
 use std::{net::SocketAddr, time::Duration};
 
 use backend::HealthSettings;
@@ -53,6 +57,7 @@ pub async fn unreachable_database_url() -> String {
 /// The backend, served on a free local port.
 pub struct TestServer {
     addr: SocketAddr,
+    channel: Channel,
     client: HealthClient<Channel>,
     shutdown: CancellationToken,
     served: JoinHandle<Result<(), backend::ServeError>>,
@@ -70,13 +75,20 @@ impl TestServer {
             .connect()
             .await
             .unwrap();
-        let client = HealthClient::new(channel);
+        let client = HealthClient::new(channel.clone());
         Self {
             addr,
+            channel,
             client,
             shutdown,
             served,
         }
+    }
+
+    /// A channel to the server, for the client of the service under test.
+    /// Drop every client built on it before `stop`.
+    pub fn channel(&self) -> Channel {
+        self.channel.clone()
     }
 
     /// The server's status, from the health service's `Check` RPC.
@@ -119,6 +131,7 @@ impl TestServer {
     /// without an error in time, and the port no longer accepts connections.
     pub async fn stop(self) {
         drop(self.client);
+        drop(self.channel);
         self.shutdown.cancel();
 
         tokio::time::timeout(STATUS_TIMEOUT, self.served)

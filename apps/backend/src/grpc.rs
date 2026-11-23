@@ -1,3 +1,6 @@
+mod ping;
+
+use evie_proto::evie::ping::v1::ping_service_server::PingServiceServer;
 use sea_orm::DatabaseConnection;
 use thiserror::Error;
 use tokio::{net::TcpListener, task::JoinError};
@@ -39,6 +42,7 @@ pub async fn serve(
 
     let served = Server::builder()
         .add_service(health_service)
+        .add_service(PingServiceServer::new(ping::PingApi))
         .serve_with_incoming_shutdown(
             TcpIncoming::from(listener),
             shutdown.clone().cancelled_owned(),

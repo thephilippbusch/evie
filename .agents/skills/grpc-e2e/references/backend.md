@@ -29,6 +29,7 @@ Read `apps/backend/AGENTS.md` and follow the `rust-conventions` skill. The handl
    ```
 
    In `stop`, drop `self.channel` next to `self.client`, so the shutdown doesn't wait for an open connection.
+   With a second test file, each file leaves some helpers unused, and clippy fails on dead code: start `tests/common/mod.rs` with `#![allow(dead_code)]`.
 5. Update the Purpose and Structure of `apps/backend/AGENTS.md`: the backend now serves more than the health service.
 
 ## Handler

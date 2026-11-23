@@ -8,8 +8,8 @@ project:
 
 # Libraries this app uses, so changes to them affect it. The image ships the
 # domain-migrations binary as its `migrate` target, so `moon docker scaffold`
-# needs it here.
-dependsOn: ['domain-migrations']
+# needs it here. proto holds the generated gRPC services the backend serves.
+dependsOn: ['domain-migrations', 'proto']
 
 # build, lint, check, test and format come from .moon/tasks/rust.yml.
 tasks: {}
