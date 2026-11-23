@@ -42,6 +42,17 @@ impl FormatStagedError {
             _ => 1,
         }
     }
+
+    /// The text for stderr. Empty for a failed command, which printed its
+    /// own error.
+    pub fn report(&self) -> String {
+        match self {
+            Self::DprintMissing => format!("{self}\n"),
+            Self::PartlyStagedNotFormatted => format!("\n{self}\n"),
+            Self::Failed { .. } => String::new(),
+            Self::Spawn { source, .. } => format!("evie-dev: {self}: {source}\n"),
+        }
+    }
 }
 
 /// Formats the files staged in `repo`, using the given dprint executable.

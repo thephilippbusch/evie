@@ -7,7 +7,7 @@ use anyhow::Context;
 use clap::{Parser, Subcommand};
 use evie_dev::agent_files;
 use evie_dev::commit_msg::{self, Subject};
-use evie_dev::format_staged::{self, FormatStagedError};
+use evie_dev::format_staged;
 use evie_dev::pre_tool_use::{self, Blocked};
 
 /// The repository's development tool. Run it through `tools/evie-dev/bin/evie-dev`,
@@ -85,15 +85,8 @@ fn format_staged() -> ExitCode {
     let Err(err) = format_staged::run(Path::new("."), OsStr::new("dprint")) else {
         return ExitCode::SUCCESS;
     };
-    let code = err.exit_code();
-    match err {
-        FormatStagedError::DprintMissing => eprintln!("{err}"),
-        FormatStagedError::PartlyStagedNotFormatted => eprintln!("\n{err}"),
-        // The command printed its own error.
-        FormatStagedError::Failed { .. } => {}
-        FormatStagedError::Spawn { .. } => eprintln!("evie-dev: {:#}", anyhow::Error::new(err)),
-    }
-    exit_code(code)
+    eprint!("{}", err.report());
+    exit_code(err.exit_code())
 }
 
 fn validate_agent_files() -> anyhow::Result<ExitCode> {
@@ -105,40 +98,26 @@ fn validate_agent_files() -> anyhow::Result<ExitCode> {
     for problem in &problems {
         eprintln!("{problem}");
     }
-    eprintln!(
-        "\n{} problem(s) found. See the budgets in {}/authoring-skills/SKILL.md.",
-        problems.len(),
-        agent_files::SKILLS_DIR
-    );
+    eprintln!("\n{}", agent_files::summary(problems.len()));
     Ok(ExitCode::FAILURE)
 }
 
-/// Claude Code blocks a tool call when its hook exits with 2. Every other
-/// failure would let the call through, so this fails closed: unreadable
-/// input and panics block too.
+/// Fails closed: unreadable input and panics block the call too, since any
+/// exit code but 2 would let it through.
 fn pre_tool_use() -> ExitCode {
-    const BLOCK: u8 = 2;
     let mut input = String::new();
-    if std::io::stdin().read_to_string(&mut input).is_err() {
-        eprintln!(
-            "{}",
-            Blocked("the hook input could not be read.".to_owned())
-        );
-        return ExitCode::from(BLOCK);
-    }
-    let env = pre_tool_use::Env::from_process();
-    match std::panic::catch_unwind(|| pre_tool_use::check(&input, &env)) {
-        Ok(Ok(())) => ExitCode::SUCCESS,
-        Ok(Err(blocked)) => {
-            eprintln!("{blocked}");
-            ExitCode::from(BLOCK)
-        }
-        Err(_) => {
-            eprintln!(
-                "{}",
-                Blocked("the guardrails crashed while checking this call.".to_owned())
-            );
-            ExitCode::from(BLOCK)
+    let result = if std::io::stdin().read_to_string(&mut input).is_err() {
+        Err(Blocked::UnreadableInput)
+    } else {
+        let env = pre_tool_use::Env::from_process();
+        std::panic::catch_unwind(|| pre_tool_use::check(&input, &env))
+            .unwrap_or(Err(Blocked::Crashed))
+    };
+    match result {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(blocked) => {
+            eprintln!("{}", blocked.report());
+            ExitCode::from(Blocked::EXIT_CODE)
         }
     }
 }

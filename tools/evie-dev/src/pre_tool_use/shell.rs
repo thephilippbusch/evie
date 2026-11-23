@@ -7,7 +7,7 @@
 
 use std::process::{Command, Stdio};
 
-use super::paths::{self, Rule};
+use super::paths::{self, Rules};
 use super::pattern;
 use super::{Blocked, MSG_DRIZZLE, MSG_FORCE, MSG_MAIN};
 
@@ -23,11 +23,11 @@ const WRAPPERS: [&str; 21] = [
 const SHELLS: [&str; 5] = ["sh", "bash", "zsh", "dash", "ksh"];
 const REDIRECTS: [&str; 5] = [">", ">&", "<", "<&", "<<<"];
 
-pub struct Analyzer<'a> {
+pub(crate) struct Analyzer<'a> {
     /// The working directory of the current simple command; `cd` changes it.
     cwd: String,
     home: &'a str,
-    rules: &'a [Rule],
+    rules: &'a Rules,
 }
 
 /// The words of the simple command being read.
@@ -53,11 +53,11 @@ impl Words {
 }
 
 impl<'a> Analyzer<'a> {
-    pub fn new(cwd: String, home: &'a str, rules: &'a [Rule]) -> Self {
+    pub(crate) fn new(cwd: String, home: &'a str, rules: &'a Rules) -> Self {
         Self { cwd, home, rules }
     }
 
-    pub fn analyze(&mut self, command: &str, depth: usize) -> Result<(), Blocked> {
+    pub(crate) fn analyze(&mut self, command: &str, depth: usize) -> Result<(), Blocked> {
         if depth > MAX_DEPTH {
             return Ok(());
         }
@@ -188,10 +188,7 @@ impl<'a> Analyzer<'a> {
 
     fn check_write(&self, path: &str) -> Result<(), Blocked> {
         let absolute = paths::absolute(path, &self.cwd, self.home);
-        match paths::protected(&absolute, self.rules) {
-            Some(message) => Err(Blocked(message)),
-            None => Ok(()),
-        }
+        paths::protected(&absolute, self.rules)
     }
 
     fn check_segment(&mut self, a: &[String], depth: usize) -> Result<(), Blocked> {
@@ -281,7 +278,7 @@ impl<'a> Analyzer<'a> {
                 name if name == "drizzle-kit" || name.starts_with("drizzle-kit@") => {
                     drizzle_kit = true;
                 }
-                "push" if drizzle_kit => return Err(Blocked(MSG_DRIZZLE.to_owned())),
+                "push" if drizzle_kit => return Err(Blocked::Rule(MSG_DRIZZLE.to_owned())),
                 _ => {}
             }
         }
@@ -356,28 +353,28 @@ impl<'a> Analyzer<'a> {
 
         let refspecs = positional.get(1..).unwrap_or_default();
         if force {
-            return Err(Blocked(MSG_FORCE.to_owned()));
+            return Err(Blocked::Rule(MSG_FORCE.to_owned()));
         }
         if refspecs.iter().any(|spec| spec.starts_with('+')) {
-            return Err(Blocked(format!(
+            return Err(Blocked::Rule(format!(
                 "{MSG_FORCE} (a `+` refspec forces the update)"
             )));
         }
         if all {
-            return Err(Blocked(format!(
+            return Err(Blocked::Rule(format!(
                 "{MSG_MAIN} (`--all`, `--branches` and `--mirror` push `main` too)"
             )));
         }
         let branch = git_output(&git_dir, &["branch", "--show-current"]);
         if refspecs.is_empty() {
             if branch == "main" {
-                return Err(Blocked(format!(
+                return Err(Blocked::Rule(format!(
                     "{MSG_MAIN} (you are on `main`, so a plain `git push` pushes it)"
                 )));
             }
             let upstream = git_output(&git_dir, &["rev-parse", "--abbrev-ref", "@{push}"]);
             if pattern::matches("*/main", &upstream, false) {
-                return Err(Blocked(format!(
+                return Err(Blocked::Rule(format!(
                     "{MSG_MAIN} (this branch pushes to `{upstream}`; push with an explicit branch name)"
                 )));
             }
@@ -394,7 +391,7 @@ impl<'a> Analyzer<'a> {
                 .strip_prefix("refs/heads/")
                 .unwrap_or(destination);
             if destination == "main" {
-                return Err(Blocked(MSG_MAIN.to_owned()));
+                return Err(Blocked::Rule(MSG_MAIN.to_owned()));
             }
         }
         Ok(())
@@ -522,7 +519,7 @@ fn is_secret(word: &str) -> bool {
 
 fn check_secret(word: &str) -> Result<(), Blocked> {
     if is_secret(word) {
-        return Err(Blocked(format!(
+        return Err(Blocked::Rule(format!(
             "`{word}` looks like a secret (.env file, key or credentials). Agents never read, print, copy or edit secrets. Use `.env.example` for variable names, or ask the user."
         )));
     }

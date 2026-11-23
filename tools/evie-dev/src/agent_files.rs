@@ -31,8 +31,8 @@ use thiserror::Error;
 use frontmatter::{field, has_frontmatter};
 use links::relative_links;
 
-pub const SKILLS_DIR: &str = ".agents/skills";
-pub const AGENTS_DIR: &str = ".claude/agents";
+pub(crate) const SKILLS_DIR: &str = ".agents/skills";
+pub(crate) const AGENTS_DIR: &str = ".claude/agents";
 
 const SKILL_MD_LINES: usize = 500;
 const SUBAGENT_LINES: usize = 100;
@@ -59,6 +59,13 @@ impl fmt::Display for Problem {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}: {}", self.path, self.message)
     }
+}
+
+/// The last line of a failed check, which points to the budgets.
+pub fn summary(problems: usize) -> String {
+    format!(
+        "{problems} problem(s) found. See the budgets in {SKILLS_DIR}/authoring-skills/SKILL.md."
+    )
 }
 
 /// Checks the agent files of the repository at `root`, in the order the

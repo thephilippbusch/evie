@@ -34,4 +34,7 @@ if stale; then
   touch "$bin"
 fi
 
+# pre-tool-use reads .claude/hooks/protected-paths.txt from this repository.
+EVIE_DEV_ROOT=$root
+export EVIE_DEV_ROOT
 exec "$bin" "$@"

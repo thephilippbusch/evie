@@ -4,12 +4,12 @@ use thiserror::Error;
 
 /// The types a header may start with: the standard Conventional Commit types
 /// plus `ai` for agent configuration.
-pub const TYPES: [&str; 12] = [
+pub(crate) const TYPES: [&str; 12] = [
     "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert",
     "ai",
 ];
 
-pub const MAX_HEADER_LENGTH: usize = 100;
+pub(crate) const MAX_HEADER_LENGTH: usize = 100;
 
 /// Headers that git and GitHub write themselves. A commit message may start
 /// with them; a PR title may not, since it becomes the squash commit on `main`.

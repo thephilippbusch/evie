@@ -4,15 +4,15 @@
 use std::path::Path;
 use std::process::{Command, Stdio};
 
-use super::pattern;
+use super::{Blocked, pattern};
 
-pub const PROTECTED_PATHS: &str = ".claude/hooks/protected-paths.txt";
+pub(crate) const PROTECTED_PATHS: &str = ".claude/hooks/protected-paths.txt";
 const ASK: &str = "If this file really needs a change, stop and ask the user.";
 
 /// The absolute form of `path`, relative to `base`, with `.`, `..` and `//`
 /// removed and the deepest existing directory resolved through symlinks
 /// (`/tmp` becomes `/private/tmp`). `~/` starts at `home`.
-pub fn absolute(path: &str, base: &str, home: &str) -> String {
+pub(crate) fn absolute(path: &str, base: &str, home: &str) -> String {
     // Only the first line counts, as with `read` in a shell.
     let path = path.split('\n').next().unwrap_or_default();
     let joined = if path.starts_with('/') {
@@ -57,17 +57,21 @@ pub fn absolute(path: &str, base: &str, home: &str) -> String {
 
 /// One line of `protected-paths.txt`: a glob and the reason shown to the agent.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Rule {
+pub(crate) struct Rule {
     pattern: String,
     reason: String,
 }
 
-/// The rules of a `protected-paths.txt`. A file that can't be read protects
-/// nothing.
-pub fn read_rules(file: &Path) -> Vec<Rule> {
-    std::fs::read_to_string(file)
-        .map(|content| parse_rules(&content))
-        .unwrap_or_default()
+/// The protected-path rules, or why they couldn't be read.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum Rules {
+    Loaded(Vec<Rule>),
+    Unreadable { file: String, reason: String },
+}
+
+/// The rules of a `protected-paths.txt`.
+pub(crate) fn read_rules(file: &Path) -> std::io::Result<Vec<Rule>> {
+    std::fs::read_to_string(file).map(|content| parse_rules(&content))
 }
 
 fn parse_rules(content: &str) -> Vec<Rule> {
@@ -91,19 +95,35 @@ fn is_space(c: char) -> bool {
 
 /// The message for the agent when `absolute` is a protected path of the git
 /// repository it lies in.
-pub fn protected(absolute: &str, rules: &[Rule]) -> Option<String> {
-    if rules.is_empty() {
-        return None;
+///
+/// A path outside any git repository is never protected. Without readable
+/// rules, every path inside one is blocked, so a lost list fails closed.
+pub(crate) fn protected(absolute: &str, rules: &Rules) -> Result<(), Blocked> {
+    if matches!(rules, Rules::Loaded(rules) if rules.is_empty()) {
+        return Ok(());
     }
     let mut dir = absolute.rsplit_once('/').map_or(absolute, |(dir, _)| dir);
     while !dir.is_empty() && !Path::new(dir).is_dir() {
         dir = dir.rsplit_once('/').map_or("", |(parent, _)| parent);
     }
-    let top = git_toplevel(if dir.is_empty() { "/" } else { dir })?;
-    let rel = absolute.strip_prefix(&format!("{top}/"))?;
+    let Some(top) = git_toplevel(if dir.is_empty() { "/" } else { dir }) else {
+        return Ok(());
+    };
+    let Some(rel) = absolute.strip_prefix(&format!("{top}/")) else {
+        return Ok(());
+    };
+    let rules = match rules {
+        Rules::Loaded(rules) => rules,
+        Rules::Unreadable { file, reason } => {
+            return Err(Blocked::UnreadableRules {
+                file: file.clone(),
+                reason: reason.clone(),
+            });
+        }
+    };
     let name = rel.rsplit('/').next().unwrap_or(rel);
 
-    let rule = rules.iter().find(|rule| {
+    let Some(rule) = rules.iter().find(|rule| {
         let pattern = rule.pattern.as_str();
         if pattern.ends_with('/') {
             pattern::matches(&format!("{pattern}*"), rel, true)
@@ -117,16 +137,18 @@ pub fn protected(absolute: &str, rules: &[Rule]) -> Option<String> {
         } else {
             pattern::matches(pattern, name, true)
         }
-    })?;
+    }) else {
+        return Ok(());
+    };
     let reason = if rule.reason.is_empty() {
         "It must not be edited by hand."
     } else {
         &rule.reason
     };
-    Some(format!(
+    Err(Blocked::Rule(format!(
         "`{rel}` is protected (rule `{}` in {PROTECTED_PATHS}). {reason} {ASK}",
         rule.pattern
-    ))
+    )))
 }
 
 fn git_toplevel(dir: &str) -> Option<String> {

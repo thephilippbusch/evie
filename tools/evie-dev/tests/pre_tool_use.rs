@@ -66,10 +66,17 @@ fn repos() -> Repos {
 
 /// Runs the hook with `input` as the tool call, in and for `repo`.
 fn hook(repo: &Path, input: &serde_json::Value) -> Output {
+    hook_with_env(repo, &[("CLAUDE_PROJECT_DIR", repo)], input)
+}
+
+/// Runs the hook in `repo` with only the given project variables set.
+fn hook_with_env(repo: &Path, env: &[(&str, &Path)], input: &serde_json::Value) -> Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_evie-dev"))
         .arg("pre-tool-use")
         .current_dir(repo)
-        .env("CLAUDE_PROJECT_DIR", repo)
+        .env_remove("EVIE_DEV_ROOT")
+        .env_remove("CLAUDE_PROJECT_DIR")
+        .envs(env.iter().copied())
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -359,4 +366,82 @@ fn blocks_input_that_is_not_json() {
     let output = child.wait_with_output().unwrap();
 
     assert_blocked(&output, "not json", "not valid JSON");
+}
+
+fn bash_with_env(repo: &Path, env: &[(&str, &Path)], command: &str) -> Output {
+    hook_with_env(
+        repo,
+        env,
+        &serde_json::json!({
+            "tool_name": "Bash",
+            "tool_input": { "command": command },
+            "cwd": repo,
+        }),
+    )
+}
+
+const UNREADABLE: &str = "so the guardrails cannot tell which paths are protected";
+
+#[test]
+fn reads_the_rules_from_evie_dev_root_first() {
+    let repos = repos();
+    let without_rules = TempRepo::new();
+    let env = [
+        ("EVIE_DEV_ROOT", repos.work.path()),
+        ("CLAUDE_PROJECT_DIR", without_rules.path()),
+    ];
+
+    let output = bash_with_env(repos.work.path(), &env, "echo x > CHANGELOG.md");
+
+    assert_blocked(&output, "EVIE_DEV_ROOT", PROTECTED);
+}
+
+#[test]
+fn blocks_writes_inside_a_repository_when_the_rules_file_is_missing() {
+    let repo = TempRepo::new();
+    let env = [("CLAUDE_PROJECT_DIR", repo.path())];
+    let missing = repo.join(".claude/hooks/protected-paths.txt");
+
+    for command in ["echo x > notes.md", "rm README.md"] {
+        let output = bash_with_env(repo.path(), &env, command);
+
+        assert_blocked(&output, command, UNREADABLE);
+        assert!(
+            String::from_utf8_lossy(&output.stderr).contains(missing.to_str().unwrap()),
+            "{command}: the reason names the file"
+        );
+    }
+    let edit = serde_json::json!({
+        "tool_name": "Edit",
+        "tool_input": { "file_path": "README.md" },
+        "cwd": repo.path(),
+    });
+    assert_blocked(&hook_with_env(repo.path(), &env, &edit), "Edit", UNREADABLE);
+}
+
+#[test]
+fn allows_reads_and_writes_outside_a_repository_when_the_rules_file_is_missing() {
+    let repo = TempRepo::new();
+    let env = [("CLAUDE_PROJECT_DIR", repo.path())];
+
+    for command in ["ls -la", "cat README.md", "echo x > /nonexistent/notes.md"] {
+        assert_allowed(&bash_with_env(repo.path(), &env, command), command);
+    }
+}
+
+#[test]
+fn blocks_writes_when_the_rules_file_is_unreadable() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let repos = repos();
+    let rules = repos.work.join(".claude/hooks/protected-paths.txt");
+    std::fs::set_permissions(&rules, std::fs::Permissions::from_mode(0o000)).unwrap();
+    if std::fs::read(&rules).is_ok() {
+        // Running as root, which reads the file anyway.
+        return;
+    }
+
+    let output = bash(repos.work.path(), "echo x > notes.md");
+
+    assert_blocked(&output, "unreadable", UNREADABLE);
 }

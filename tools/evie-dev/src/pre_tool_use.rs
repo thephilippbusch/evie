@@ -17,59 +17,84 @@ mod paths;
 mod pattern;
 mod shell;
 
-use std::fmt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 use serde_json::Value;
+use thiserror::Error;
 
-pub use paths::PROTECTED_PATHS;
+use paths::{PROTECTED_PATHS, Rules};
 
 const MSG_FORCE: &str = "force-pushing is not allowed (AGENTS.md rules). Push new commits instead of rewriting pushed history. If a force-push is really needed, ask the user to run it.";
 const MSG_MAIN: &str = "pushing to `main` is not allowed (AGENTS.md rules). Work on a branch, push that branch and open a PR.";
 const MSG_DRIZZLE: &str = "`drizzle-kit push` is for humans in local dev only. Generate a migration, review it and apply it with `moon run :migrate`, or ask the user to push their local database.";
 
-/// A blocked tool call, with the reason for the agent.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Blocked(pub String);
+/// Why a tool call is blocked. The message is the reason for the agent.
+#[derive(Debug, Clone, PartialEq, Eq, Error)]
+pub enum Blocked {
+    #[error("the hook input is not valid JSON, so the guardrails cannot check this call.")]
+    InvalidJson,
 
-impl fmt::Display for Blocked {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Blocked by evie-dev pre-tool-use: {}", self.0)
-    }
+    #[error("the hook input could not be read.")]
+    UnreadableInput,
+
+    #[error("the guardrails crashed while checking this call.")]
+    Crashed,
+
+    #[error(
+        "`{file}` could not be read ({reason}), so the guardrails cannot tell which paths are protected. Ask the user to restore it."
+    )]
+    UnreadableRules { file: String, reason: String },
+
+    /// A guardrail rule: a force-push, a push to `main`, `drizzle-kit push`,
+    /// a secret or a protected path.
+    #[error("{0}")]
+    Rule(String),
 }
 
-impl std::error::Error for Blocked {}
+impl Blocked {
+    /// Claude Code blocks a tool call when its hook exits with 2. Any other
+    /// failure lets the call through.
+    pub const EXIT_CODE: u8 = 2;
+
+    /// The text for stderr, which Claude Code shows the agent.
+    pub fn report(&self) -> String {
+        format!("Blocked by evie-dev pre-tool-use: {self}")
+    }
+}
 
 /// What the hook reads from its environment.
 #[derive(Debug, Clone)]
 pub struct Env {
+    /// `EVIE_DEV_ROOT`: the repository the launcher runs from.
+    pub(crate) dev_root: Option<String>,
     /// `CLAUDE_PROJECT_DIR`: the checkout Claude Code runs in.
-    pub project_dir: Option<String>,
+    pub(crate) project_dir: Option<String>,
     /// `HOME`, for `~/` and a bare `cd`.
-    pub home: String,
+    pub(crate) home: String,
     /// The process's working directory, used when the input has no `cwd`.
-    pub current_dir: String,
+    pub(crate) current_dir: String,
 }
 
 impl Env {
     pub fn from_process() -> Self {
+        let var = |name: &str| std::env::var(name).ok().filter(|value| !value.is_empty());
         let current_dir = std::env::current_dir()
             .map(|dir| dir.to_string_lossy().into_owned())
             .unwrap_or_default();
         Self {
-            project_dir: std::env::var("CLAUDE_PROJECT_DIR")
-                .ok()
-                .filter(|dir| !dir.is_empty()),
-            home: std::env::var("HOME").unwrap_or_default(),
+            dev_root: var("EVIE_DEV_ROOT"),
+            project_dir: var("CLAUDE_PROJECT_DIR"),
+            home: var("HOME").unwrap_or_default(),
             current_dir,
         }
     }
 
-    /// The protected-path list of the project: `CLAUDE_PROJECT_DIR`, or else
-    /// the git repository of the working directory.
+    /// The protected-path list: in `EVIE_DEV_ROOT`, which the launcher sets,
+    /// else in `CLAUDE_PROJECT_DIR`, else in the git repository of the
+    /// working directory.
     fn protected_paths(&self) -> Option<PathBuf> {
-        let root = match &self.project_dir {
+        let root = match self.dev_root.as_ref().or(self.project_dir.as_ref()) {
             Some(dir) => dir.clone(),
             None => {
                 let output = Command::new("git")
@@ -87,16 +112,27 @@ impl Env {
         };
         Some(Path::new(&root).join(PROTECTED_PATHS))
     }
+
+    fn rules(&self) -> Rules {
+        let Some(file) = self.protected_paths() else {
+            return Rules::Unreadable {
+                file: PROTECTED_PATHS.to_owned(),
+                reason: "no repository was found to read it from".to_owned(),
+            };
+        };
+        match paths::read_rules(&file) {
+            Ok(rules) => Rules::Loaded(rules),
+            Err(err) => Rules::Unreadable {
+                file: file.display().to_string(),
+                reason: err.to_string(),
+            },
+        }
+    }
 }
 
 /// Checks one tool call, given as the hook's JSON input.
 pub fn check(input: &str, env: &Env) -> Result<(), Blocked> {
-    let input: Value = serde_json::from_str(input).map_err(|_| {
-        Blocked(
-            "the hook input is not valid JSON, so the guardrails cannot check this call."
-                .to_owned(),
-        )
-    })?;
+    let input: Value = serde_json::from_str(input).map_err(|_| Blocked::InvalidJson)?;
     let cwd = Some(text(&input["cwd"]))
         .filter(|cwd| !cwd.is_empty() && Path::new(cwd).is_dir())
         .unwrap_or_else(|| {
@@ -104,10 +140,7 @@ pub fn check(input: &str, env: &Env) -> Result<(), Blocked> {
                 .clone()
                 .unwrap_or_else(|| env.current_dir.clone())
         });
-    let rules = env
-        .protected_paths()
-        .map(|file| paths::read_rules(&file))
-        .unwrap_or_default();
+    let rules = env.rules();
 
     match text(&input["tool_name"]).as_str() {
         "Edit" | "Write" | "MultiEdit" | "NotebookEdit" => {
@@ -118,11 +151,7 @@ pub fn check(input: &str, env: &Env) -> Result<(), Blocked> {
             if path.is_empty() {
                 return Ok(());
             }
-            let absolute = paths::absolute(&path, &cwd, &env.home);
-            match paths::protected(&absolute, &rules) {
-                Some(message) => Err(Blocked(message)),
-                None => Ok(()),
-            }
+            paths::protected(&paths::absolute(&path, &cwd, &env.home), &rules)
         }
         "Bash" => {
             let command = text(&input["tool_input"]["command"]);
