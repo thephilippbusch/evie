@@ -8,15 +8,24 @@ on:
 permissions:
   contents: read
 
+# A new push to a PR cancels its older run. Runs on main always finish, so
+# every merge is checked.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ci:
+    # The `main` ruleset requires this check by name.
     name: moon ci
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # moon ci compares against the base branch to find affected tasks.
           fetch-depth: 0
+          persist-credentials: false
       # proto's Rust plugin only locates toolchains that rustup installed under
       # their exact version, and the runner's preinstalled Rust is named
       # `stable`. With no arguments, rustup installs the toolchain and
@@ -29,3 +38,99 @@ jobs:
         with:
           auto-install: true
       - run: moon ci
+      # The `check` tasks cover the code's formatting; dprint covers Markdown,
+      # JSON and YAML. Only the changed files, as the verify skill checks them.
+      - name: Check formatting
+        # bash with pipefail, so a failing moon query fails the step.
+        shell: bash
+        run: moon query changed-files --remote | jq -r '.files[]' | dprint check --stdin-files --allow-no-files --list-different
+
+  # Image builds stay out of `moon ci`, so a local verify doesn't need Docker.
+  # This job picks the Dockerfile targets the change can break.
+  images-affected:
+    name: Affected Docker images
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # moon compares against the base branch to find affected projects.
+          fetch-depth: 0
+          persist-credentials: false
+      # Only moon is needed, at the version pinned in .prototools.
+      - id: moon-version
+        run: |
+          version=$(sed -n 's/^moon = "\(.*\)"$/\1/p' .prototools)
+          if [ -z "$version" ]; then
+            echo '::error file=.prototools::No line of the form moon = "<version>" found.'
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: moonrepo/setup-toolchain@261c62cb5b0f580c7be7c8cd0f023a2e96756095 # v0.6.4
+        with:
+          auto-install: false
+          moon-version: ${{ steps.moon-version.outputs.version }}
+          cache: false
+      # An app's image needs a build when the app or a project it depends on
+      # changes, and every image does when a shared build input changes or on
+      # a push to main. Keep the mapping in step with the Dockerfile targets.
+      - id: targets
+        # bash with pipefail, so a failing moon query fails the step.
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          projects='[]'
+          changed='{"files":[]}'
+          if [ "$EVENT" != push ]; then
+            projects=$(moon query projects --affected remote --downstream deep | jq -c '[.projects[].id]')
+            changed=$(moon query changed-files --remote)
+          fi
+          jq -rn --arg event "$EVENT" --argjson projects "$projects" --argjson changed "$changed" '
+            ($event == "push" or any($changed.files[]; test("^(Dockerfile|\\.dockerignore|Cargo\\.(toml|lock)|bun\\.lock|package\\.json|\\.prototools|rust-toolchain\\.toml|tsconfig\\.base\\.json)$|^\\.moon/"))) as $shared
+            | [if $shared or ($projects | index("frontend")) then "frontend" else empty end,
+               if $shared or ($projects | index("backend")) then "backend", "migrate" else empty end]
+            | "targets=\(tojson)"' | tee -a "$GITHUB_OUTPUT"
+
+  image:
+    name: Docker image ${{ matrix.target }}
+    needs: images-affected
+    if: needs.images-affected.outputs.targets != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.images-affected.outputs.targets) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      # The gha cache needs no token permission. mode=max also caches the
+      # build stages, which take most of the time.
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          target: ${{ matrix.target }}
+          push: false
+          cache-from: type=gha,scope=${{ matrix.target }}
+          cache-to: type=gha,scope=${{ matrix.target }},mode=max
+
+  # The `main` ruleset requires this check by name. It reports one result for
+  # every run, also when no image needs a build and the matrix is skipped.
+  images:
+    name: Docker images
+    needs: [images-affected, image]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - env:
+          AFFECTED: ${{ needs.images-affected.result }}
+          IMAGE: ${{ needs.image.result }}
+        run: |
+          echo "Affected Docker images: $AFFECTED, Docker image builds: $IMAGE"
+          [ "$AFFECTED" = success ] && { [ "$IMAGE" = success ] || [ "$IMAGE" = skipped ]; }

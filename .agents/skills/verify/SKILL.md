@@ -37,6 +37,7 @@ moon ci --output-style buffer-only-failure
 
 - `moon check` runs the affected `build` and `test` tasks. `lint` and `check` tasks are `test` tasks, so it runs them too.
 - `moon ci` also runs the tasks CI runs on every PR, such as `root:validate-agent-files`.
+- CI also builds the Docker images of the affected apps, outside `moon ci`, so verify needs no Docker. To check an image locally, build its target: `docker build --target <name> .`, or every image with `docker compose build`.
 - `--output-style buffer-only-failure` prints the output of failing tasks only.
 - dprint checks Markdown, JSON and YAML. It lists the files that aren't formatted and skips deleted ones.
 - `format` tasks, such as `root:format`, are `run` tasks that rewrite files, so verify never runs them. A project checks the formatting of its code in its `check` task, e.g. with `cargo fmt --check`.
