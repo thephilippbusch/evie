@@ -8,6 +8,7 @@ use clap::{Parser, Subcommand};
 use evie_dev::agent_files;
 use evie_dev::commit_msg::{self, Subject};
 use evie_dev::format_staged::{self, FormatStagedError};
+use evie_dev::pre_tool_use::{self, Blocked};
 
 /// The repository's development tool. Run it through `tools/evie-dev/bin/evie-dev`,
 /// which builds it first when needed.
@@ -35,6 +36,9 @@ enum Command {
     /// Check skills, subagents and AGENTS.md files against the authoring-skills
     /// budgets. Run from the repository root.
     ValidateAgentFiles,
+    /// Check a Claude Code tool call, read as JSON from stdin, against the
+    /// guardrails. Exits 2 with the reason on stderr to block it.
+    PreToolUse,
 }
 
 fn main() -> ExitCode {
@@ -43,6 +47,7 @@ fn main() -> ExitCode {
         Command::CommitMsg { pr_title, file } => commit_msg(pr_title, file),
         Command::FormatStaged => Ok(format_staged()),
         Command::ValidateAgentFiles => validate_agent_files(),
+        Command::PreToolUse => Ok(pre_tool_use()),
     };
     result.unwrap_or_else(|err| {
         eprintln!("evie-dev: {err:#}");
@@ -106,6 +111,36 @@ fn validate_agent_files() -> anyhow::Result<ExitCode> {
         agent_files::SKILLS_DIR
     );
     Ok(ExitCode::FAILURE)
+}
+
+/// Claude Code blocks a tool call when its hook exits with 2. Every other
+/// failure would let the call through, so this fails closed: unreadable
+/// input and panics block too.
+fn pre_tool_use() -> ExitCode {
+    const BLOCK: u8 = 2;
+    let mut input = String::new();
+    if std::io::stdin().read_to_string(&mut input).is_err() {
+        eprintln!(
+            "{}",
+            Blocked("the hook input could not be read.".to_owned())
+        );
+        return ExitCode::from(BLOCK);
+    }
+    let env = pre_tool_use::Env::from_process();
+    match std::panic::catch_unwind(|| pre_tool_use::check(&input, &env)) {
+        Ok(Ok(())) => ExitCode::SUCCESS,
+        Ok(Err(blocked)) => {
+            eprintln!("{blocked}");
+            ExitCode::from(BLOCK)
+        }
+        Err(_) => {
+            eprintln!(
+                "{}",
+                Blocked("the guardrails crashed while checking this call.".to_owned())
+            );
+            ExitCode::from(BLOCK)
+        }
+    }
 }
 
 /// A child process's exit code, which is 0 to 255 on every platform it runs on.

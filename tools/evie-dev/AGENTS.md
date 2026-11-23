@@ -14,6 +14,8 @@ The repository's development tool, one subcommand per repo-wide check. It runs t
 | `src/format_staged.rs` | `format-staged`: formats the staged files with dprint                                  |
 | `src/agent_files.rs`   | `validate-agent-files`: the rules of the Budgets table in the `authoring-skills` skill |
 | `src/agent_files/`     | The frontmatter readers, the Agent Skills spec rules and the Markdown link finder      |
+| `src/pre_tool_use.rs`  | `pre-tool-use`: the Claude Code guardrails for one tool call                           |
+| `src/pre_tool_use/`    | The Bash command reader, the protected-path rules and shell glob matching              |
 | `tests/common/mod.rs`  | Test helpers, such as a temporary git repository                                       |
 | `tests/<module>.rs`    | Integration tests per subcommand, with accept and reject cases                         |
 | `Cargo.toml`           | Crate manifest; version and edition come from the workspace                            |

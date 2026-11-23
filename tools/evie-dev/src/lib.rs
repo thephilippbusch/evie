@@ -5,3 +5,4 @@
 pub mod agent_files;
 pub mod commit_msg;
 pub mod format_staged;
+pub mod pre_tool_use;
