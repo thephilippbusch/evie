@@ -5,6 +5,7 @@ use std::process::ExitCode;
 
 use anyhow::Context;
 use clap::{Parser, Subcommand};
+use evie_dev::agent_files;
 use evie_dev::commit_msg::{self, Subject};
 use evie_dev::format_staged::{self, FormatStagedError};
 
@@ -31,6 +32,9 @@ enum Command {
     },
     /// Format the staged files with dprint and stage the result. Run by the pre-commit hook.
     FormatStaged,
+    /// Check skills, subagents and AGENTS.md files against the authoring-skills
+    /// budgets. Run from the repository root.
+    ValidateAgentFiles,
 }
 
 fn main() -> ExitCode {
@@ -38,6 +42,7 @@ fn main() -> ExitCode {
     let result = match cli.command {
         Command::CommitMsg { pr_title, file } => commit_msg(pr_title, file),
         Command::FormatStaged => Ok(format_staged()),
+        Command::ValidateAgentFiles => validate_agent_files(),
     };
     result.unwrap_or_else(|err| {
         eprintln!("evie-dev: {err:#}");
@@ -84,6 +89,23 @@ fn format_staged() -> ExitCode {
         FormatStagedError::Spawn { .. } => eprintln!("evie-dev: {:#}", anyhow::Error::new(err)),
     }
     exit_code(code)
+}
+
+fn validate_agent_files() -> anyhow::Result<ExitCode> {
+    let problems = agent_files::validate(Path::new(".")).context("listing the agent files")?;
+    if problems.is_empty() {
+        println!("Agent files are valid.");
+        return Ok(ExitCode::SUCCESS);
+    }
+    for problem in &problems {
+        eprintln!("{problem}");
+    }
+    eprintln!(
+        "\n{} problem(s) found. See the budgets in {}/authoring-skills/SKILL.md.",
+        problems.len(),
+        agent_files::SKILLS_DIR
+    );
+    Ok(ExitCode::FAILURE)
 }
 
 /// A child process's exit code, which is 0 to 255 on every platform it runs on.
