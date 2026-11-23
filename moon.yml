@@ -4,6 +4,8 @@ $schema: 'https://moonrepo.dev/schemas/v2/project.json'
 # the repository root and never hash the whole repo. The hook and formatting
 # tasks declare no inputs and are `run` tasks, so `moon check` and `moon ci`
 # skip them; `validate-agent-files` is a `test` task that always runs in CI.
+# The hook and check tasks run evie-dev (tools/evie-dev) through its launcher,
+# which builds the binary when it is missing or out of date.
 layer: 'tool'
 project:
   title: 'root'
@@ -26,7 +28,7 @@ tasks:
 
   format-staged:
     description: 'Format the staged files and stage the result. Run by the pre-commit hook.'
-    command: 'sh scripts/format-staged.sh'
+    command: 'sh tools/evie-dev/bin/evie-dev format-staged'
     type: 'run'
     inputs: []
     options:
@@ -36,7 +38,7 @@ tasks:
 
   lint-commit-msg:
     description: 'Check that a commit message is a Conventional Commit. Run by the commit-msg hook.'
-    command: 'sh scripts/lint-commit-msg.sh'
+    command: 'sh tools/evie-dev/bin/evie-dev commit-msg'
     type: 'run'
     inputs: []
     options:
@@ -46,14 +48,16 @@ tasks:
 
   validate-agent-files:
     description: 'Validate skills, subagents and AGENTS.md files against the authoring-skills budgets.'
-    command: 'sh scripts/validate-agent-files.sh'
+    command: 'sh tools/evie-dev/bin/evie-dev validate-agent-files'
     type: 'test'
     inputs:
       - '.agents/**/*'
       - '.claude/agents/**/*'
       - '**/AGENTS.md'
       - '**/CLAUDE.md'
-      - 'scripts/validate-agent-files.sh'
+      - 'tools/evie-dev/bin/evie-dev'
+      - 'tools/evie-dev/src/**/*'
+      - 'tools/evie-dev/Cargo.toml'
     options:
       # Links may point to any file in the repo, which the inputs can't list
       # without hashing the whole repo. So the task never reuses a cached

@@ -1,6 +1,6 @@
-# Paths agents must not edit by hand. Enforced by pre-tool-use.sh for the
-# Edit, Write, MultiEdit and NotebookEdit tools, and for Bash commands that
-# write to them (redirects, tee, sed -i, cp, mv, rm, ...).
+# Paths agents must not edit by hand. Enforced by `evie-dev pre-tool-use`
+# (tools/evie-dev) for the Edit, Write, MultiEdit and NotebookEdit tools, and
+# for Bash commands that write to them (redirects, tee, sed -i, cp, mv, rm, ...).
 #
 # One rule per line: <glob> <reason shown to the agent>
 # - A glob without "/" matches the file name at any depth.

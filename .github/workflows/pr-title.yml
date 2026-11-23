@@ -21,17 +21,21 @@ jobs:
     # The `main` ruleset requires this check by name.
     name: PR title
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # A cold cache compiles evie-dev and its few dependencies first.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          sparse-checkout: scripts
           persist-credentials: false
+      # With no arguments, rustup installs the toolchain from
+      # rust-toolchain.toml, the same one the hooks build with.
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       # The title is untrusted input: pass it through the environment, never
       # interpolate it into the script, so it can't inject shell commands.
-      # The same script runs in the commit-msg hook, so PR titles and local
+      # The same check runs in the commit-msg hook, so PR titles and local
       # commits follow the same rules.
       - name: Check that the PR title is a Conventional Commit
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
-        run: printf '%s\n' "$PR_TITLE" | sh scripts/lint-commit-msg.sh --pr-title
+        run: printf '%s\n' "$PR_TITLE" | cargo run --locked --quiet -p evie-dev -- commit-msg --pr-title

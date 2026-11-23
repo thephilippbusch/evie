@@ -1,0 +1,37 @@
+#!/bin/sh
+# Runs evie-dev, the repository's development tool, and builds it first when
+# the release binary is missing or older than the crate's sources, its
+# Cargo.toml or the workspace's Cargo.toml and Cargo.lock. Hooks call this
+# launcher, never `cargo run`, so a call costs one `find` once it is built.
+#
+# Usage: tools/evie-dev/bin/evie-dev <subcommand> [args...]
+#
+# A failed build exits 2 for `pre-tool-use`, so Claude Code blocks the tool
+# call instead of letting it through unchecked.
+
+set -eu
+
+root=$(CDPATH='' cd -- "$(dirname -- "$0")/../../.." && pwd -P)
+crate=$root/tools/evie-dev
+target=${CARGO_TARGET_DIR:-$root/target}
+# cargo runs from the root below, so a relative target dir starts there.
+case $target in /*) ;; *) target=$root/$target ;; esac
+bin=$target/release/evie-dev
+
+stale() {
+  [ ! -x "$bin" ] \
+    || [ -n "$(find "$crate/src" "$crate/Cargo.toml" "$root/Cargo.toml" "$root/Cargo.lock" -newer "$bin" 2> /dev/null | head -n 1)" ]
+}
+
+if stale; then
+  # cargo's output goes to stderr: a hook's stdout is read by its caller.
+  if ! (cd "$root" && cargo build --release --locked --quiet -p evie-dev < /dev/null 1>&2); then
+    printf 'evie-dev could not be built. In the repository root, run: proto trust && proto install\n' >&2
+    if [ "${1:-}" = pre-tool-use ]; then exit 2; fi
+    exit 1
+  fi
+  # cargo doesn't relink an up-to-date binary, so mark it as checked.
+  touch "$bin"
+fi
+
+exec "$bin" "$@"
