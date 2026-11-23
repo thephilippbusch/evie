@@ -5,7 +5,7 @@ description: Sets evie's Conventional Commit format for commit messages and PR t
 
 # Conventional Commits
 
-Every commit message and PR title is a [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/). `scripts/lint-commit-msg.sh` checks commit messages in the `commit-msg` hook and PR titles in CI. PRs are squash-merged, so the PR title becomes the commit on `main` that release-please reads.
+Every commit message and PR title is a [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/). `evie-dev commit-msg` (in `tools/evie-dev`) checks commit messages in the `commit-msg` hook and PR titles in CI. PRs are squash-merged, so the PR title becomes the commit on `main` that release-please reads.
 
 Before v1, the PR title follows the `pull-request` skill.
 
