@@ -1,10 +1,12 @@
+use std::ffi::OsStr;
 use std::io::Read;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use anyhow::Context;
 use clap::{Parser, Subcommand};
 use evie_dev::commit_msg::{self, Subject};
+use evie_dev::format_staged::{self, FormatStagedError};
 
 /// The repository's development tool. Run it through `tools/evie-dev/bin/evie-dev`,
 /// which builds it first when needed.
@@ -27,12 +29,15 @@ enum Command {
         /// or with `-`, the message is read from stdin.
         file: Option<PathBuf>,
     },
+    /// Format the staged files with dprint and stage the result. Run by the pre-commit hook.
+    FormatStaged,
 }
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
     let result = match cli.command {
         Command::CommitMsg { pr_title, file } => commit_msg(pr_title, file),
+        Command::FormatStaged => Ok(format_staged()),
     };
     result.unwrap_or_else(|err| {
         eprintln!("evie-dev: {err:#}");
@@ -64,4 +69,24 @@ fn commit_msg(pr_title: bool, file: Option<PathBuf>) -> anyhow::Result<ExitCode>
             Ok(ExitCode::FAILURE)
         }
     }
+}
+
+fn format_staged() -> ExitCode {
+    let Err(err) = format_staged::run(Path::new("."), OsStr::new("dprint")) else {
+        return ExitCode::SUCCESS;
+    };
+    let code = err.exit_code();
+    match err {
+        FormatStagedError::DprintMissing => eprintln!("{err}"),
+        FormatStagedError::PartlyStagedNotFormatted => eprintln!("\n{err}"),
+        // The command printed its own error.
+        FormatStagedError::Failed { .. } => {}
+        FormatStagedError::Spawn { .. } => eprintln!("evie-dev: {:#}", anyhow::Error::new(err)),
+    }
+    exit_code(code)
+}
+
+/// A child process's exit code, which is 0 to 255 on every platform it runs on.
+fn exit_code(code: i32) -> ExitCode {
+    ExitCode::from(u8::try_from(code).unwrap_or(1))
 }

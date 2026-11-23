@@ -6,13 +6,15 @@ The repository's development tool, one subcommand per repo-wide check. It runs t
 
 ## Structure
 
-| Path                | Contents                                                       |
-| ------------------- | -------------------------------------------------------------- |
-| `src/main.rs`       | Argument parsing and exit codes only                           |
-| `src/lib.rs`        | One module per subcommand                                      |
-| `src/commit_msg.rs` | `commit-msg`: the Conventional Commit check                    |
-| `tests/<module>.rs` | Integration tests per subcommand, with accept and reject cases |
-| `Cargo.toml`        | Crate manifest; version and edition come from the workspace    |
+| Path                   | Contents                                                       |
+| ---------------------- | -------------------------------------------------------------- |
+| `src/main.rs`          | Argument parsing and exit codes only                           |
+| `src/lib.rs`           | One module per subcommand                                      |
+| `src/commit_msg.rs`    | `commit-msg`: the Conventional Commit check                    |
+| `src/format_staged.rs` | `format-staged`: formats the staged files with dprint          |
+| `tests/common/mod.rs`  | Test helpers, such as a temporary git repository               |
+| `tests/<module>.rs`    | Integration tests per subcommand, with accept and reject cases |
+| `Cargo.toml`           | Crate manifest; version and edition come from the workspace    |
 
 The workspace files live at the repository root: `Cargo.toml`, `Cargo.lock` and `rust-toolchain.toml`.
 

@@ -3,3 +3,4 @@
 //! the arguments and maps the results to exit codes.
 
 pub mod commit_msg;
+pub mod format_staged;
