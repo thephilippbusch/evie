@@ -1,13 +1,17 @@
-import { Card, CardHeader, CardTitle } from "@evie/ui/card";
+import { createAsync, type RouteDefinition } from "@solidjs/router";
+import { Show } from "solid-js";
+import { getPing } from "~/ping/get-ping";
+import { PingStatus } from "~/ping/ping-status";
+import { pingStatusTexts } from "~/ping/ping-status-texts";
 
-const Home = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle as="h1" class="text-2xl">
-        evie
-      </CardTitle>
-    </CardHeader>
-  </Card>
-);
+export const route = { preload: () => getPing() } satisfies RouteDefinition;
+
+// Renders `en` until #31 adds locale detection.
+const Home = () => {
+  const ping = createAsync(() => getPing());
+  return (
+    <Show when={ping()}>{(view) => <PingStatus view={view()} texts={pingStatusTexts.en} />}</Show>
+  );
+};
 
 export default Home;
