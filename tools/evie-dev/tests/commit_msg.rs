@@ -179,3 +179,11 @@ fn binary_fails_when_the_message_file_is_missing() {
 
     assert_eq!(output.status.code(), Some(1));
 }
+
+#[test]
+fn binary_rejects_a_merge_header_only_as_a_pr_title() {
+    let title = "Merge branch 'main' into feature\n";
+
+    assert_eq!(run(&["--pr-title", "-"], title).status.code(), Some(1));
+    assert_eq!(run(&["-"], title).status.code(), Some(0));
+}
