@@ -10,9 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@connectrpc/connect": "^2.3.0",
+    "@connectrpc/connect-node": "^2.3.0",
+    "@evie/proto": "workspace:*",
     "@evie/ui": "workspace:*",
     "@solidjs/router": "^1.0.3",
     "@solidjs/start": "^2.2.2",
+    "effect": "^4.1.5",
     "nitro": "^3.0.260610-beta",
     "solid-js": "^1.9.18",
     "vite": "^8.3.7"

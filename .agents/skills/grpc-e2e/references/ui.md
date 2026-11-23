@@ -2,13 +2,13 @@
 
 The page gets the RPC's result through a server function that runs the client service with `appRuntime`. Write it in the shape the `effect-service` skill gives for server functions. Build the page from `@evie/ui` components; use the `ui-component` skill for any that's missing.
 
-## Server function
+## View and server function
+
+The effect that turns the RPC's result into what the page shows lives in `src/<feature>/<feature>-view.ts`, so `bun test` can test it: bun can't load the server function file, because `@solidjs/router` throws outside the browser.
 
 ```ts
-// src/ping/get-ping.ts
-import { query } from "@solidjs/router";
+// src/ping/ping-view.ts
 import { Effect } from "effect";
-import { appRuntime } from "~/lib/runtime";
 import { PingClient } from "./ping-client";
 
 /** What the page shows about the backend. */
@@ -16,21 +16,35 @@ export type PingView =
   | { readonly _tag: "Reachable"; readonly version: string }
   | { readonly _tag: "Unreachable" };
 
+export const pingView = Effect.gen(function* () {
+  const client = yield* PingClient;
+  const { version } = yield* client.ping;
+  return { _tag: "Reachable", version } satisfies PingView;
+}).pipe(
+  Effect.catchTag("BackendUnavailable", (error) =>
+    Effect.logWarning("the backend can't be reached", error).pipe(
+      Effect.as<PingView>({ _tag: "Unreachable" }),
+    ),
+  ),
+);
+```
+
+```ts
+// src/ping/get-ping.ts
+import { query } from "@solidjs/router";
+import { Effect } from "effect";
+import { appRuntime } from "~/lib/runtime";
+import { type PingView, pingView } from "./ping-view";
+
+// Public data: ping needs no session.
 export const getPing = query(async (): Promise<PingView> => {
   "use server";
-  const view = Effect.gen(function* () {
-    const client = yield* PingClient;
-    const { version } = yield* client.ping;
-    return { _tag: "Reachable", version } satisfies PingView;
-  }).pipe(
-    Effect.catchTag("BackendUnavailable", () => Effect.succeed<PingView>({ _tag: "Unreachable" })),
-    Effect.tapCause(Effect.logError),
-  );
-  return appRuntime.runPromise(view);
+  return appRuntime.runPromise(pingView.pipe(Effect.tapCause(Effect.logError)));
 }, "ping");
 ```
 
-- One `_tag` variant per outcome the page shows. A backend that is down is an outcome, not an error page.
+- One `_tag` variant per outcome the page shows. A backend that is down is an outcome, not an error page, and it's logged as a warning.
+- Test the view with a test layer for the client service, as `ping-view.test.ts` does: one test per variant, and one that `BackendError` still fails.
 - `BackendError` stays unhandled unless the page has something to say about it: it rejects and reaches the nearest `ErrorBoundary`.
 - An RPC with arguments takes them as `unknown` and decodes them with `Schema` first.
 
@@ -41,7 +55,7 @@ The component switches on `_tag` and closes the switch with `satisfies never`, s
 ```tsx
 // src/ping/ping-status.tsx
 import { Card, CardDescription, CardHeader, CardTitle } from "@evie/ui/card";
-import type { PingView } from "./get-ping";
+import type { PingView } from "./ping-view";
 
 type PingStatusProps = {
   readonly view: PingView;

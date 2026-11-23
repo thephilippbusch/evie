@@ -1,6 +1,6 @@
-//! evie's gRPC backend. It serves the gRPC health service, which reports
-//! whether PostgreSQL is reachable. `main.rs` only reads the config and wires
-//! these parts together.
+//! evie's gRPC backend. It serves evie's API from `evie-proto`, and the gRPC
+//! health service, which reports whether PostgreSQL is reachable. `main.rs`
+//! only reads the config and wires these parts together.
 mod config;
 mod db;
 mod grpc;

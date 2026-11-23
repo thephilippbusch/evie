@@ -61,6 +61,8 @@ services:
     build:
       context: .
       target: frontend
+    environment:
+      BACKEND_URL: http://backend:50051
     ports:
       - '127.0.0.1:3000:3000'
     depends_on:

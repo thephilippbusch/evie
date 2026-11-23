@@ -98,7 +98,7 @@ Fork the effect that waits, move the clock past its deadline, then join the fibe
 
 ## Server functions
 
-Don't test server functions through SolidStart. Keep their effect small and test the services it calls. When the mapping from failures to the view is worth a test, move the effect into the service file as an exported function and test it there.
+Don't test server functions through SolidStart. Keep their effect small and test the services it calls. When the mapping from failures to the view is worth a test, move the effect into `src/<feature>/<feature>-view.ts` as an exported effect and test it there with test layers; bun can't load the server function file, because `@solidjs/router` throws outside the browser. The `grpc-e2e` skill's `references/ui.md` shows the ping example.
 
 ## Running
 

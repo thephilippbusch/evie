@@ -7,7 +7,7 @@ project:
   description: 'The SolidStart web app that people use in the browser; its server is the BFF that calls the backend.'
 
 # Libraries this app uses, so changes to them affect it.
-dependsOn: ['ui']
+dependsOn: ['proto', 'ui']
 
 # lint, check, typecheck, test and format come from .moon/tasks/typescript.yml.
 tasks:
