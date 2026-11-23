@@ -69,7 +69,7 @@ Non-negotiable. Each rule will link to its ADR once it exists.
 - Never edit `CHANGELOG.md` or the release manifest; release-please owns them.
 - Never push to `main` or force-push. Work on a branch and open a PR.
 - Never read `.env` files or other secrets.
-- Claude Code enforces the rules above with permissions in `.claude/settings.json` and a hook in `.claude/hooks/` (needs `jq`); list new generated or release-owned paths in [`protected-paths.txt`](.claude/hooks/protected-paths.txt).
+- Claude Code enforces the rules above with permissions in `.claude/settings.json` and the `evie-dev pre-tool-use` hook; list new generated or release-owned paths in [`protected-paths.txt`](.claude/hooks/protected-paths.txt).
 - PR titles are Conventional Commits, checked in CI. PRs are squash-merged, and the commit takes the PR title and description. Before v1, PR titles use a type that doesn't release (`chore`, `ci`, `docs`, `ai`, …); only the PR that closes the last issue of a milestone is a `feat`.
 - From v0.5 on, participation features support acting for household members and managed profiles, and record who acted.
 - New apps are added with the `moon-new-app` skill, which registers them for releases and image builds.
