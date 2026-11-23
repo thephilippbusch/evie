@@ -11,6 +11,10 @@ project:
   title: 'root'
   description: 'Repo-wide tasks, such as the commit hooks and formatting.'
 
+# The hook and check tasks run evie-dev, so a change to it affects them.
+dependsOn:
+  - 'evie-dev'
+
 # Don't inherit the tasks meant for apps and libs.
 workspace:
   inheritedTasks:
