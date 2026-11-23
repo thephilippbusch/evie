@@ -154,7 +154,8 @@
           {
             "type": "command",
             "command": "${CLAUDE_PROJECT_DIR}/tools/evie-dev/bin/evie-dev",
-            "args": ["pre-tool-use"]
+            "args": ["pre-tool-use"],
+            "timeout": 300
           }
         ]
       },
@@ -164,7 +165,8 @@
           {
             "type": "command",
             "command": "${CLAUDE_PROJECT_DIR}/tools/evie-dev/bin/evie-dev",
-            "args": ["pre-tool-use"]
+            "args": ["pre-tool-use"],
+            "timeout": 300
           }
         ]
       }
