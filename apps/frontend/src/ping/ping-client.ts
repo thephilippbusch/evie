@@ -5,7 +5,7 @@ import { BackendTransport } from "~/lib/backend-transport";
 import { type BackendError, type BackendUnavailable, callBackend } from "~/lib/call-backend";
 
 const Ping = Schema.Struct({ version: Schema.Trim.check(Schema.isNonEmpty()) });
-export type Ping = typeof Ping.Type;
+type Ping = typeof Ping.Type;
 
 /** Checks that the backend answers. */
 export class PingClient extends Context.Service<
