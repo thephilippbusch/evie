@@ -2,8 +2,8 @@
 
 ## Purpose
 
-evie's SolidStart web app, used by everyone in the browser. Its server is the BFF: server functions call the backend over gRPC.
-For now it renders one page inside the app shell; the backend call comes with the [v0.2 milestone](https://github.com/thephilippbusch/evie/milestone/2) issues.
+evie's SolidStart web app, used by everyone in the browser. Its server is the BFF: server functions run Effect services, and client services call the backend over gRPC with Connect, using [`@evie/proto`](../../libs/proto/AGENTS.md).
+For now it renders one page inside the app shell, which shows the backend's version from the ping RPC.
 
 ## Structure
 
@@ -12,6 +12,8 @@ For now it renders one page inside the app shell; the backend call comes with th
 | `src/app.tsx`          | The root component: the router with the file routes, inside the app shell                       |
 | `src/shell/`           | The app shell: the layout around every page, such as the header and the main column             |
 | `src/routes/`          | File routes; `index.tsx` is `/`                                                                 |
+| `src/<feature>/`       | One feature each: its client services, server functions and components, e.g. `src/ping/`        |
+| `src/lib/`             | Server code no feature owns: `appRuntime`, the backend transport and `callBackend`              |
 | `src/entry-server.tsx` | The HTML document rendered on the server                                                        |
 | `src/entry-client.tsx` | Mounts the app in the browser                                                                   |
 | `src/global.d.ts`      | Loads the SolidStart types for the whole app                                                    |
@@ -21,6 +23,14 @@ For now it renders one page inside the app shell; the backend call comes with th
 | `.output/`             | The production build (`bun .output/server/index.mjs`), not committed                            |
 
 Biome and TypeScript are dev dependencies of the root `package.json`, and `biome.json` at the root configures Biome. Dependencies install into the root `bun.lock`.
+
+## Configuration
+
+The server reads these with Effect's `Config`. A missing one fails the first server function that needs it with a `ConfigError`.
+
+| Variable      | Default  | Meaning                                                                                                     |
+| ------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
+| `BACKEND_URL` | required | The backend's internal gRPC address, e.g. `http://backend:50051` in compose, `http://127.0.0.1:50051` local |
 
 ## Commands
 
@@ -35,7 +45,7 @@ Biome and TypeScript are dev dependencies of the root `package.json`, and `biome
 | `moon run frontend:test`      | Run the tests with `bun test`                                            |
 | `moon run frontend:format`    | Format the code and organize imports with Biome                          |
 
-For a dev server, run `bun run dev` in `apps/frontend/`.
+For a dev server, run `BACKEND_URL=http://127.0.0.1:50051 bun run dev` in `apps/frontend/`, next to `cargo run` in `apps/backend/`.
 To run the app with the rest of the stack, run `docker compose up` at the repository root and open `http://127.0.0.1:3000`. Build the image alone from the repository root with `docker build --target frontend .`. The root `Dockerfile` builds it from a moon scaffold and runs `.output` with bun on port 3000.
 
 ## Local rules
