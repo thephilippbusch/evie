@@ -26,6 +26,7 @@ For a client of a backend RPC, use the `grpc-e2e` skill, which builds on this on
 | --------------------------------- | --------------------------------------------------------------------------------- |
 | `src/<feature>/<service>.ts`      | the service class, its live layer, its errors and the schemas of what it takes in |
 | `src/<feature>/<service>.test.ts` | tests with test layers                                                            |
+| `src/<feature>/<feature>-view.ts` | the effect a server function runs, when its mapping to the view needs a test      |
 | `src/<feature>/get-<thing>.ts`    | a server function, apart from the service so tests never load the router          |
 | `src/lib/runtime.ts`              | `appRuntime`: the one `ManagedRuntime` over every live layer                      |
 
