@@ -1,0 +1,13 @@
+$schema: 'https://moonrepo.dev/schemas/v2/project.json'
+
+layer: 'tool'
+language: 'rust'
+project:
+  title: 'evie-dev'
+  description: 'Runs the repository''s commit hooks, agent file check and Claude Code guardrails as one binary, so they need only the proto-pinned toolchain.'
+
+# Projects this one uses, so affected checks reach their dependents.
+dependsOn: []
+
+# build, lint, check, test and format come from .moon/tasks/rust.yml.
+tasks: {}

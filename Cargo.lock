@@ -993,6 +993,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "evie-dev"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "tempfile",
+ "thiserror",
+]
+
+[[package]]
 name = "evie-proto"
 version = "0.1.0"
 dependencies = [
