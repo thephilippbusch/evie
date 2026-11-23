@@ -55,28 +55,35 @@ jobs:
           persist-credentials: false
       # Only moon is needed, at the version pinned in .prototools.
       - id: moon-version
-        run: sed -n 's/^moon = "\(.*\)"$/version=\1/p' .prototools >> "$GITHUB_OUTPUT"
+        run: |
+          version=$(sed -n 's/^moon = "\(.*\)"$/\1/p' .prototools)
+          if [ -z "$version" ]; then
+            echo '::error file=.prototools::No line of the form moon = "<version>" found.'
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - uses: moonrepo/setup-toolchain@261c62cb5b0f580c7be7c8cd0f023a2e96756095 # v0.6.4
         with:
           auto-install: false
           moon-version: ${{ steps.moon-version.outputs.version }}
           cache: false
       # An app's image needs a build when the app or a project it depends on
-      # changes, and every image does when a shared build input changes. Keep
-      # the mapping in step with the Dockerfile targets.
+      # changes, and every image does when a shared build input changes or on
+      # a push to main. Keep the mapping in step with the Dockerfile targets.
       - id: targets
         # bash with pipefail, so a failing moon query fails the step.
         shell: bash
         env:
           EVENT: ${{ github.event_name }}
         run: |
-          if [ "$EVENT" = push ]; then
-            echo 'targets=["frontend","backend","migrate"]' >> "$GITHUB_OUTPUT"
-            exit 0
+          projects='[]'
+          changed='{"files":[]}'
+          if [ "$EVENT" != push ]; then
+            projects=$(moon query projects --affected remote --downstream deep | jq -c '[.projects[].id]')
+            changed=$(moon query changed-files --remote)
           fi
-          projects=$(moon query projects --affected remote --downstream deep | jq -c '[.projects[].id]')
-          moon query changed-files --remote | jq -r --argjson projects "$projects" '
-            any(.files[]; test("^(Dockerfile|\\.dockerignore|Cargo\\.(toml|lock)|bun\\.lock|package\\.json|\\.prototools|rust-toolchain\\.toml|tsconfig\\.base\\.json)$|^\\.moon/")) as $shared
+          jq -rn --arg event "$EVENT" --argjson projects "$projects" --argjson changed "$changed" '
+            ($event == "push" or any($changed.files[]; test("^(Dockerfile|\\.dockerignore|Cargo\\.(toml|lock)|bun\\.lock|package\\.json|\\.prototools|rust-toolchain\\.toml|tsconfig\\.base\\.json)$|^\\.moon/"))) as $shared
             | [if $shared or ($projects | index("frontend")) then "frontend" else empty end,
                if $shared or ($projects | index("backend")) then "backend", "migrate" else empty end]
             | "targets=\(tojson)"' | tee -a "$GITHUB_OUTPUT"
